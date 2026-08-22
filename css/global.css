@@ -1,0 +1,29 @@
+html {
+    font-size: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family: var(--font-family-base);
+    color: var(--color-text);
+    background-color: var(--color-background);
+
+    line-height: 1.5;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    width: min(
+        calc(100% - 2rem),
+        var(--container-max-width)
+    );
+
+    margin-inline: auto;
+}
+
+:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
