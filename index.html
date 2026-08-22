@@ -16,13 +16,38 @@
     <title>Bem-Feito</title>
 </head>
 
-<body>
-    <header class="site-header">
-        <nav class="navbar container" aria-label="Navegação principal">
-            <a class="navbar__brand" href="./index.html">
-                Bem-Feito
-            </a>
+    <main>
+        <section class="container">
+            <h1>Bem-Feito</h1>
+        </section>
+    </main>
 
+    <script type="module" src="./js/main.js"></script>
+<body>
+<header class="site-header">
+    <nav class="navbar container" aria-label="Navegação principal">
+        <a class="navbar__brand" href="./index.html">
+            Bem-Feito
+        </a>
+
+        <button
+            class="navbar__toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="primary-navigation"
+            aria-label="Abrir menu"
+            data-menu-toggle
+        >
+            <span class="navbar__toggle-line"></span>
+            <span class="navbar__toggle-line"></span>
+            <span class="navbar__toggle-line"></span>
+        </button>
+
+        <div
+            class="navbar__menu"
+            id="primary-navigation"
+            data-menu
+        >
             <ul class="navbar__links">
                 <li>
                     <a
@@ -56,13 +81,9 @@
             <a class="button button--outline" href="#">
                 Login Admin
             </a>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
 
-    <main>
-        <section class="container">
-            <h1>Bem-Feito</h1>
-        </section>
-    </main>
 </body>
 </html>
