@@ -98,6 +98,54 @@
     background-color: var(--color-primary-light);
 }
 
+/* Seção responsável por apresentar o fluxo básico de uso da plataforma. */
+.how-it-works {
+    scroll-margin-top: 5rem;
+    padding-block: var(--space-7);
+}
+
+.how-it-works__heading {
+    margin-bottom: var(--space-5);
+
+    text-align: center;
+}
+
+.how-it-works__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+}
+
+.step-card {
+    min-height: 13rem;
+}
+
+.step-card__icon {
+    display: grid;
+    place-items: center;
+
+    width: 3rem;
+    height: 3rem;
+
+    margin-bottom: var(--space-4);
+
+    border-radius: var(--radius-md);
+
+    color: var(--color-accent);
+    background-color: var(--color-accent-light);
+}
+
+.step-card__title {
+    margin-bottom: var(--space-3);
+
+    font-size: var(--font-size-base);
+}
+
+.step-card__description {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+}
+
 @media (max-width: 48rem) {
     .hero {
         padding-block:
@@ -128,6 +176,15 @@
 
     .hero__visual-placeholder {
         width: min(100%, 20rem);
+    }
+
+    /* No tablet e no mobile, os passos passam de três colunas para uma. */
+    .how-it-works__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .step-card {
+        min-height: auto;
     }
 }
 
