@@ -10,10 +10,55 @@
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/variables.css" />
     <link rel="stylesheet" href="./css/global.css" />
+
+    <link rel="stylesheet" href="./css/components/buttons.css">
+    <link rel="stylesheet" href="./css/components/navbar.css">
     <title>Bem-Feito</title>
 </head>
 
 <body>
+    <header class="site-header">
+        <nav class="navbar container" aria-label="Navegação principal">
+            <a class="navbar__brand" href="./index.html">
+                Bem-Feito
+            </a>
+
+            <ul class="navbar__links">
+                <li>
+                    <a
+                        class="navbar__link"
+                        href="./index.html"
+                        aria-current="page"
+                    >
+                        Início
+                    </a>
+                </li>
+
+                <li>
+                    <a class="navbar__link" href="#como-funciona">
+                        Como funciona
+                    </a>
+                </li>
+
+                <li>
+                    <a class="navbar__link" href="#instituicoes">
+                        Instituições
+                    </a>
+                </li>
+
+                <li>
+                    <a class="navbar__link" href="#sobre">
+                        Sobre
+                    </a>
+                </li>
+            </ul>
+
+            <a class="button button--outline" href="#">
+                Login Admin
+            </a>
+        </nav>
+    </header>
+
     <main>
         <section class="container">
             <h1>Bem-Feito</h1>
