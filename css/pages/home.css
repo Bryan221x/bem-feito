@@ -1,0 +1,142 @@
+.hero {
+    padding-block: clamp(
+        var(--space-7),
+        8vw,
+        var(--space-8)
+    );
+}
+
+.hero__container {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(18rem, 0.9fr);
+
+    align-items: center;
+    gap: clamp(
+        var(--space-6),
+        6vw,
+        var(--space-8)
+    );
+}
+
+.hero__content {
+    max-width: 37rem;
+}
+
+.hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+
+    margin-bottom: var(--space-4);
+    padding:
+        var(--space-2)
+        var(--space-3);
+
+    border-radius: var(--radius-pill);
+
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+
+    color: var(--color-accent-text);
+    background-color: var(--color-accent-light);
+}
+
+.hero__title {
+    max-width: 11ch;
+
+    font-size: clamp(
+        2.25rem,
+        5vw,
+        3.25rem
+    );
+
+    letter-spacing: -0.03em;
+}
+
+.hero__description {
+    max-width: 34rem;
+
+    margin-top: var(--space-4);
+
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+
+    margin-top: var(--space-5);
+}
+
+.hero__visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 24rem;
+}
+
+.hero__visual-placeholder {
+    display: grid;
+    place-items: center;
+
+    width: min(100%, 26rem);
+    aspect-ratio: 1;
+
+    padding: var(--space-5);
+
+    border: 1px dashed var(--color-border);
+    border-radius: 50%;
+
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    text-align: center;
+
+    background-color: var(--color-primary-light);
+}
+
+@media (max-width: 48rem) {
+    .hero {
+        padding-block:
+            var(--space-6)
+            var(--space-7);
+    }
+
+    .hero__container {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+
+    .hero__content {
+        max-width: none;
+    }
+
+    .hero__title {
+        max-width: 13ch;
+    }
+
+    .hero__description {
+        max-width: none;
+    }
+
+    .hero__visual {
+        min-height: auto;
+    }
+
+    .hero__visual-placeholder {
+        width: min(100%, 20rem);
+    }
+}
+
+@media (max-width: 30rem) {
+    .hero__actions {
+        flex-direction: column;
+    }
+
+    .hero__actions .button {
+        width: 100%;
+    }
+}

@@ -1,89 +1,177 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta
-    name="description"
-    content="Bem-Feito conecta pessoas a instituições de caridade e facilita a descoberta de como ajudar."
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     />
+
+    <meta
+        name="description"
+        content="Bem-Feito conecta pessoas a instituições de caridade e facilita a descoberta de como ajudar."
+    />
+
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/variables.css" />
     <link rel="stylesheet" href="./css/global.css" />
 
-    <link rel="stylesheet" href="./css/components/buttons.css">
-    <link rel="stylesheet" href="./css/components/navbar.css">
+    <link rel="stylesheet" href="./css/components/buttons.css" />
+    <link rel="stylesheet" href="./css/components/navbar.css" />
+
+    <link rel="stylesheet" href="./css/pages/home.css" />
+
     <title>Bem-Feito</title>
 </head>
 
+<body>
+
+    <header class="site-header">
+        <nav
+            class="navbar container"
+            aria-label="Navegação principal"
+        >
+            <a
+                class="navbar__brand"
+                href="./index.html"
+            >
+                Bem-Feito
+            </a>
+
+            <button
+                class="navbar__toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="primary-navigation"
+                aria-label="Abrir menu"
+                data-menu-toggle
+            >
+                <span class="navbar__toggle-line"></span>
+                <span class="navbar__toggle-line"></span>
+                <span class="navbar__toggle-line"></span>
+            </button>
+
+            <div
+                class="navbar__menu"
+                id="primary-navigation"
+                data-menu
+            >
+                <ul class="navbar__links">
+
+                    <li>
+                        <a
+                            class="navbar__link"
+                            href="./index.html"
+                            aria-current="page"
+                        >
+                            Início
+                        </a>
+                    </li>
+
+                    <li>
+                        <a
+                            class="navbar__link"
+                            href="#como-funciona"
+                        >
+                            Como funciona
+                        </a>
+                    </li>
+
+                    <li>
+                        <a
+                            class="navbar__link"
+                            href="#instituicoes"
+                        >
+                            Instituições
+                        </a>
+                    </li>
+
+                    <li>
+                        <a
+                            class="navbar__link"
+                            href="#sobre"
+                        >
+                            Sobre
+                        </a>
+                    </li>
+
+                </ul>
+
+                <a
+                    class="button button--outline"
+                    href="#"
+                >
+                    Login Admin
+                </a>
+            </div>
+        </nav>
+    </header>
+
+
     <main>
-        <section class="container">
-            <h1>Bem-Feito</h1>
+
+        <section class="hero">
+            <div class="hero__container container">
+
+                <div class="hero__content">
+
+                    <span class="hero__eyebrow">
+                        Doe amor, transforme vidas
+                    </span>
+
+                    <h1 class="hero__title">
+                        Encontre instituições de caridade e saiba como ajudar
+                    </h1>
+
+                    <p class="hero__description">
+                        O Bem-Feito conecta pessoas que desejam ajudar com
+                        instituições que precisam de apoio, reunindo localização,
+                        contatos e listas de itens necessários em um só lugar.
+                    </p>
+
+                    <div class="hero__actions">
+
+                        <a
+                            class="button button--primary"
+                            href="#instituicoes"
+                        >
+                            Encontrar instituições
+                        </a>
+
+                        <a
+                            class="button button--outline"
+                            href="#como-funciona"
+                        >
+                            Como funciona
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="hero__visual"
+                    aria-hidden="true"
+                >
+                    <div class="hero__visual-placeholder">
+                        Ilustração do Bem-Feito
+                    </div>
+                </div>
+
+            </div>
         </section>
+
     </main>
 
-    <script type="module" src="./js/main.js"></script>
-<body>
-<header class="site-header">
-    <nav class="navbar container" aria-label="Navegação principal">
-        <a class="navbar__brand" href="./index.html">
-            Bem-Feito
-        </a>
 
-        <button
-            class="navbar__toggle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="primary-navigation"
-            aria-label="Abrir menu"
-            data-menu-toggle
-        >
-            <span class="navbar__toggle-line"></span>
-            <span class="navbar__toggle-line"></span>
-            <span class="navbar__toggle-line"></span>
-        </button>
-
-        <div
-            class="navbar__menu"
-            id="primary-navigation"
-            data-menu
-        >
-            <ul class="navbar__links">
-                <li>
-                    <a
-                        class="navbar__link"
-                        href="./index.html"
-                        aria-current="page"
-                    >
-                        Início
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navbar__link" href="#como-funciona">
-                        Como funciona
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navbar__link" href="#instituicoes">
-                        Instituições
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navbar__link" href="#sobre">
-                        Sobre
-                    </a>
-                </li>
-            </ul>
-
-            <a class="button button--outline" href="#">
-                Login Admin
-            </a>
-        </div>
-    </nav>
-</header>
+    <script
+        type="module"
+        src="./js/main.js"
+    ></script>
 
 </body>
+
 </html>
