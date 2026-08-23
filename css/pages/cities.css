@@ -1,8 +1,231 @@
-/* Estrutura inicial da página de seleção de cidade. */
+/* =========================================================
+   Seleção de cidade
+   ========================================================= */
+
 .city-selection {
   padding-block: var(--space-7);
 }
 
-.city-selection h1 {
+.city-selection__container {
+  max-width: 48rem;
+}
+
+.city-selection__header {
+  margin-bottom: var(--space-4);
+
   text-align: center;
+}
+
+.city-selection__title {
+  margin-bottom: var(--space-2);
+
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-3xl));
+}
+
+.city-selection__description {
+  color: var(--color-text-muted);
+}
+
+/* =========================================================
+   Pesquisa de cidades
+   ========================================================= */
+
+/*
+ * Input e botão são elementos independentes semanticamente,
+ * mas visualmente formam um único controle de pesquisa.
+ */
+.city-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+
+  max-width: 38rem;
+  margin-inline: auto;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background-color: var(--color-surface);
+
+  overflow: hidden;
+}
+
+.city-search:focus-within {
+  border-color: var(--color-primary);
+
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.city-search__input {
+  min-width: 0;
+
+  padding: var(--space-3) var(--space-4);
+
+  border: 0;
+  outline: 0;
+
+  color: var(--color-text);
+  background: transparent;
+}
+
+.city-search__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.city-search__button {
+  display: grid;
+  place-items: center;
+
+  width: 3rem;
+
+  border: 0;
+
+  color: var(--color-surface);
+  background-color: var(--color-primary);
+
+  cursor: pointer;
+}
+
+.city-search__button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* =========================================================
+   Cidades cadastradas
+   ========================================================= */
+
+/*
+ * A grade ficará responsável pelos cards reais das cidades
+ * quando esses dados estiverem disponíveis no sistema.
+ */
+.registered-cities {
+  margin-top: var(--space-6);
+}
+
+.registered-cities__title {
+  margin-bottom: var(--space-4);
+
+  font-size: var(--font-size-lg);
+}
+
+.registered-cities__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: var(--space-4);
+}
+
+.registered-cities__empty {
+  padding: var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  text-align: center;
+
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+}
+
+/* =========================================================
+   Mapa
+   ========================================================= */
+
+.city-map {
+  margin-top: var(--space-6);
+}
+
+.city-map__title {
+  margin-bottom: var(--space-4);
+
+  font-size: var(--font-size-lg);
+}
+
+/*
+ * O wrapper controla bordas e recorte.
+ * O Leaflet controla apenas o conteúdo interno do mapa.
+ */
+.city-map__wrapper {
+  position: relative;
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+}
+
+.city-map__canvas {
+  width: 100%;
+  min-height: 18rem;
+}
+
+/*
+ * A mensagem informa que ainda não existem localidades
+ * cadastradas sem impedir que o usuário visualize o mapa.
+ */
+.city-map__status {
+  position: absolute;
+  z-index: 500;
+  left: 50%;
+  bottom: var(--space-3);
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  width: max-content;
+  max-width: calc(100% - 2rem);
+
+  padding: var(--space-2) var(--space-3);
+
+  border-radius: var(--radius-md);
+
+  color: var(--color-text);
+  background-color: var(--color-surface);
+
+  box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 10%);
+
+  transform: translateX(-50%);
+}
+
+.city-map__status-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+
+  color: var(--color-primary);
+}
+
+.city-map__status p {
+  margin: 0;
+
+  font-size: var(--font-size-sm);
+}
+
+/* =========================================================
+   Responsividade
+   ========================================================= */
+
+@media (max-width: 48rem) {
+  .city-selection {
+    padding-block: var(--space-6);
+  }
+
+  .registered-cities__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .city-map__canvas {
+    min-height: 15rem;
+  }
+
+  .city-map__status {
+    width: calc(100% - 2rem);
+
+    justify-content: center;
+
+    text-align: center;
+  }
 }

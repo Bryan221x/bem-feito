@@ -28,18 +28,190 @@
     <link rel="stylesheet" href="../css/components/buttons.css" />
     <link rel="stylesheet" href="../css/components/navbar.css" />
 
+    <!-- Leaflet fornece a interface interativa utilizada pelo mapa. -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
     <!-- Estilos específicos da tela de seleção de cidade. -->
     <link rel="stylesheet" href="../css/pages/cities.css" />
   </head>
 
   <body>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegação principal">
+        <a
+          class="navbar__brand brand"
+          href="../index.html"
+          aria-label="Bem-Feito - Página inicial"
+        >
+          <img
+            class="brand__mark"
+            src="../assets/images/brand/brand-mark.png"
+            alt=""
+            width="1254"
+            height="1254"
+          />
+
+          <span class="brand__name">Bem-Feito</span>
+        </a>
+
+        <button
+          class="navbar__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Abrir menu"
+          data-menu-toggle
+        >
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+        </button>
+
+        <div class="navbar__menu" id="primary-navigation" data-menu>
+          <ul class="navbar__links">
+            <li>
+              <a class="navbar__link" href="../index.html">Início</a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="../index.html#como-funciona">
+                Como funciona
+              </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="./cities.html" aria-current="page">
+                Instituições
+              </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="../index.html#sobre">Sobre</a>
+            </li>
+          </ul>
+
+          <a class="button button--outline" href="#">Login Admin</a>
+        </div>
+      </nav>
+    </header>
+
     <main>
-      <section class="city-selection">
-        <div class="container">
-          <h1>Escolha sua cidade</h1>
+      <section class="city-selection" aria-labelledby="city-selection-title">
+        <div class="city-selection__container container">
+          <header class="city-selection__header">
+            <h1 id="city-selection-title" class="city-selection__title">
+              Escolha sua cidade
+            </h1>
+
+            <p class="city-selection__description">
+              Veja instituições próximas e descubra como contribuir.
+            </p>
+          </header>
+
+          <form class="city-search" role="search">
+            <label class="sr-only" for="city-search-input">
+              Pesquisar cidade
+            </label>
+
+            <input
+              class="city-search__input"
+              id="city-search-input"
+              name="city"
+              type="search"
+              placeholder="Digite o nome da cidade..."
+              autocomplete="off"
+            />
+
+            <button
+              class="city-search__button"
+              type="submit"
+              aria-label="Pesquisar cidade"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4-4"></path>
+              </svg>
+            </button>
+          </form>
+
+          <section
+            class="registered-cities"
+            aria-labelledby="registered-cities-title"
+          >
+            <h2 id="registered-cities-title" class="registered-cities__title">
+              Cidades com instituições cadastradas
+            </h2>
+
+            <!-- Os cards serão gerados futuramente somente a partir
+                 de cidades associadas a instituições cadastradas. -->
+            <div class="registered-cities__grid" data-city-list></div>
+
+            <div class="registered-cities__empty" data-city-empty>
+              <p data-city-empty-message>
+                Ainda não há cidades com instituições cadastradas no momento.
+              </p>
+            </div>
+          </section>
+
+          <section class="city-map" aria-labelledby="city-map-title">
+            <h2 id="city-map-title" class="city-map__title">Veja no mapa</h2>
+
+            <div class="city-map__wrapper">
+              <!-- O mapa existe independentemente dos dados.
+                   Os marcadores serão adicionados futuramente somente
+                   quando cidades reais estiverem disponíveis. -->
+              <div
+                class="city-map__canvas"
+                data-city-map
+                role="region"
+                aria-label="Mapa das cidades com instituições cadastradas"
+              ></div>
+
+              <div class="city-map__status" data-city-map-status>
+                <span class="city-map__status-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                    ></path>
+
+                    <circle cx="12" cy="10" r="2.5"></circle>
+                  </svg>
+                </span>
+
+                <p>Nenhuma cidade com instituições cadastradas no momento.</p>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
     </main>
+
+    <!-- Leaflet precisa ser carregado antes dos módulos que utilizam o mapa. -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
 
     <script type="module" src="../js/main.js"></script>
   </body>
