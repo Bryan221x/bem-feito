@@ -146,6 +146,53 @@
     line-height: var(--line-height-relaxed);
 }
 
+/* Benefícios resumem os diferenciais centrais da plataforma sem repetir o fluxo de uso. */
+.benefits {
+    padding-block:
+        var(--space-6)
+        var(--space-7);
+}
+
+.benefits__heading {
+    margin-bottom: var(--space-5);
+
+    text-align: center;
+}
+
+.benefits__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+}
+
+.benefit-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+
+    min-height: 6.5rem;
+}
+
+.benefit-card__icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+
+    width: 2.75rem;
+    height: 2.75rem;
+
+    border-radius: var(--radius-md);
+
+    color: var(--color-primary);
+    background-color: var(--color-primary-light);
+}
+
+.benefit-card__title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+}
+
 @media (max-width: 48rem) {
     .hero {
         padding-block:
@@ -186,6 +233,11 @@
     .step-card {
         min-height: auto;
     }
+
+    .benefits__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 }
 
 @media (max-width: 30rem) {
@@ -196,4 +248,8 @@
     .hero__actions .button {
         width: 100%;
     }
+    
+    .benefits__grid {
+    grid-template-columns: 1fr;
+}
 }
