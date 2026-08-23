@@ -1,255 +1,242 @@
 .hero {
-    padding-block: clamp(
-        var(--space-7),
-        8vw,
-        var(--space-8)
-    );
+  padding-block: clamp(var(--space-6), 5vw, var(--space-7));
 }
 
 .hero__container {
-    display: grid;
-    grid-template-columns:
-        minmax(0, 1fr)
-        minmax(18rem, 0.9fr);
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(18rem, 0.9fr);
 
-    align-items: center;
-    gap: clamp(
-        var(--space-6),
-        6vw,
-        var(--space-8)
-    );
+  align-items: center;
+  gap: clamp(var(--space-5), 4vw, var(--space-7));
 }
 
 .hero__content {
-    max-width: 37rem;
+  max-width: 37rem;
 }
 
 .hero__eyebrow {
-    display: inline-flex;
-    align-items: center;
+  display: inline-flex;
+  align-items: center;
 
-    margin-bottom: var(--space-4);
-    padding:
-        var(--space-2)
-        var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: var(--space-2) var(--space-3);
 
-    border-radius: var(--radius-pill);
+  border-radius: var(--radius-pill);
 
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 
-    color: var(--color-accent-text);
-    background-color: var(--color-accent-light);
+  color: var(--color-accent-text);
+  background-color: var(--color-accent-light);
 }
 
 .hero__title {
-    max-width: 11ch;
+  max-width: 19ch;
 
-    font-size: clamp(
-        2.25rem,
-        5vw,
-        3.25rem
-    );
+  font-size: clamp(2.125rem, 4vw, 2.875rem);
 
-    letter-spacing: -0.03em;
+  letter-spacing: -0.03em;
 }
 
 .hero__description {
-    max-width: 34rem;
+  max-width: 34rem;
 
-    margin-top: var(--space-4);
+  margin-top: var(--space-4);
 
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
 }
 
 .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 
-    margin-top: var(--space-5);
+  margin-top: var(--space-5);
 }
 
 .hero__visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    min-height: 24rem;
+  min-height: 20rem;
 }
 
 .hero__visual-placeholder {
-    display: grid;
-    place-items: center;
+  display: grid;
+  place-items: center;
 
-    width: min(100%, 26rem);
-    aspect-ratio: 1;
+  width: min(100%, 22rem);
+  aspect-ratio: 1;
 
-    padding: var(--space-5);
+  padding: var(--space-5);
 
-    border: 1px dashed var(--color-border);
-    border-radius: 50%;
+  border: 1px dashed var(--color-border);
+  border-radius: 50%;
 
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
 
-    background-color: var(--color-primary-light);
+  background-color: var(--color-primary-light);
 }
 
-/* Seção responsável por apresentar o fluxo básico de uso da plataforma. */
+/* Apresenta resumidamente o fluxo principal antes do acesso ao catálogo. */
 .how-it-works {
-    scroll-margin-top: 5rem;
-    padding-block: var(--space-7);
+  scroll-margin-top: 5rem;
+
+  padding-block: var(--space-6);
 }
 
 .how-it-works__heading {
-    margin-bottom: var(--space-5);
+  margin-bottom: var(--space-5);
 
-    text-align: center;
+  text-align: center;
+}
+
+.how-it-works__heading h2,
+.benefits__heading h2 {
+  font-size: var(--font-size-2xl);
 }
 
 .how-it-works__grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 
 .step-card {
-    min-height: 13rem;
+  min-height: 10.5rem;
 }
 
 .step-card__icon {
-    display: grid;
-    place-items: center;
+  display: grid;
+  place-items: center;
 
-    width: 3rem;
-    height: 3rem;
+  width: 3rem;
+  height: 3rem;
 
-    margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 
-    border-radius: var(--radius-md);
+  border-radius: var(--radius-md);
 
-    color: var(--color-accent);
-    background-color: var(--color-accent-light);
+  color: var(--color-accent);
+  background-color: var(--color-accent-light);
 }
 
 .step-card__title {
-    margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
 
-    font-size: var(--font-size-base);
+  font-size: var(--font-size-base);
 }
 
 .step-card__description {
-    font-size: var(--font-size-sm);
-    line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
 }
 
-/* Benefícios resumem os diferenciais centrais da plataforma sem repetir o fluxo de uso. */
+/* Resume os benefícios da plataforma sem repetir o passo a passo de utilização. */
 .benefits {
-    padding-block:
-        var(--space-6)
-        var(--space-7);
+  padding-block: var(--space-5) var(--space-6);
 }
 
 .benefits__heading {
-    margin-bottom: var(--space-5);
+  margin-bottom: var(--space-5);
 
-    text-align: center;
+  text-align: center;
 }
 
 .benefits__grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 
 .benefit-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 
-    min-height: 6.5rem;
+  min-height: 5.25rem;
 }
 
 .benefit-card__icon {
-    display: grid;
-    flex-shrink: 0;
-    place-items: center;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
 
-    width: 2.75rem;
-    height: 2.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
 
-    border-radius: var(--radius-md);
+  border-radius: var(--radius-md);
 
-    color: var(--color-primary);
-    background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
 }
 
 .benefit-card__title {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-normal);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
 }
 
 @media (max-width: 48rem) {
-    .hero {
-        padding-block:
-            var(--space-6)
-            var(--space-7);
-    }
+  .hero {
+    padding-block: var(--space-6) var(--space-7);
+  }
 
-    .hero__container {
-        grid-template-columns: 1fr;
-        gap: var(--space-6);
-    }
+  .hero__container {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
 
-    .hero__content {
-        max-width: none;
-    }
+  .hero__content {
+    max-width: none;
+  }
 
-    .hero__title {
-        max-width: 13ch;
-    }
+  .hero__title {
+    max-width: 13ch;
+  }
 
-    .hero__description {
-        max-width: none;
-    }
+  .hero__description {
+    max-width: none;
+  }
 
-    .hero__visual {
-        min-height: auto;
-    }
+  .hero__visual {
+    min-height: auto;
+  }
 
-    .hero__visual-placeholder {
-        width: min(100%, 20rem);
-    }
+  .hero__visual-placeholder {
+    width: min(100%, 20rem);
+  }
 
-    /* No tablet e no mobile, os passos passam de três colunas para uma. */
-    .how-it-works__grid {
-        grid-template-columns: 1fr;
-    }
+  /* Em telas menores, os passos priorizam leitura vertical. */
+  .how-it-works__grid {
+    grid-template-columns: 1fr;
+  }
 
-    .step-card {
-        min-height: auto;
-    }
+  .step-card {
+    min-height: auto;
+  }
 
-    .benefits__grid {
+  .benefits__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
+  }
 }
 
 @media (max-width: 30rem) {
-    .hero__actions {
-        flex-direction: column;
-    }
+  .hero__actions {
+    flex-direction: column;
+  }
 
-    .hero__actions .button {
-        width: 100%;
-    }
-    
-    .benefits__grid {
+  .hero__actions .button {
+    width: 100%;
+  }
+
+  .benefits__grid {
     grid-template-columns: 1fr;
-}
+  }
 }

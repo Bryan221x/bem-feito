@@ -1,17 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <meta
-        name="description"
-        content="Bem-Feito conecta pessoas a instituições de caridade e facilita a descoberta de como ajudar."
+      name="description"
+      content="Bem-Feito conecta pessoas a instituições de caridade e facilita a descoberta de como ajudar."
     />
 
     <link rel="stylesheet" href="./css/reset.css" />
@@ -20,505 +16,410 @@
 
     <link rel="stylesheet" href="./css/components/buttons.css" />
     <link rel="stylesheet" href="./css/components/navbar.css" />
-    <link rel="stylesheet" href="./css/components/cards.css">
-    <link rel="stylesheet" href="./css/components/footer.css">
+    <link rel="stylesheet" href="./css/components/cards.css" />
+    <link rel="stylesheet" href="./css/components/footer.css" />
 
     <link rel="stylesheet" href="./css/pages/home.css" />
 
     <title>Bem-Feito</title>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <header class="site-header">
-        <nav
-            class="navbar container"
-            aria-label="Navegação principal"
+      <nav class="navbar container" aria-label="Navegação principal">
+        <a class="navbar__brand" href="./index.html"> Bem-Feito </a>
+
+        <button
+          class="navbar__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Abrir menu"
+          data-menu-toggle
         >
-            <a
-                class="navbar__brand"
-                href="./index.html"
-            >
-                Bem-Feito
-            </a>
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+        </button>
 
-            <button
-                class="navbar__toggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="primary-navigation"
-                aria-label="Abrir menu"
-                data-menu-toggle
-            >
-                <span class="navbar__toggle-line"></span>
-                <span class="navbar__toggle-line"></span>
-                <span class="navbar__toggle-line"></span>
-            </button>
+        <div class="navbar__menu" id="primary-navigation" data-menu>
+          <ul class="navbar__links">
+            <li>
+              <a class="navbar__link" href="./index.html" aria-current="page">
+                Início
+              </a>
+            </li>
 
-            <div
-                class="navbar__menu"
-                id="primary-navigation"
-                data-menu
-            >
-                <ul class="navbar__links">
+            <li>
+              <a class="navbar__link" href="#como-funciona"> Como funciona </a>
+            </li>
 
-                    <li>
-                        <a
-                            class="navbar__link"
-                            href="./index.html"
-                            aria-current="page"
-                        >
-                            Início
-                        </a>
-                    </li>
+            <li>
+              <a class="navbar__link" href="#instituicoes"> Instituições </a>
+            </li>
 
-                    <li>
-                        <a
-                            class="navbar__link"
-                            href="#como-funciona"
-                        >
-                            Como funciona
-                        </a>
-                    </li>
+            <li>
+              <a class="navbar__link" href="#sobre"> Sobre </a>
+            </li>
+          </ul>
 
-                    <li>
-                        <a
-                            class="navbar__link"
-                            href="#instituicoes"
-                        >
-                            Instituições
-                        </a>
-                    </li>
-
-                    <li>
-                        <a
-                            class="navbar__link"
-                            href="#sobre"
-                        >
-                            Sobre
-                        </a>
-                    </li>
-
-                </ul>
-
-                <a
-                    class="button button--outline"
-                    href="#"
-                >
-                    Login Admin
-                </a>
-            </div>
-        </nav>
+          <a class="button button--outline" href="#"> Login Admin </a>
+        </div>
+      </nav>
     </header>
 
-
     <main>
+      <section class="hero">
+        <div class="hero__container container">
+          <div class="hero__content">
+            <span class="hero__eyebrow"> Doe amor, transforme vidas </span>
 
-        <section class="hero">
-            <div class="hero__container container">
+            <h1 class="hero__title">
+              Encontre instituições de caridade e saiba como ajudar
+            </h1>
 
-                <div class="hero__content">
+            <p class="hero__description">
+              O Bem-Feito conecta pessoas que desejam ajudar com instituições
+              que precisam de apoio, reunindo localização, contatos e listas de
+              itens necessários em um só lugar.
+            </p>
 
-                    <span class="hero__eyebrow">
-                        Doe amor, transforme vidas
-                    </span>
+            <div class="hero__actions">
+              <a class="button button--primary" href="#instituicoes">
+                Encontrar instituições
+              </a>
 
-                    <h1 class="hero__title">
-                        Encontre instituições de caridade e saiba como ajudar
-                    </h1>
-
-                    <p class="hero__description">
-                        O Bem-Feito conecta pessoas que desejam ajudar com
-                        instituições que precisam de apoio, reunindo localização,
-                        contatos e listas de itens necessários em um só lugar.
-                    </p>
-
-                    <div class="hero__actions">
-
-                        <a
-                            class="button button--primary"
-                            href="#instituicoes"
-                        >
-                            Encontrar instituições
-                        </a>
-
-                        <a
-                            class="button button--outline"
-                            href="#como-funciona"
-                        >
-                            Como funciona
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="hero__visual"
-                    aria-hidden="true"
-                >
-                    <div class="hero__visual-placeholder">
-                        Ilustração do Bem-Feito
-                    </div>
-                </div>
-
+              <a class="button button--outline" href="#como-funciona">
+                Como funciona
+              </a>
             </div>
-        </section>
+          </div>
 
-        <!-- Explica o fluxo principal antes de direcionar o usuário ao catálogo. -->
-<section class="how-it-works" id="como-funciona">
-    <div class="container">
-        <div class="how-it-works__heading">
+          <div class="hero__visual" aria-hidden="true">
+            <div class="hero__visual-placeholder">Ilustração do Bem-Feito</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resume o fluxo principal de uso antes de direcionar o usuário ao catálogo. -->
+      <section class="how-it-works" id="como-funciona">
+        <div class="container">
+          <div class="how-it-works__heading">
             <h2>Como funciona</h2>
+          </div>
+
+          <div class="how-it-works__grid">
+            <article class="info-card step-card">
+              <div class="step-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="32"
+                  height="32"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"
+                  ></path>
+                  <circle cx="12" cy="10" r="2.5"></circle>
+                </svg>
+              </div>
+
+              <h3 class="step-card__title">1. Escolha a cidade</h3>
+
+              <p class="step-card__description">
+                Selecione sua cidade para encontrar instituições próximas.
+              </p>
+            </article>
+
+            <article class="info-card step-card">
+              <div class="step-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="32"
+                  height="32"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M4 21V9l8-5 8 5v12"></path>
+                  <path d="M9 21v-7h6v7"></path>
+                  <path d="M8 10h.01"></path>
+                  <path d="M16 10h.01"></path>
+                </svg>
+              </div>
+
+              <h3 class="step-card__title">2. Veja instituições</h3>
+
+              <p class="step-card__description">
+                Navegue pelo catálogo e conheça as instituições da sua região.
+              </p>
+            </article>
+
+            <article class="info-card step-card">
+              <div class="step-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="32"
+                  height="32"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 21V10"></path>
+                  <path d="M12 14C8 14 5 11 5 7c4 0 7 3 7 7Z"></path>
+                  <path d="M12 10c0-4 3-7 7-7 0 4-3 7-7 7Z"></path>
+                </svg>
+              </div>
+
+              <h3 class="step-card__title">3. Saiba como ajudar</h3>
+
+              <p class="step-card__description">
+                Confira os itens necessários e entre em contato para fazer sua
+                doação.
+              </p>
+            </article>
+          </div>
         </div>
+      </section>
 
-        <div class="how-it-works__grid">
-            <article class="info-card step-card">
-                <div class="step-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="32"
-                        height="32"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path
-                            d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"
-                        ></path>
-                        <circle cx="12" cy="10" r="2.5"></circle>
-                    </svg>
-                </div>
-
-                <h3 class="step-card__title">
-                    1. Escolha a cidade
-                </h3>
-
-                <p class="step-card__description">
-                    Selecione sua cidade para encontrar instituições próximas.
-                </p>
-            </article>
-
-            <article class="info-card step-card">
-                <div class="step-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="32"
-                        height="32"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M4 21V9l8-5 8 5v12"></path>
-                        <path d="M9 21v-7h6v7"></path>
-                        <path d="M8 10h.01"></path>
-                        <path d="M16 10h.01"></path>
-                    </svg>
-                </div>
-
-                <h3 class="step-card__title">
-                    2. Veja instituições
-                </h3>
-
-                <p class="step-card__description">
-                    Navegue pelo catálogo e conheça as instituições da sua região.
-                </p>
-            </article>
-
-            <article class="info-card step-card">
-                <div class="step-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="32"
-                        height="32"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M12 21V10"></path>
-                        <path d="M12 14C8 14 5 11 5 7c4 0 7 3 7 7Z"></path>
-                        <path d="M12 10c0-4 3-7 7-7 0 4-3 7-7 7Z"></path>
-                    </svg>
-                </div>
-
-                <h3 class="step-card__title">
-                    3. Saiba como ajudar
-                </h3>
-
-                <p class="step-card__description">
-                    Confira os itens necessários e entre em contato para fazer sua doação.
-                </p>
-            </article>
-        </div>
-    </div>
-</section>
-
-<!-- Resume os principais benefícios oferecidos pela plataforma ao usuário. -->
-<section class="benefits">
-    <div class="container">
-        <div class="benefits__heading">
+      <!-- Apresenta os principais benefícios da plataforma sem repetir o fluxo de utilização. -->
+      <section class="benefits">
+        <div class="container">
+          <div class="benefits__heading">
             <h2>Por que usar o Bem-Feito?</h2>
+          </div>
+
+          <div class="benefits__grid">
+            <article class="info-card benefit-card">
+              <div class="benefit-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="28"
+                  height="28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="9" cy="8" r="3"></circle>
+                  <path d="M3 21v-2a6 6 0 0 1 12 0v2"></path>
+                  <circle cx="17" cy="7" r="2"></circle>
+                  <path d="M16 13a5 5 0 0 1 5 5v2"></path>
+                </svg>
+              </div>
+
+              <h3 class="benefit-card__title">Informações centralizadas</h3>
+            </article>
+
+            <article class="info-card benefit-card">
+              <div class="benefit-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="28"
+                  height="28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"
+                  ></path>
+                  <circle cx="12" cy="10" r="2.5"></circle>
+                </svg>
+              </div>
+
+              <h3 class="benefit-card__title">Mapa com localização</h3>
+            </article>
+
+            <article class="info-card benefit-card">
+              <div class="benefit-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="28"
+                  height="28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2
+                                        19.79 19.79 0 0 1-8.63-3.07
+                                        19.5 19.5 0 0 1-6-6
+                                        19.79 19.79 0 0 1-3.07-8.67
+                                        A2 2 0 0 1 4.11 2h3
+                                        a2 2 0 0 1 2 1.72
+                                        12.84 12.84 0 0 0 .7 2.81
+                                        2 2 0 0 1-.45 2.11L8.09 9.91
+                                        a16 16 0 0 0 6 6l1.27-1.27
+                                        a2 2 0 0 1 2.11-.45
+                                        12.84 12.84 0 0 0 2.81.7
+                                        A2 2 0 0 1 22 16.92Z"
+                  ></path>
+                </svg>
+              </div>
+
+              <h3 class="benefit-card__title">Contatos diretos</h3>
+            </article>
+
+            <article class="info-card benefit-card">
+              <div class="benefit-card__icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="28"
+                  height="28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M4 7h16v14H4z"></path>
+                  <path d="M8 7V4h8v3"></path>
+                  <path d="M9 12h6"></path>
+                  <path d="M12 9v6"></path>
+                </svg>
+              </div>
+
+              <h3 class="benefit-card__title">
+                Itens atualizados pelas instituições
+              </h3>
+            </article>
+          </div>
         </div>
-
-        <div class="benefits__grid">
-            <article class="info-card benefit-card">
-                <div class="benefit-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="28"
-                        height="28"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <circle cx="9" cy="8" r="3"></circle>
-                        <path d="M3 21v-2a6 6 0 0 1 12 0v2"></path>
-                        <circle cx="17" cy="7" r="2"></circle>
-                        <path d="M16 13a5 5 0 0 1 5 5v2"></path>
-                    </svg>
-                </div>
-
-                <h3 class="benefit-card__title">
-                    Informações centralizadas
-                </h3>
-            </article>
-
-            <article class="info-card benefit-card">
-                <div class="benefit-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="28"
-                        height="28"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path
-                            d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"
-                        ></path>
-                        <circle cx="12" cy="10" r="2.5"></circle>
-                    </svg>
-                </div>
-
-                <h3 class="benefit-card__title">
-                    Mapa com localização
-                </h3>
-            </article>
-
-            <article class="info-card benefit-card">
-                <div class="benefit-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="28"
-                        height="28"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path
-                            d="M22 16.92v3a2 2 0 0 1-2.18 2
-                            19.79 19.79 0 0 1-8.63-3.07
-                            19.5 19.5 0 0 1-6-6
-                            19.79 19.79 0 0 1-3.07-8.67
-                            A2 2 0 0 1 4.11 2h3
-                            a2 2 0 0 1 2 1.72
-                            12.84 12.84 0 0 0 .7 2.81
-                            2 2 0 0 1-.45 2.11L8.09 9.91
-                            a16 16 0 0 0 6 6l1.27-1.27
-                            a2 2 0 0 1 2.11-.45
-                            12.84 12.84 0 0 0 2.81.7
-                            A2 2 0 0 1 22 16.92Z"
-                        ></path>
-                    </svg>
-                </div>
-
-                <h3 class="benefit-card__title">
-                    Contatos diretos
-                </h3>
-            </article>
-
-            <article class="info-card benefit-card">
-                <div class="benefit-card__icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="28"
-                        height="28"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M4 7h16v14H4z"></path>
-                        <path d="M8 7V4h8v3"></path>
-                        <path d="M9 12h6"></path>
-                        <path d="M12 9v6"></path>
-                    </svg>
-                </div>
-
-                <h3 class="benefit-card__title">
-                    Itens atualizados pelas instituições
-                </h3>
-            </article>
-        </div>
-    </div>
-</section>
-
+      </section>
     </main>
 
-<!-- Rodapé compartilhado das páginas públicas, concentrando navegação e informações institucionais. -->
-<footer class="site-footer">
-    <div class="site-footer__container container">
+    <!-- Rodapé compartilhado pelas páginas públicas do Bem-Feito. -->
+    <footer class="site-footer">
+      <div class="site-footer__container container">
         <div class="site-footer__brand">
-            <a class="site-footer__logo" href="./index.html">
-                Bem-Feito
-            </a>
+          <a class="site-footer__logo" href="./index.html"> Bem-Feito </a>
 
-            <p class="site-footer__description">
-                Conectando solidariedade e transformando vidas.
-            </p>
+          <p class="site-footer__description">
+            Conectando solidariedade e transformando vidas.
+          </p>
         </div>
 
-        <nav
-            class="site-footer__navigation"
-            aria-label="Navegação do rodapé"
-        >
-            <h2 class="site-footer__title">Navegação</h2>
+        <nav class="site-footer__navigation" aria-label="Navegação do rodapé">
+          <h2 class="site-footer__title">Navegação</h2>
 
-            <ul class="site-footer__list">
-                <li>
-                    <a class="site-footer__link" href="./index.html">
-                        Início
-                    </a>
-                </li>
+          <ul class="site-footer__list">
+            <li>
+              <a class="site-footer__link" href="./index.html"> Início </a>
+            </li>
 
-                <li>
-                    <a class="site-footer__link" href="#como-funciona">
-                        Como funciona
-                    </a>
-                </li>
+            <li>
+              <a class="site-footer__link" href="#como-funciona">
+                Como funciona
+              </a>
+            </li>
 
-                <!-- Estes destinos serão ativados quando suas páginas forem implementadas. -->
-                <li>
-                    <span class="site-footer__link site-footer__link--pending">
-                        Instituições
-                    </span>
-                </li>
+            <!-- Os destinos serão ativados quando suas páginas forem implementadas. -->
+            <li>
+              <span class="site-footer__link site-footer__link--pending">
+                Instituições
+              </span>
+            </li>
 
-                <li>
-                    <span class="site-footer__link site-footer__link--pending">
-                        Sobre
-                    </span>
-                </li>
-            </ul>
+            <li>
+              <span class="site-footer__link site-footer__link--pending">
+                Sobre
+              </span>
+            </li>
+          </ul>
         </nav>
 
         <div class="site-footer__help">
-            <h2 class="site-footer__title">Ajuda</h2>
+          <h2 class="site-footer__title">Ajuda</h2>
 
-            <ul class="site-footer__list">
-                <li>
-                    <span class="site-footer__link site-footer__link--pending">
-                        Perguntas frequentes
-                    </span>
-                </li>
+          <ul class="site-footer__list">
+            <li>
+              <span class="site-footer__link site-footer__link--pending">
+                Perguntas frequentes
+              </span>
+            </li>
 
-                <li>
-                    <span class="site-footer__link site-footer__link--pending">
-                        Contato
-                    </span>
-                </li>
+            <li>
+              <span class="site-footer__link site-footer__link--pending">
+                Contato
+              </span>
+            </li>
 
-                <li>
-                    <span class="site-footer__link site-footer__link--pending">
-                        Política de privacidade
-                    </span>
-                </li>
+            <li>
+              <span class="site-footer__link site-footer__link--pending">
+                Política de privacidade
+              </span>
+            </li>
 
-                <li>
-                    <span class="site-footer__link site-footer__link--pending">
-                        Termos de uso
-                    </span>
-                </li>
-            </ul>
+            <li>
+              <span class="site-footer__link site-footer__link--pending">
+                Termos de uso
+              </span>
+            </li>
+          </ul>
         </div>
 
         <div class="site-footer__social">
-            <h2 class="site-footer__title">Siga-nos</h2>
+          <h2 class="site-footer__title">Siga-nos</h2>
 
-            <div class="site-footer__social-list" aria-hidden="true">
-                <span class="site-footer__social-icon">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                    >
-                        <path
-                            d="M14 8h3V4h-3c-3.3 0-5 2-5 5v2H6v4h3v7h4v-7h3.2l.8-4H13V9c0-.7.3-1 1-1Z"
-                        ></path>
-                    </svg>
-                </span>
+          <div class="site-footer__social-list" aria-hidden="true">
+            <span class="site-footer__social-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="currentColor"
+              >
+                <path
+                  d="M14 8h3V4h-3c-3.3 0-5 2-5 5v2H6v4h3v7h4v-7h3.2l.8-4H13V9c0-.7.3-1 1-1Z"
+                ></path>
+              </svg>
+            </span>
 
-                <span class="site-footer__social-icon">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <rect
-                            x="3"
-                            y="3"
-                            width="18"
-                            height="18"
-                            rx="5"
-                        ></rect>
-                        <circle cx="12" cy="12" r="4"></circle>
-                        <circle
-                            cx="17.5"
-                            cy="6.5"
-                            r="1"
-                            fill="currentColor"
-                            stroke="none"
-                        ></circle>
-                    </svg>
-                </span>
+            <span class="site-footer__social-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                <circle cx="12" cy="12" r="4"></circle>
+                <circle
+                  cx="17.5"
+                  cy="6.5"
+                  r="1"
+                  fill="currentColor"
+                  stroke="none"
+                ></circle>
+              </svg>
+            </span>
 
-                <span class="site-footer__social-icon">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path
-                            d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.1-5.1A8.5 8.5 0 1 1 21 11.5Z"
-                        ></path>
-                        <path
-                            d="M8.5 8.5c.7 3.2 2.8 5.3 6 6"
-                        ></path>
-                    </svg>
-                </span>
-            </div>
+            <span class="site-footer__social-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.1-5.1A8.5 8.5 0 1 1 21 11.5Z"
+                ></path>
+                <path d="M8.5 8.5c.7 3.2 2.8 5.3 6 6"></path>
+              </svg>
+            </span>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <div class="site-footer__bottom container">
-        <p>
-            © 2026 Bem-Feito. Todos os direitos reservados.
-        </p>
-    </div>
-</footer>
+      <div class="site-footer__bottom container">
+        <p>© 2026 Bem-Feito. Todos os direitos reservados.</p>
+      </div>
+    </footer>
 
-    <script
-        type="module"
-        src="./js/main.js"
-    ></script>
-
-</body>
-
+    <script type="module" src="./js/main.js"></script>
+  </body>
 </html>

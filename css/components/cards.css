@@ -1,10 +1,10 @@
-/* Base visual compartilhada por cards informativos do sistema. */
+/* Base visual compartilhada pelos cards informativos do sistema. */
 .info-card {
-    padding: var(--space-5);
+  padding: var(--space-4) var(--space-5);
 
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 
-    box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
