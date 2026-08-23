@@ -1,0 +1,116 @@
+/* Rodapé reutilizável das páginas públicas do Bem-Feito. */
+.site-footer {
+    margin-top: var(--space-7);
+
+    color: var(--color-surface);
+    background-color: var(--color-primary-dark);
+}
+
+.site-footer__container {
+    display: grid;
+    grid-template-columns:
+        minmax(14rem, 1.4fr)
+        repeat(3, minmax(8rem, 1fr));
+
+    gap: var(--space-6);
+
+    padding-block: var(--space-7);
+}
+
+.site-footer__brand {
+    max-width: 18rem;
+}
+
+.site-footer__logo {
+    display: inline-block;
+
+    margin-bottom: var(--space-3);
+
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+}
+
+.site-footer__description {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+
+    color: rgb(255 255 255 / 75%);
+}
+
+.site-footer__title {
+    margin-bottom: var(--space-3);
+
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-surface);
+}
+
+.site-footer__list {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.site-footer__link {
+    font-size: var(--font-size-sm);
+    color: rgb(255 255 255 / 75%);
+}
+
+a.site-footer__link {
+    transition: color 180ms ease;
+}
+
+a.site-footer__link:hover {
+    color: var(--color-surface);
+}
+
+.site-footer__link--pending {
+    cursor: default;
+}
+
+.site-footer__social-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.site-footer__social-icon {
+    display: grid;
+    place-items: center;
+
+    width: 2.25rem;
+    height: 2.25rem;
+
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 50%;
+
+    color: var(--color-surface);
+}
+
+.site-footer__bottom {
+    padding-block: var(--space-4);
+
+    border-top: 1px solid rgb(255 255 255 / 15%);
+}
+
+.site-footer__bottom p {
+    font-size: var(--font-size-xs);
+    color: rgb(255 255 255 / 65%);
+}
+
+@media (max-width: 48rem) {
+    .site-footer__container {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .site-footer__brand {
+        max-width: none;
+    }
+}
+
+@media (max-width: 30rem) {
+    .site-footer__container {
+        grid-template-columns: 1fr;
+        gap: var(--space-5);
+    }
+}
