@@ -33,7 +33,7 @@
 }
 
 .hero__title {
-  max-width: 19ch;
+  max-width: 17ch;
 
   font-size: clamp(2.125rem, 4vw, 2.875rem);
 
@@ -58,30 +58,21 @@
 }
 
 .hero__visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  min-height: 20rem;
+    min-height: 20rem;
 }
 
-.hero__visual-placeholder {
-  display: grid;
-  place-items: center;
+/* Mantém a ilustração proporcional sem deixá-la dominar o Hero. */
+.hero__image {
+    display: block;
 
-  width: min(100%, 22rem);
-  aspect-ratio: 1;
+    width: min(100%, 24rem);
+    height: auto;
 
-  padding: var(--space-5);
-
-  border: 1px dashed var(--color-border);
-  border-radius: 50%;
-
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-align: center;
-
-  background-color: var(--color-primary-light);
+    object-fit: contain;
 }
 
 /* Apresenta resumidamente o fluxo principal antes do acesso ao catálogo. */
@@ -183,6 +174,7 @@
   line-height: var(--line-height-normal);
 }
 
+
 @media (max-width: 48rem) {
   .hero {
     padding-block: var(--space-6) var(--space-7);
@@ -209,9 +201,9 @@
     min-height: auto;
   }
 
-  .hero__visual-placeholder {
-    width: min(100%, 20rem);
-  }
+  .hero__image {
+    width: min(100%, 21rem);
+}
 
   /* Em telas menores, os passos priorizam leitura vertical. */
   .how-it-works__grid {

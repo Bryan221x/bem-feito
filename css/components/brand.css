@@ -1,0 +1,19 @@
+/* Agrupa o símbolo e o nome da marca em contextos reutilizáveis da interface. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.brand__mark {
+  flex-shrink: 0;
+
+  width: 2.5rem;
+  height: 2.5rem;
+
+  object-fit: contain;
+}
+
+.brand__name {
+  line-height: 1;
+}
