@@ -1,0 +1,8 @@
+/* Estrutura inicial da página de seleção de cidade. */
+.city-selection {
+  padding-block: var(--space-7);
+}
+
+.city-selection h1 {
+  text-align: center;
+}
