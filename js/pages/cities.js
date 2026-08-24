@@ -33,6 +33,16 @@ function initCitySearch(page) {
 
     filterCities(cityList, emptyState, emptyMessage, query);
   });
+
+  /*
+   * Quando o campo é completamente limpo, a listagem volta
+   * automaticamente ao estado original.
+   */
+  input.addEventListener("input", () => {
+    if (input.value.trim() !== "") return;
+
+    filterCities(cityList, emptyState, emptyMessage, "");
+  });
 }
 
 /*
@@ -93,13 +103,18 @@ function initCityMap(page) {
 
   if (!mapContainer) return;
 
+  /*
+   * Evita criar uma segunda instância do Leaflet no mesmo elemento
+   * caso a página venha a ser inicializada novamente no futuro.
+   */
+  if (mapContainer.dataset.mapInitialized === "true") return;
+
   const map = createCityMap(mapContainer);
 
-  /*
-   * Se o Leaflet não estiver disponível, apenas o mapa deixa de ser
-   * inicializado. O restante da página continua funcionando normalmente.
-   */
   if (!map) {
     console.warn("O mapa do Bem-Feito não pôde ser inicializado.");
+    return;
   }
+
+  mapContainer.dataset.mapInitialized = "true";
 }

@@ -5,10 +5,18 @@
 export function createCityMap(container) {
   if (!container || typeof L === "undefined") return null;
 
+  /*
+   * O enquadramento inicial mostra o Brasil e não representa
+   * a localização de nenhuma instituição cadastrada.
+   */
+  const brazilCenter = [-14.235, -51.9253];
+
   const map = L.map(container, {
     zoomControl: true,
-    scrollWheelZoom: true,
-  }).setView([-14.235, -51.9253], 4);
+
+    // Evita que a rolagem normal da página seja capturada pelo mapa.
+    scrollWheelZoom: false,
+  }).setView(brazilCenter, 4);
 
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
