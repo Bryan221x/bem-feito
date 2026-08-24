@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Encontre instituições cadastradas no Bem-Feito e descubra como contribuir."
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="../assets/images/brand/brand-mark.png"
+    />
+
+    <title>Instituições | Bem-Feito</title>
+
+    <!-- Base visual compartilhada entre as páginas públicas. -->
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <!-- Componentes compartilhados. -->
+    <link rel="stylesheet" href="../css/components/brand.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/navbar.css" />
+    <link rel="stylesheet" href="../css/components/institution-card.css" />
+
+    <!-- Estilos específicos do catálogo de instituições. -->
+    <link rel="stylesheet" href="../css/pages/institutions.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegação principal">
+        <a
+          class="navbar__brand brand"
+          href="../index.html"
+          aria-label="Bem-Feito - Página inicial"
+        >
+          <img
+            class="brand__mark"
+            src="../assets/images/brand/brand-mark.png"
+            alt=""
+            width="1254"
+            height="1254"
+          />
+
+          <span class="brand__name">Bem-Feito</span>
+        </a>
+
+        <button
+          class="navbar__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Abrir menu"
+          data-menu-toggle
+        >
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+        </button>
+
+        <div class="navbar__menu" id="primary-navigation" data-menu>
+          <ul class="navbar__links">
+            <li>
+              <a class="navbar__link" href="../index.html">Início</a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="../index.html#como-funciona">
+                Como funciona
+              </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="./cities.html" aria-current="page">
+                Instituições
+              </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="../index.html#sobre">Sobre</a>
+            </li>
+          </ul>
+
+          <a class="button button--outline" href="#">Login Admin</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section
+        class="institutions-page"
+        aria-labelledby="institutions-page-title"
+      >
+        <div class="institutions-page__container container">
+          <a class="institutions-page__back" href="./cities.html">
+            <span aria-hidden="true">←</span>
+            Escolher outra cidade
+          </a>
+
+          <header class="institutions-page__header">
+            <h1 id="institutions-page-title" class="institutions-page__title">
+              Instituições
+            </h1>
+
+            <p class="institutions-page__description">
+              Encontre instituições cadastradas e descubra como você pode
+              contribuir.
+            </p>
+          </header>
+
+          <!-- A grade receberá futuramente somente instituições
+               obtidas a partir dos dados reais da aplicação. -->
+          <div class="institutions-list" data-institution-list></div>
+
+          <!-- Exibido futuramente enquanto as instituições da cidade são carregadas. -->
+          <div
+            class="institutions-feedback"
+            data-institutions-loading
+            role="status"
+            aria-live="polite"
+            hidden
+          >
+            <span
+              class="institutions-feedback__loader"
+              aria-hidden="true"
+            ></span>
+
+            <p>Carregando instituições...</p>
+          </div>
+
+          <!-- Exibido futuramente quando ocorrer uma falha ao consultar os dados. -->
+          <div
+            class="institutions-feedback"
+            data-institutions-error
+            role="alert"
+            hidden
+          >
+            <div class="institutions-feedback__icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 8v5"></path>
+                <path d="M12 16.5h.01"></path>
+              </svg>
+            </div>
+
+            <strong>Não foi possível carregar as instituições.</strong>
+
+            <p>
+              Tente novamente quando a conexão com o serviço estiver disponível.
+            </p>
+          </div>
+
+          <!-- Estado exibido quando nenhuma cidade foi selecionada. -->
+          <section
+            class="institutions-empty"
+            aria-labelledby="institutions-empty-title"
+            data-city-required
+          >
+            <div class="institutions-empty__icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="32"
+                height="32"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path d="M3 21h18"></path>
+                <path d="M6 21V9l6-4 6 4v12"></path>
+                <path d="M9 21v-6h6v6"></path>
+                <path d="M9 11h.01"></path>
+                <path d="M15 11h.01"></path>
+              </svg>
+            </div>
+
+            <h2 id="institutions-empty-title" class="institutions-empty__title">
+              Escolha uma cidade para continuar
+            </h2>
+
+            <p class="institutions-empty__description">
+              Selecione uma cidade para visualizar as instituições cadastradas
+              naquela região.
+            </p>
+
+            <a class="button button--primary" href="./cities.html">
+              Escolher cidade
+            </a>
+          </section>
+
+          <!-- Estado reservado para uma cidade válida que ainda não possua
+               instituições cadastradas. A API decidirá quando exibi-lo. -->
+          <section
+            class="institutions-empty"
+            aria-labelledby="institutions-unavailable-title"
+            data-institutions-empty
+            hidden
+          >
+            <div class="institutions-empty__icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="32"
+                height="32"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path d="M3 21h18"></path>
+                <path d="M6 21V9l6-4 6 4v12"></path>
+                <path d="M9 21v-6h6v6"></path>
+                <path d="M9 11h.01"></path>
+                <path d="M15 11h.01"></path>
+              </svg>
+            </div>
+
+            <h2
+              id="institutions-unavailable-title"
+              class="institutions-empty__title"
+            >
+              Nenhuma instituição cadastrada
+            </h2>
+
+            <p class="institutions-empty__description">
+              Ainda não há instituições disponíveis para esta cidade.
+            </p>
+
+            <a class="button button--outline" href="./cities.html">
+              Escolher outra cidade
+            </a>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

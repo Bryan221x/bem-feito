@@ -1,0 +1,55 @@
+/* =========================================================
+   Card de instituição
+   ========================================================= */
+
+/*
+ * Componente reutilizável para instituições recebidas pela aplicação.
+ * O conteúdo será preenchido somente com dados reais disponibilizados
+ * pela camada de dados do Bem-Feito.
+ */
+.institution-card {
+  display: flex;
+
+  min-width: 0;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+
+  overflow: hidden;
+}
+
+.institution-card__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+
+  padding: var(--space-5);
+}
+
+.institution-card__category {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+
+  color: var(--color-primary);
+}
+
+.institution-card__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-lg);
+}
+
+.institution-card__description {
+  margin-bottom: var(--space-4);
+
+  color: var(--color-text-muted);
+}
+
+.institution-card__link {
+  margin-top: auto;
+}

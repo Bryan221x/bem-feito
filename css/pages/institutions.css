@@ -1,0 +1,206 @@
+/* =========================================================
+   Catálogo de instituições
+   ========================================================= */
+
+.institutions-page {
+  padding-block: var(--space-7);
+}
+
+.institutions-page__container {
+  max-width: 62rem;
+}
+
+.institutions-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  margin-bottom: var(--space-5);
+
+  color: var(--color-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  text-decoration: none;
+}
+
+.institutions-page__back:hover {
+  text-decoration: underline;
+}
+
+.institutions-page__header {
+  max-width: 38rem;
+  margin-inline: auto;
+  margin-bottom: var(--space-6);
+
+  text-align: center;
+}
+
+.institutions-page__title {
+  margin-bottom: var(--space-2);
+
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-3xl));
+}
+
+.institutions-page__description {
+  color: var(--color-text-muted);
+}
+
+/* =========================================================
+   Lista futura de instituições
+   ========================================================= */
+
+/*
+ * Esta grade permanece vazia até que instituições reais sejam
+ * disponibilizadas pela camada de dados da aplicação.
+ */
+.institutions-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: var(--space-4);
+}
+
+/* =========================================================
+   Estado sem cidade selecionada
+   ========================================================= */
+
+.institutions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: var(--space-7) var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  text-align: center;
+
+  background-color: var(--color-surface);
+}
+/*
+ * Garante que estados controlados pelo JavaScript permaneçam
+ * fora do layout enquanto estiverem marcados como ocultos.
+ */
+.institutions-empty[hidden] {
+  display: none;
+}
+
+.institutions-empty__icon {
+  display: grid;
+  place-items: center;
+
+  width: 4rem;
+  height: 4rem;
+
+  margin-bottom: var(--space-4);
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institutions-empty__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xl);
+}
+
+.institutions-empty__description {
+  max-width: 30rem;
+
+  margin-bottom: var(--space-5);
+
+  color: var(--color-text-muted);
+}
+
+/* =========================================================
+   Estados da consulta de instituições
+   ========================================================= */
+
+/*
+ * Estados utilizados futuramente durante a comunicação com a API.
+ * Permanecem ocultos enquanto não houver uma consulta em andamento.
+ */
+.institutions-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 14rem;
+  padding: var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  text-align: center;
+
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+}
+
+.institutions-feedback[hidden] {
+  display: none;
+}
+
+.institutions-feedback strong {
+  margin-bottom: var(--space-2);
+
+  color: var(--color-text);
+}
+
+.institutions-feedback__icon {
+  display: grid;
+  place-items: center;
+
+  width: 4rem;
+  height: 4rem;
+
+  margin-bottom: var(--space-4);
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institutions-feedback__loader {
+  width: 2rem;
+  height: 2rem;
+
+  margin-bottom: var(--space-4);
+
+  border: 0.2rem solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+
+  animation: institutions-loading 0.8s linear infinite;
+}
+
+@keyframes institutions-loading {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   Responsividade
+   ========================================================= */
+
+@media (max-width: 48rem) {
+  .institutions-page {
+    padding-block: var(--space-6);
+  }
+
+  .institutions-list {
+    grid-template-columns: 1fr;
+  }
+
+  .institutions-empty {
+    padding: var(--space-6) var(--space-4);
+  }
+}
