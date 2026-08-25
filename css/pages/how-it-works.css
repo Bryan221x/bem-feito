@@ -1,0 +1,502 @@
+/* =========================================================
+   Hero
+   ========================================================= */
+
+.how-hero {
+  padding-block: var(--space-7);
+}
+
+.how-hero__container {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(18rem, 0.9fr);
+
+  align-items: center;
+
+  gap: clamp(var(--space-6), 7vw, var(--space-8));
+}
+
+.how-hero__content {
+  max-width: 39rem;
+}
+
+.how-hero__eyebrow {
+  display: inline-flex;
+
+  margin-bottom: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+
+  border-radius: var(--radius-pill);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+
+  color: var(--color-accent-text);
+  background-color: var(--color-accent-light);
+}
+
+.how-hero__title {
+  max-width: 13ch;
+
+  margin-bottom: var(--space-4);
+
+  font-size: clamp(var(--font-size-3xl), 5vw, 3.2rem);
+
+  line-height: 1.08;
+}
+
+.how-hero__description {
+  max-width: 38rem;
+
+  color: var(--color-text-muted);
+
+  line-height: 1.8;
+}
+
+/* =========================================================
+   Imagem da Hero
+   ========================================================= */
+
+.how-hero__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+}
+
+.how-hero__image {
+  display: block;
+
+  width: min(100%, 27rem);
+  height: auto;
+
+  object-fit: contain;
+}
+
+/* =========================================================
+   Jornada
+   ========================================================= */
+
+.how-journey {
+  padding-block: var(--space-6) var(--space-8);
+}
+
+.how-journey__container {
+  max-width: 68rem;
+}
+
+.journey {
+  position: relative;
+
+  display: grid;
+
+  gap: var(--space-6);
+
+  list-style: none;
+}
+
+/* Linha visual que conecta todas as etapas. */
+.journey::before {
+  content: "";
+
+  position: absolute;
+
+  top: 4rem;
+  bottom: 4rem;
+  left: 50%;
+
+  width: 2px;
+
+  border-left: 2px dashed var(--color-primary);
+
+  transform: translateX(-50%);
+
+  opacity: 0.45;
+}
+
+.journey__item {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  align-items: center;
+}
+
+/* Marcador central de cada etapa. */
+.journey__item::after {
+  content: "";
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 1rem;
+  height: 1rem;
+
+  border: 0.25rem solid var(--color-primary-light);
+  border-radius: 50%;
+
+  background-color: var(--color-primary);
+
+  transform: translate(-50%, -50%);
+
+  z-index: 2;
+}
+
+.journey__item--left .journey-card {
+  grid-column: 1;
+
+  margin-right: var(--space-7);
+}
+
+.journey__item--right .journey-card {
+  grid-column: 2;
+
+  margin-left: var(--space-7);
+}
+
+/* =========================================================
+   Cards da jornada
+   ========================================================= */
+
+.journey-card {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: var(--space-4);
+
+  padding: var(--space-5);
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+}
+
+.journey-card__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 7rem;
+  height: 7rem;
+
+  padding: var(--space-1);
+
+  overflow: hidden;
+
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-primary-light);
+}
+
+.journey-card__visual img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+.journey-card__content {
+  min-width: 0;
+}
+
+.journey-card__number {
+  display: block;
+
+  margin-bottom: var(--space-1);
+
+  font-size: 2.3rem;
+  font-weight: var(--font-weight-bold);
+
+  line-height: 1;
+
+  color: var(--color-primary);
+}
+
+.journey-card__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-lg);
+}
+
+.journey-card__description {
+  color: var(--color-text-muted);
+
+  line-height: 1.65;
+}
+
+/* =========================================================
+   Transparência
+   ========================================================= */
+
+.how-transparency {
+  padding-bottom: var(--space-6);
+}
+
+.how-transparency__container {
+  max-width: 68rem;
+}
+
+.transparency-card {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: var(--space-5);
+
+  padding: var(--space-6);
+
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-primary-light);
+}
+
+.transparency-card__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 8rem;
+  height: 8rem;
+}
+
+.transparency-card__visual img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+.transparency-card__content {
+  min-width: 0;
+}
+
+.transparency-card__title {
+  max-width: 43rem;
+
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xl);
+}
+
+.transparency-card__description {
+  max-width: 48rem;
+
+  color: var(--color-text-muted);
+
+  line-height: 1.7;
+}
+
+/* =========================================================
+   CTA final
+   ========================================================= */
+
+.how-cta {
+  padding-block: var(--space-4) var(--space-8);
+}
+
+.how-cta__container {
+  max-width: 68rem;
+}
+
+.how-cta__card {
+  display: grid;
+  grid-template-columns:
+    minmax(12rem, 0.48fr)
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: var(--space-6);
+
+  padding: var(--space-6);
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+}
+
+.how-cta__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 11rem;
+
+  padding: var(--space-3);
+
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-primary-light);
+}
+
+.how-cta__visual img {
+  display: block;
+
+  width: min(100%, 14rem);
+  height: 10rem;
+
+  object-fit: contain;
+}
+
+.how-cta__content {
+  min-width: 0;
+}
+
+.how-cta__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xl);
+}
+
+.how-cta__description {
+  max-width: 35rem;
+
+  margin-bottom: var(--space-4);
+
+  color: var(--color-text-muted);
+
+  line-height: 1.65;
+}
+
+/* =========================================================
+   Responsividade intermediária
+   ========================================================= */
+
+@media (max-width: 56rem) {
+  .how-hero__container {
+    grid-template-columns: 1fr;
+  }
+
+  .how-hero__content {
+    margin-inline: auto;
+
+    text-align: center;
+  }
+
+  .how-hero__title {
+    max-width: none;
+  }
+
+  .how-hero__visual {
+    width: min(100%, 30rem);
+
+    margin-inline: auto;
+  }
+
+  .how-hero__image {
+    width: min(100%, 24rem);
+  }
+
+  .journey::before {
+    left: 1rem;
+  }
+
+  .journey__item {
+    display: block;
+
+    padding-left: var(--space-6);
+  }
+
+  .journey__item::after {
+    left: 1rem;
+  }
+
+  .journey__item--left .journey-card,
+  .journey__item--right .journey-card {
+    margin: 0;
+  }
+}
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 40rem) {
+  .how-hero {
+    padding-block: var(--space-6);
+  }
+
+  .how-hero__description {
+    line-height: 1.7;
+  }
+
+  .how-hero__image {
+    width: min(100%, 20rem);
+  }
+
+  .journey {
+    gap: var(--space-5);
+  }
+
+  .journey-card {
+    grid-template-columns: 1fr;
+
+    padding: var(--space-4);
+  }
+
+  .journey-card__visual {
+    width: 4.5rem;
+    height: 4.5rem;
+
+    padding: var(--space-1);
+  }
+
+  .journey-card__number {
+    font-size: 2rem;
+  }
+
+  .transparency-card {
+    grid-template-columns: 1fr;
+
+    padding: var(--space-5);
+
+    text-align: center;
+  }
+
+  .transparency-card__visual {
+    width: 6.5rem;
+    height: 6.5rem;
+
+    margin-inline: auto;
+  }
+
+  .how-cta__card {
+    grid-template-columns: 1fr;
+
+    padding: var(--space-4);
+
+    text-align: center;
+  }
+
+  .how-cta__visual {
+    min-height: 8rem;
+  }
+
+  .how-cta__visual img {
+    width: min(100%, 11rem);
+    height: 7rem;
+  }
+
+  .how-cta__content .button {
+    width: 100%;
+  }
+}

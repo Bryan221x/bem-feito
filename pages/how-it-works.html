@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Entenda como o Bem-Feito conecta pessoas que desejam ajudar a instituições cadastradas."
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="../assets/images/brand/brand-mark.png"
+    />
+
+    <title>Como funciona | Bem-Feito</title>
+
+    <!-- Base visual compartilhada entre as páginas públicas. -->
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <!-- Componentes compartilhados. -->
+    <link rel="stylesheet" href="../css/components/brand.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/navbar.css" />
+
+    <!-- Estilos específicos da página. -->
+    <link rel="stylesheet" href="../css/pages/how-it-works.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegação principal">
+        <a
+          class="navbar__brand brand"
+          href="../index.html"
+          aria-label="Bem-Feito - Página inicial"
+        >
+          <img
+            class="brand__mark"
+            src="../assets/images/brand/brand-mark.png"
+            alt=""
+            width="1254"
+            height="1254"
+          />
+
+          <span class="brand__name">Bem-Feito</span>
+        </a>
+
+        <button
+          class="navbar__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Abrir menu"
+          data-menu-toggle
+        >
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+        </button>
+
+        <div class="navbar__menu" id="primary-navigation" data-menu>
+          <ul class="navbar__links">
+            <li>
+              <a class="navbar__link" href="../index.html">Início</a>
+            </li>
+
+            <li>
+              <a
+                class="navbar__link"
+                href="./how-it-works.html"
+                aria-current="page"
+              >
+                Como funciona
+              </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="./cities.html"> Instituições </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="../index.html#sobre">Sobre</a>
+            </li>
+          </ul>
+
+          <a class="button button--outline" href="#">Login Admin</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- =====================================================
+           Hero
+           ===================================================== -->
+      <section class="how-hero">
+        <div class="how-hero__container container">
+          <div class="how-hero__content">
+            <span class="how-hero__eyebrow">
+              Solidariedade mais perto de você
+            </span>
+
+            <h1 class="how-hero__title">Como funciona o Bem-Feito</h1>
+
+            <p class="how-hero__description">
+              Encontrar uma forma de ajudar pode ser simples. O Bem-Feito reúne
+              instituições, necessidades e formas de contato para aproximar quem
+              quer contribuir de quem precisa de apoio.
+            </p>
+          </div>
+
+          <div class="how-hero__visual">
+            <img
+              class="how-hero__image"
+              src="../assets/images/how-it-works/hero-how-it-works.png"
+              alt=""
+              decoding="async"
+              fetchpriority="high"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Jornada
+           ===================================================== -->
+      <section class="how-journey" aria-labelledby="journey-title">
+        <div class="how-journey__container container">
+          <h2 id="journey-title" class="sr-only">
+            Etapas para contribuir pelo Bem-Feito
+          </h2>
+
+          <ol class="journey">
+            <!-- Etapa 01 -->
+            <li class="journey__item journey__item--left">
+              <article class="journey-card">
+                <div class="journey-card__visual" aria-hidden="true">
+                  <img
+                    src="../assets/images/how-it-works/step-location.png"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+
+                <div class="journey-card__content">
+                  <span class="journey-card__number">01</span>
+
+                  <h3 class="journey-card__title">Encontre sua região</h3>
+
+                  <p class="journey-card__description">
+                    Escolha sua cidade para visualizar apenas instituições
+                    cadastradas naquela região.
+                  </p>
+                </div>
+              </article>
+            </li>
+
+            <!-- Etapa 02 -->
+            <li class="journey__item journey__item--right">
+              <article class="journey-card">
+                <div class="journey-card__visual" aria-hidden="true">
+                  <img
+                    src="../assets/images/how-it-works/step-institution.png"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+
+                <div class="journey-card__content">
+                  <span class="journey-card__number">02</span>
+
+                  <h3 class="journey-card__title">Conheça as instituições</h3>
+
+                  <p class="journey-card__description">
+                    Veja as instituições disponíveis e conheça um pouco mais
+                    sobre o trabalho realizado por cada uma.
+                  </p>
+                </div>
+              </article>
+            </li>
+
+            <!-- Etapa 03 -->
+            <li class="journey__item journey__item--left">
+              <article class="journey-card">
+                <div class="journey-card__visual" aria-hidden="true">
+                  <img
+                    src="../assets/images/how-it-works/step-needs.png"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+
+                <div class="journey-card__content">
+                  <span class="journey-card__number">03</span>
+
+                  <h3 class="journey-card__title">
+                    Descubra o que elas precisam
+                  </h3>
+
+                  <p class="journey-card__description">
+                    Consulte os itens e necessidades informados pelas próprias
+                    instituições para saber como sua ajuda pode ser mais útil.
+                  </p>
+                </div>
+              </article>
+            </li>
+
+            <!-- Etapa 04 -->
+            <li class="journey__item journey__item--right">
+              <article class="journey-card">
+                <div class="journey-card__visual" aria-hidden="true">
+                  <img
+                    src="../assets/images/how-it-works/step-contact.png"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+
+                <div class="journey-card__content">
+                  <span class="journey-card__number">04</span>
+
+                  <h3 class="journey-card__title">Entre em contato</h3>
+
+                  <p class="journey-card__description">
+                    Utilize os canais disponibilizados pela instituição para
+                    tirar dúvidas e combinar a melhor forma de contribuir.
+                  </p>
+                </div>
+              </article>
+            </li>
+
+            <!-- Etapa 05 -->
+            <li class="journey__item journey__item--left">
+              <article class="journey-card">
+                <div class="journey-card__visual" aria-hidden="true">
+                  <img
+                    src="../assets/images/how-it-works/step-donation.png"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+
+                <div class="journey-card__content">
+                  <span class="journey-card__number">05</span>
+
+                  <h3 class="journey-card__title">Faça sua contribuição</h3>
+
+                  <p class="journey-card__description">
+                    Realize sua contribuição diretamente com a instituição e
+                    ajude a transformar solidariedade em ação.
+                  </p>
+                </div>
+              </article>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Transparência
+           ===================================================== -->
+      <section class="how-transparency">
+        <div class="how-transparency__container container">
+          <div class="transparency-card">
+            <div class="transparency-card__visual" aria-hidden="true">
+              <img
+                src="../assets/images/how-it-works/transparency.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            <div class="transparency-card__content">
+              <h2 class="transparency-card__title">
+                O Bem-Feito conecta. A contribuição acontece diretamente com a
+                instituição.
+              </h2>
+
+              <p class="transparency-card__description">
+                O Bem-Feito não recebe pagamentos, dinheiro ou doações em nome
+                das instituições. A plataforma organiza e disponibiliza
+                informações para facilitar o contato entre quem deseja ajudar e
+                as instituições cadastradas.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           CTA final
+           ===================================================== -->
+      <section class="how-cta">
+        <div class="how-cta__container container">
+          <div class="how-cta__card">
+            <div class="how-cta__visual" aria-hidden="true">
+              <img
+                src="../assets/images/how-it-works/final-cta.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            <div class="how-cta__content">
+              <h2 class="how-cta__title">
+                Pronto para encontrar uma forma de ajudar?
+              </h2>
+
+              <p class="how-cta__description">
+                Veja as instituições disponíveis e descubra onde sua
+                contribuição pode fazer a diferença.
+              </p>
+
+              <a class="button button--primary" href="./cities.html">
+                Encontrar instituições
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- GSAP mantém as animações desacopladas do layout. -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>
