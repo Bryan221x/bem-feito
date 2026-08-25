@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Conheça a história, o propósito e a evolução do Projeto Bem-Feito."
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="../assets/images/brand/brand-mark.png"
+    />
+
+    <title>Sobre | Bem-Feito</title>
+
+    <!-- Base visual compartilhada entre as páginas públicas. -->
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <!-- Componentes compartilhados. -->
+    <link rel="stylesheet" href="../css/components/brand.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/navbar.css" />
+
+    <!-- Estilos específicos da página Sobre. -->
+    <link rel="stylesheet" href="../css/pages/about.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegação principal">
+        <a
+          class="navbar__brand brand"
+          href="../index.html"
+          aria-label="Bem-Feito - Página inicial"
+        >
+          <img
+            class="brand__mark"
+            src="../assets/images/brand/brand-mark.png"
+            alt=""
+            width="1254"
+            height="1254"
+          />
+
+          <span class="brand__name">Bem-Feito</span>
+        </a>
+
+        <button
+          class="navbar__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Abrir menu"
+          data-menu-toggle
+        >
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+          <span class="navbar__toggle-line"></span>
+        </button>
+
+        <div class="navbar__menu" id="primary-navigation" data-menu>
+          <ul class="navbar__links">
+            <li>
+              <a class="navbar__link" href="../index.html">Início</a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="./how-it-works.html">
+                Como funciona
+              </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="./cities.html"> Instituições </a>
+            </li>
+
+            <li>
+              <a class="navbar__link" href="./about.html" aria-current="page">
+                Sobre
+              </a>
+            </li>
+          </ul>
+
+          <a class="button button--outline" href="#">Login Admin</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- =====================================================
+           Hero
+           ===================================================== -->
+      <section class="about-hero">
+        <div class="about-hero__container container">
+          <div class="about-hero__content">
+            <span class="about-hero__eyebrow">
+              Tecnologia com propósito social
+            </span>
+
+            <h1 class="about-hero__title">Sobre o Bem-Feito</h1>
+
+            <p class="about-hero__description">
+              O Bem-Feito nasceu no ambiente acadêmico a partir de uma ideia
+              simples: tornar mais fácil encontrar instituições, compreender
+              suas necessidades e descobrir formas reais de contribuir. Ao longo
+              da graduação, essa ideia amadureceu e se transformou em um projeto
+              que busca unir informação, tecnologia e solidariedade de maneira
+              clara, acessível e responsável.
+            </p>
+
+            <div class="about-hero__tags" aria-label="Princípios do Bem-Feito">
+              <span class="about-hero__tag">
+                <span aria-hidden="true">♥</span>
+                Propósito social
+              </span>
+
+              <span class="about-hero__tag">
+                <span aria-hidden="true">↔</span>
+                Conexão
+              </span>
+
+              <span class="about-hero__tag">
+                <span aria-hidden="true">✦</span>
+                Evolução
+              </span>
+            </div>
+          </div>
+
+          <div class="about-hero__visual" aria-hidden="true">
+            <img
+              class="about-hero__image"
+              src="../assets/images/about/about-hero.png"
+              alt=""
+              decoding="async"
+              fetchpriority="high"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Nossa história
+           ===================================================== -->
+      <section class="about-story" aria-labelledby="about-story-title">
+        <div class="about-story__container container">
+          <div class="about-story__panel">
+            <div class="about-story__content">
+              <span class="about-section__eyebrow">Nossa história</span>
+
+              <h2 id="about-story-title" class="about-section__title">
+                De uma ideia acadêmica a um projeto em evolução
+              </h2>
+
+              <p>
+                O Bem-Feito surgiu no segundo período do curso de Análise e
+                Desenvolvimento de Sistemas, inicialmente como uma proposta
+                acadêmica desenvolvida em grupo. A ideia nasceu da percepção de
+                que informações importantes sobre instituições nem sempre estão
+                reunidas de forma simples, organizada e acessível.
+              </p>
+
+              <p>
+                Ao longo da graduação, a proposta amadureceu e ganhou uma nova
+                dimensão. Retomado como Projeto Final, o Bem-Feito passou a ter
+                identidade própria, objetivos mais definidos e uma estrutura
+                preparada para continuar evoluindo.
+              </p>
+            </div>
+
+            <!-- A própria arte representa a trajetória do projeto. -->
+            <div class="about-story__art" aria-hidden="true">
+              <img
+                src="../assets/images/about/about-history.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Problema que virou propósito
+           ===================================================== -->
+      <section class="about-problem" aria-labelledby="about-problem-title">
+        <div class="about-problem__container container">
+          <div class="about-problem__content">
+            <span class="about-section__eyebrow">
+              O problema que virou propósito
+            </span>
+
+            <h2 id="about-problem-title" class="about-section__title">
+              Quando a vontade de ajudar encontra barreiras de informação
+            </h2>
+
+            <p class="about-problem__intro">
+              A vontade de ajudar nem sempre vem acompanhada das informações
+              necessárias. Encontrar uma instituição, descobrir como entrar em
+              contato e entender o que ela realmente precisa pode exigir buscas
+              em diferentes lugares.
+            </p>
+
+            <div class="about-problem__points">
+              <div class="about-problem__point">
+                <span class="about-problem__point-icon" aria-hidden="true">
+                  !
+                </span>
+
+                <p>
+                  <strong>Informações dispersas.</strong>
+                  Endereços, contatos e necessidades podem estar espalhados
+                  entre diferentes canais.
+                </p>
+              </div>
+
+              <div class="about-problem__point">
+                <span class="about-problem__point-icon" aria-hidden="true">
+                  ⌂
+                </span>
+
+                <p>
+                  <strong>Pouca visibilidade.</strong>
+                  Instituições menores nem sempre conseguem tornar suas
+                  informações facilmente acessíveis.
+                </p>
+              </div>
+
+              <div class="about-problem__point about-problem__point--highlight">
+                <span class="about-problem__point-icon" aria-hidden="true">
+                  ↔
+                </span>
+
+                <p>
+                  <strong>Uma ponte entre os dois lados.</strong>
+                  O Bem-Feito reúne essas informações para facilitar o encontro
+                  entre quem deseja ajudar e as instituições.
+                </p>
+              </div>
+            </div>
+
+            <p class="about-problem__highlight">
+              Mais do que divulgar instituições, o objetivo é facilitar conexões
+              conscientes e bem informadas.
+            </p>
+          </div>
+
+          <div class="about-problem__visual" aria-hidden="true">
+            <img
+              class="about-problem__image"
+              src="../assets/images/about/about-problem.png"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Projeto acadêmico
+           ===================================================== -->
+      <section class="about-academic" aria-labelledby="about-academic-title">
+        <div class="about-academic__container container">
+          <div class="about-academic__panel">
+            <div class="about-academic__intro">
+              <span class="about-section__eyebrow">Projeto acadêmico</span>
+
+              <h2 id="about-academic-title" class="about-section__title">
+                Um projeto acadêmico pensado para ir além
+              </h2>
+
+              <p>
+                O Bem-Feito integra o Projeto Final do curso de Análise e
+                Desenvolvimento de Sistemas da FASF e representa a oportunidade
+                de transformar conhecimentos construídos durante a graduação em
+                uma proposta concreta.
+              </p>
+
+              <p>
+                Sua evolução reúne pesquisa, planejamento, experiência do
+                usuário e organização da informação em torno de um objetivo
+                comum: desenvolver uma solução coerente com um contexto real e
+                capaz de continuar amadurecendo além da etapa acadêmica.
+              </p>
+            </div>
+
+            <div class="about-pillars">
+              <article class="about-pillar">
+                <div class="about-pillar__icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="30"
+                    height="30"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                  >
+                    <path d="m3 10 9-5 9 5-9 5Z"></path>
+                    <path d="M7 12.5V17c3 2 7 2 10 0v-4.5"></path>
+                  </svg>
+                </div>
+
+                <div>
+                  <h3>Formação aplicada</h3>
+
+                  <p>
+                    Conhecimentos da graduação transformados em decisões,
+                    planejamento e construção de uma proposta completa.
+                  </p>
+                </div>
+              </article>
+
+              <article class="about-pillar">
+                <div class="about-pillar__icon" aria-hidden="true">
+                  <span>✦</span>
+                </div>
+
+                <div>
+                  <h3>Aprendizado em prática</h3>
+
+                  <p>
+                    Cada etapa permite experimentar, avaliar escolhas e
+                    desenvolver soluções para necessidades identificadas no
+                    projeto.
+                  </p>
+                </div>
+              </article>
+
+              <article class="about-pillar">
+                <div class="about-pillar__icon" aria-hidden="true">
+                  <span>♥</span>
+                </div>
+
+                <div>
+                  <h3>Propósito social</h3>
+
+                  <p>
+                    O conhecimento acadêmico é direcionado para uma proposta que
+                    busca facilitar conexões entre pessoas e instituições.
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Pessoas
+           ===================================================== -->
+      <section class="about-people" aria-labelledby="about-people-title">
+        <div class="about-people__container container">
+          <header class="about-people__header">
+            <span class="about-section__eyebrow">
+              Nossa história também é feita de pessoas
+            </span>
+
+            <h2 id="about-people-title" class="about-section__title">
+              Quem fez parte dessa história
+            </h2>
+
+            <p>
+              O Bem-Feito começou no segundo período da graduação como uma
+              construção coletiva. Cinco estudantes participaram da etapa
+              inicial que deu origem à proposta e ajudou a estabelecer suas
+              primeiras ideias.
+            </p>
+
+            <p>
+              Com o passar do tempo, o projeto seguiu novos caminhos. Em sua
+              etapa atual, Bryan retomou a proposta e passou a conduzir
+              individualmente sua evolução como Projeto Final, preservando sua
+              origem e ampliando o que havia sido construído inicialmente.
+            </p>
+          </header>
+
+          <div class="about-people__content">
+            <!-- Responsável pela versão atual -->
+            <article class="about-person-card about-person-card--author">
+              <div class="about-person-card__portrait">
+                <img
+                  src="../assets/images/about/Bryan.png"
+                  alt="Bryan Silva Oliveira"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <div class="about-person-card__content">
+                <span class="about-person-card__label">
+                  Desenvolvimento atual
+                </span>
+
+                <h3>Bryan Silva Oliveira</h3>
+
+                <span class="about-person-card__role">
+                  Continuidade e evolução do Bem-Feito
+                </span>
+
+                <p>
+                  Participou da criação inicial do Bem-Feito e posteriormente
+                  retomou a proposta como seu Projeto Final. Na etapa atual, é
+                  responsável pelo planejamento, desenvolvimento e evolução do
+                  projeto, preservando sua origem e ampliando a proposta
+                  construída inicialmente.
+                </p>
+              </div>
+            </article>
+
+            <!-- Participantes da etapa inicial -->
+            <div class="about-collaborators">
+              <div class="about-collaborators__heading">
+                <span class="about-collaborators__eyebrow">Etapa inicial</span>
+
+                <h3>Construção que começou em grupo</h3>
+
+                <p>
+                  A primeira versão do Bem-Feito foi desenvolvida coletivamente
+                  durante o segundo período da graduação. Esses integrantes
+                  fizeram parte da etapa que deu origem ao projeto.
+                </p>
+              </div>
+
+              <div class="about-collaborators__grid">
+                <article class="about-collaborator-card">
+                  <div class="about-collaborator-card__photo">
+                    <img
+                      src="../assets/images/about/AnaBeatriz.png"
+                      alt="Ana Beatriz"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  <div class="about-collaborator-card__content">
+                    <h4>Ana Beatriz</h4>
+                    <span>Participação na etapa inicial</span>
+                  </div>
+                </article>
+
+                <article class="about-collaborator-card">
+                  <div class="about-collaborator-card__photo">
+                    <img
+                      src="../assets/images/about/douglas.png"
+                      alt="Douglas"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  <div class="about-collaborator-card__content">
+                    <h4>Douglas</h4>
+                    <span>Participação na etapa inicial</span>
+                  </div>
+                </article>
+
+                <article class="about-collaborator-card">
+                  <div class="about-collaborator-card__photo">
+                    <img
+                      src="../assets/images/about/Gustavo.png"
+                      alt="Gustavo"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  <div class="about-collaborator-card__content">
+                    <h4>Gustavo</h4>
+                    <span>Participação na etapa inicial</span>
+                  </div>
+                </article>
+
+                <article class="about-collaborator-card">
+                  <div class="about-collaborator-card__photo">
+                    <img
+                      src="../assets/images/about/Jonathas.png"
+                      alt="Jonathas"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  <div class="about-collaborator-card__content">
+                    <h4>Jonathas</h4>
+                    <span>Participação na etapa inicial</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           Princípios
+           ===================================================== -->
+      <section class="about-structure" aria-labelledby="about-structure-title">
+        <div class="about-structure__container container">
+          <div class="about-structure__panel">
+            <div class="about-structure__intro">
+              <span class="about-section__eyebrow">Princípios</span>
+
+              <h2 id="about-structure-title" class="about-section__title">
+                O que orienta o Bem-Feito
+              </h2>
+
+              <p>
+                Desde sua evolução para o Projeto Final, algumas escolhas
+                passaram a orientar a forma como o Bem-Feito é pensado. Elas
+                ajudam a manter o projeto coerente com seu propósito e com as
+                pessoas que poderão utilizá-lo.
+              </p>
+            </div>
+
+            <div
+              class="about-features"
+              aria-label="Princípios do Projeto Bem-Feito"
+            >
+              <div class="about-feature">
+                <span class="about-feature__icon" aria-hidden="true">◉</span>
+
+                <strong>Clareza</strong>
+
+                <span>
+                  Informações importantes devem ser fáceis de encontrar e
+                  compreender.
+                </span>
+              </div>
+
+              <div class="about-feature">
+                <span class="about-feature__icon" aria-hidden="true">✦</span>
+
+                <strong>Acessibilidade</strong>
+
+                <span>
+                  A experiência deve funcionar de forma simples em diferentes
+                  dispositivos e contextos.
+                </span>
+              </div>
+
+              <div class="about-feature">
+                <span class="about-feature__icon" aria-hidden="true">✓</span>
+
+                <strong>Transparência</strong>
+
+                <span>
+                  O Bem-Feito conecta pessoas e instituições sem intermediar
+                  dinheiro ou doações.
+                </span>
+              </div>
+
+              <div class="about-feature">
+                <span class="about-feature__icon" aria-hidden="true">⌖</span>
+
+                <strong>Proximidade</strong>
+
+                <span>
+                  A localização facilita a descoberta de possibilidades mais
+                  próximas da realidade do usuário.
+                </span>
+              </div>
+
+              <div class="about-feature">
+                <span class="about-feature__icon" aria-hidden="true">↻</span>
+
+                <strong>Autonomia</strong>
+
+                <span>
+                  A plataforma é pensada para permitir que as instituições
+                  mantenham suas próprias informações e necessidades
+                  atualizadas.
+                </span>
+              </div>
+
+              <div class="about-feature">
+                <span class="about-feature__icon" aria-hidden="true">↑</span>
+
+                <strong>Evolução</strong>
+
+                <span>
+                  O projeto é pensado para crescer sem perder simplicidade e
+                  propósito.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           CTA final
+           ===================================================== -->
+      <section class="about-cta">
+        <div class="about-cta__container container">
+          <div class="about-cta__card">
+            <div class="about-cta__content">
+              <span class="about-section__eyebrow">Conheça o projeto</span>
+
+              <h2 class="about-cta__title">
+                Veja como essa ideia funciona na prática
+              </h2>
+
+              <p>
+                Conheça o caminho pensado pelo Bem-Feito para transformar
+                informação em conexão e facilitar novas formas de ajudar.
+              </p>
+
+              <div class="about-cta__actions">
+                <a class="button button--primary" href="./how-it-works.html">
+                  Como funciona
+                </a>
+
+                <a class="button button--outline" href="./cities.html">
+                  Encontrar instituições
+                </a>
+              </div>
+            </div>
+
+            <!-- O CTA permanece estático, sem animação. -->
+            <div class="about-cta__visual" aria-hidden="true">
+              <img
+                class="about-cta__image"
+                src="../assets/images/about/about-cta.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

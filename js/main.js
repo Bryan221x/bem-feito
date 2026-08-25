@@ -4,6 +4,7 @@ import { initHomePage } from "./pages/home.js";
 import { initHowItWorksPage } from "./pages/how-it-works.js";
 import { initInstitutionPage } from "./pages/institution.js";
 import { initInstitutionsPage } from "./pages/institutions.js";
+import { initAboutPage } from "./pages/about.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initMobileMenu();
@@ -13,4 +14,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initCitiesPage();
   initInstitutionsPage();
   initInstitutionPage();
+  initAboutPage();
 });
