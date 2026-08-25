@@ -1,0 +1,368 @@
+/* =========================================================
+   Detalhes da instituição
+   ========================================================= */
+
+.institution-page {
+  padding-block: var(--space-7);
+}
+
+.institution-page__container {
+  max-width: 62rem;
+}
+
+.institution-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  margin-bottom: var(--space-5);
+
+  color: var(--color-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  text-decoration: none;
+}
+
+.institution-page__back:hover {
+  text-decoration: underline;
+}
+
+.institution-page__header {
+  max-width: 38rem;
+  margin-inline: auto;
+  margin-bottom: var(--space-6);
+
+  text-align: center;
+}
+
+.institution-page__title {
+  margin-bottom: var(--space-2);
+
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-3xl));
+}
+
+.institution-page__description {
+  color: var(--color-text-muted);
+}
+
+/* =========================================================
+   Conteúdo futuro da instituição
+   ========================================================= */
+
+/*
+ * Esta área será preenchida somente após a instituição recebida
+ * pela URL ser validada pela futura API do Bem-Feito.
+ */
+.institution-details {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.institution-details[hidden] {
+  display: none;
+}
+
+/* =========================================================
+   Ficha da instituição
+   ========================================================= */
+
+.institution-profile {
+  padding: var(--space-6);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+}
+
+.institution-profile__heading {
+  max-width: 44rem;
+}
+
+.institution-profile__category {
+  display: inline-flex;
+
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+
+  border-radius: var(--radius-pill);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institution-profile__category[hidden],
+.institution-profile__description[hidden] {
+  display: none;
+}
+
+.institution-profile__name {
+  margin-bottom: var(--space-3);
+
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-3xl));
+}
+
+.institution-profile__description {
+  max-width: 42rem;
+
+  color: var(--color-text-muted);
+}
+
+.institution-section {
+  padding: var(--space-6);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+}
+
+.institution-section[hidden] {
+  display: none;
+}
+
+.institution-section__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xl);
+}
+
+.institution-section__intro {
+  margin-bottom: var(--space-4);
+
+  color: var(--color-text-muted);
+}
+
+/* =========================================================
+   Necessidades
+   ========================================================= */
+
+.institution-needs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: var(--space-3);
+}
+
+.institution-needs__item {
+  padding: var(--space-3) var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background-color: var(--color-background);
+}
+
+/* =========================================================
+   Contato
+   ========================================================= */
+
+.institution-contact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: var(--space-3);
+}
+
+.institution-contact__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  padding: var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.institution-contact__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.institution-contact__value {
+  color: var(--color-text-muted);
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   Localização
+   ========================================================= */
+
+.institution-location__address {
+  margin-bottom: var(--space-4);
+
+  color: var(--color-text-muted);
+}
+
+.institution-location__address[hidden],
+.institution-location__map[hidden] {
+  display: none;
+}
+
+.institution-location__map {
+  min-height: 20rem;
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+/* =========================================================
+   Estado sem instituição selecionada
+   ========================================================= */
+
+.institution-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: var(--space-7) var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  text-align: center;
+
+  background-color: var(--color-surface);
+}
+
+.institution-empty[hidden] {
+  display: none;
+}
+
+.institution-empty__icon {
+  display: grid;
+  place-items: center;
+
+  width: 4rem;
+  height: 4rem;
+
+  margin-bottom: var(--space-4);
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institution-empty__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xl);
+}
+
+.institution-empty__description {
+  max-width: 32rem;
+
+  margin-bottom: var(--space-5);
+
+  color: var(--color-text-muted);
+}
+
+/* =========================================================
+   Estados da consulta da instituição
+   ========================================================= */
+
+.institution-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 18rem;
+  padding: var(--space-6) var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  text-align: center;
+
+  background-color: var(--color-surface);
+}
+
+.institution-feedback[hidden] {
+  display: none;
+}
+
+.institution-feedback__icon {
+  display: grid;
+  place-items: center;
+
+  width: 4rem;
+  height: 4rem;
+
+  margin-bottom: var(--space-4);
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institution-feedback__title {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-xl);
+}
+
+.institution-feedback__description {
+  max-width: 32rem;
+
+  margin-bottom: var(--space-5);
+
+  color: var(--color-text-muted);
+}
+
+.institution-feedback__loader {
+  width: 2rem;
+  height: 2rem;
+
+  margin-bottom: var(--space-4);
+
+  border: 0.2rem solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+
+  animation: institution-loading 0.8s linear infinite;
+}
+
+@keyframes institution-loading {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   Responsividade
+   ========================================================= */
+
+@media (max-width: 48rem) {
+  .institution-page {
+    padding-block: var(--space-6);
+  }
+
+  .institution-empty {
+    padding: var(--space-6) var(--space-4);
+  }
+  .institution-profile,
+  .institution-section {
+    padding: var(--space-5);
+  }
+
+  .institution-needs,
+  .institution-contact {
+    grid-template-columns: 1fr;
+  }
+
+  .institution-location__map {
+    min-height: 16rem;
+  }
+}
