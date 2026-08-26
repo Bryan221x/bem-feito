@@ -43,17 +43,16 @@ function showCityRequiredState(page) {
 }
 
 /*
- * Por enquanto apenas preservamos o identificador recebido.
- * A integração futura com a API será responsável por validar
- * a cidade antes de alterar o estado visual da página.
+ * Preserva o identificador da cidade selecionada.
+ * A futura API será responsável por validar sua existência.
  */
 function prepareSelectedCityState(page, cityId) {
   page.dataset.cityId = cityId;
 }
 
 /*
- * Centraliza o controle dos estados do catálogo para evitar que
- * mensagens incompatíveis apareçam simultaneamente.
+ * Centraliza o controle dos estados do catálogo para evitar
+ * que mensagens incompatíveis apareçam simultaneamente.
  */
 function hidePageStates(page) {
   const states = page.querySelectorAll(
@@ -119,10 +118,16 @@ export function renderInstitutions(page, institutions) {
     return;
   }
 
+  /*
+   * Recupera a cidade já preservada pela página para que
+   * o detalhe da instituição saiba de qual catálogo o usuário veio.
+   */
+  const cityId = page.dataset.cityId || null;
+
   const fragment = document.createDocumentFragment();
 
   institutions.forEach((institution) => {
-    const card = createInstitutionCard(institution);
+    const card = createInstitutionCard(institution, cityId);
 
     fragment.appendChild(card);
   });

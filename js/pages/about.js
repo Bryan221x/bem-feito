@@ -83,7 +83,7 @@ function initAboutHeroAnimation() {
 }
 
 /* =========================================================
-   História
+   Nossa história
    ========================================================= */
 
 function initAboutStoryAnimation() {
@@ -93,8 +93,6 @@ function initAboutStoryAnimation() {
 
   const content = section.querySelector(".about-story__content");
   const art = section.querySelector(".about-story__art");
-  const timeline = section.querySelector(".about-timeline");
-  const timelineItems = section.querySelectorAll(".about-timeline__item");
 
   if (content) {
     createRevealAnimation(content);
@@ -120,31 +118,6 @@ function initAboutStoryAnimation() {
         scrollTrigger: {
           trigger: art,
           start: "top 86%",
-          toggleActions: "play none none reverse",
-        },
-      },
-    );
-  }
-
-  if (timeline && timelineItems.length) {
-    gsap.fromTo(
-      timelineItems,
-      {
-        autoAlpha: 0,
-        y: 18,
-        filter: "blur(5px)",
-      },
-      {
-        autoAlpha: 1,
-        y: 0,
-        filter: "blur(0px)",
-        duration: 0.55,
-        stagger: 0.1,
-        ease: "power3.out",
-
-        scrollTrigger: {
-          trigger: timeline,
-          start: "top 88%",
           toggleActions: "play none none reverse",
         },
       },
@@ -220,6 +193,7 @@ function initPeopleAnimation() {
 
   const header = section.querySelector(".about-people__header");
   const author = section.querySelector(".about-person-card--author");
+
   const collaborators = section.querySelector(".about-collaborators");
 
   const collaboratorGrid = section.querySelector(".about-collaborators__grid");

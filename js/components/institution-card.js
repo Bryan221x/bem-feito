@@ -13,16 +13,16 @@
  * Cria o card visual de uma instituição cadastrada.
  *
  * @param {Institution} institution
+ * @param {string|null} cityId
  * @returns {HTMLElement}
  */
-export function createInstitutionCard(institution) {
+export function createInstitutionCard(institution, cityId = null) {
   if (!institution?.id || !institution?.name) {
     throw new Error("A instituição precisa possuir identificador e nome.");
   }
 
   const card = document.createElement("article");
   card.className = "institution-card";
-
   card.dataset.institutionId = String(institution.id);
 
   const content = document.createElement("div");
@@ -50,11 +50,18 @@ export function createInstitutionCard(institution) {
     content.appendChild(description);
   }
 
+  const params = new URLSearchParams();
+
+  if (cityId) {
+    params.set("cityId", cityId);
+  }
+
+  params.set("institutionId", String(institution.id));
+
   const link = document.createElement("a");
   link.className = "button button--outline institution-card__link";
-  link.href = `./institution.html?institutionId=${encodeURIComponent(
-    institution.id,
-  )}`;
+
+  link.href = `./institution.html?${params.toString()}`;
   link.textContent = "Ver instituição";
 
   content.appendChild(link);

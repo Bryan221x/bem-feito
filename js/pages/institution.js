@@ -5,6 +5,17 @@ export function initInstitutionPage() {
   if (!page) return;
 
   const institutionId = getSelectedInstitutionId();
+  const cityId = getSelectedCityId();
+
+  /*
+   * Preserva a cidade de origem para permitir que o usuário
+   * retorne ao mesmo catálogo de instituições.
+   */
+  if (cityId) {
+    page.dataset.cityId = cityId;
+  }
+
+  updateBackLink(page, cityId);
 
   if (!institutionId) {
     showInstitutionRequiredState(page);
@@ -15,11 +26,12 @@ export function initInstitutionPage() {
 }
 
 /*
- * Recupera o identificador recebido pela URL.
- * A futura API será responsável por confirmar se a instituição existe.
+ * Recupera o identificador da instituição recebido pela URL.
+ * A futura API será responsável por confirmar se ela existe.
  */
 function getSelectedInstitutionId() {
   const params = new URLSearchParams(window.location.search);
+
   const institutionId = params.get("institutionId");
 
   if (!institutionId) return null;
@@ -27,6 +39,43 @@ function getSelectedInstitutionId() {
   const normalizedId = institutionId.trim();
 
   return normalizedId || null;
+}
+
+/*
+ * Recupera a cidade de origem recebida pela URL.
+ * O identificador é preservado, mas sua validação continuará
+ * sendo responsabilidade da futura API.
+ */
+function getSelectedCityId() {
+  const params = new URLSearchParams(window.location.search);
+
+  const cityId = params.get("cityId");
+
+  if (!cityId) return null;
+
+  const normalizedId = cityId.trim();
+
+  return normalizedId || null;
+}
+
+/*
+ * Mantém o botão de retorno ligado ao catálogo da cidade
+ * anteriormente selecionada.
+ */
+function updateBackLink(page, cityId) {
+  const backLink = page.querySelector("[data-institution-back]");
+
+  if (!backLink) return;
+
+  if (!cityId) {
+    backLink.href = "./institutions.html";
+    return;
+  }
+
+  const params = new URLSearchParams();
+  params.set("cityId", cityId);
+
+  backLink.href = `./institutions.html?${params.toString()}`;
 }
 
 /*
