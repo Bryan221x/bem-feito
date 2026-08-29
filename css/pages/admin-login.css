@@ -1,0 +1,486 @@
+/* =========================================================
+   Página de Login Administrativo
+   ========================================================= */
+
+.admin-login-page {
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
+.admin-login {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(var(--space-4), 5vw, var(--space-7));
+}
+
+/* =========================================================
+   Container
+   ========================================================= */
+
+.admin-login__container {
+  width: min(100%, 70rem);
+  min-height: 42rem;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.95fr)
+    minmax(0, 1.05fr);
+
+  overflow: hidden;
+
+  background-color: var(--color-surface);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-md);
+}
+
+/* =========================================================
+   Área de acesso
+   ========================================================= */
+
+.admin-login__access {
+  display: flex;
+  flex-direction: column;
+
+  padding: clamp(var(--space-5), 5vw, var(--space-7));
+}
+
+.admin-login__brand {
+  width: fit-content;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.admin-login__brand-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  object-fit: contain;
+}
+
+.admin-login__brand-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.admin-login__content {
+  width: min(100%, 27rem);
+
+  margin-block: auto;
+}
+
+.admin-login__header {
+  margin-bottom: var(--space-6);
+}
+
+.admin-login__eyebrow {
+  display: inline-flex;
+
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+
+  border-radius: var(--radius-pill);
+
+  color: var(--color-accent-text);
+  background-color: var(--color-accent-soft);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.admin-login__title {
+  margin-bottom: var(--space-3);
+
+  font-size: clamp(2rem, 4vw, 2.75rem);
+
+  line-height: 1.1;
+}
+
+.admin-login__description {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+/* =========================================================
+   Formulário
+   ========================================================= */
+
+.admin-login__form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-login__field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.admin-login__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  color: var(--color-text);
+}
+
+.admin-login__input {
+  width: 100%;
+  min-height: 3.25rem;
+
+  padding: 0 var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  color: var(--color-text);
+  background-color: var(--color-surface);
+
+  outline: none;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.admin-login__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.admin-login__input:hover {
+  border-color: var(--color-primary-soft);
+}
+
+.admin-login__input:focus {
+  border-color: var(--color-primary);
+
+  box-shadow: 0 0 0 0.2rem
+    color-mix(in srgb, var(--color-primary) 16%, transparent);
+}
+
+.admin-login__input[aria-invalid="true"] {
+  border-color: var(--color-danger, #b42318);
+}
+
+/* =========================================================
+   Senha
+   ========================================================= */
+
+.admin-login__password {
+  position: relative;
+}
+
+.admin-login__input--password {
+  padding-right: 3.5rem;
+}
+
+.admin-login__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  display: inline-grid;
+  place-items: center;
+
+  padding: 0;
+
+  transform: translateY(-50%);
+
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  color: var(--color-text-muted);
+  background-color: transparent;
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.admin-login__password-toggle:hover {
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.admin-login__password-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.admin-login__password-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+
+  fill: none;
+
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.admin-login__password-slash {
+  opacity: 1;
+
+  transition: opacity 180ms ease;
+}
+
+.admin-login__password-slash.is-hidden {
+  opacity: 0;
+}
+
+/* =========================================================
+   Mensagens
+   ========================================================= */
+
+.admin-login__field-error {
+  min-height: 1.1rem;
+
+  color: var(--color-danger, #b42318);
+
+  font-size: var(--font-size-xs);
+}
+
+.admin-login__message {
+  padding:
+    var(--space-3)
+    var(--space-4);
+
+  border:
+    1px solid
+    var(--color-primary-soft);
+
+  border-radius: var(--radius-md);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.admin-login__submit {
+  width: 100%;
+  min-height: 3.25rem;
+
+  margin-top: var(--space-1);
+}
+
+.admin-login__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  margin-top: var(--space-5);
+
+  color: var(--color-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  text-decoration: none;
+}
+
+.admin-login__back:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   Painel visual
+   ========================================================= */
+
+.admin-login__visual {
+  position: relative;
+
+  min-height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(var(--space-5), 5vw, var(--space-7));
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    145deg,
+    var(--color-primary-soft),
+    var(--color-background)
+  );
+}
+
+.admin-login__visual::before,
+.admin-login__visual::after {
+  content: "";
+
+  position: absolute;
+
+  border-radius: 50%;
+
+  background-color: rgb(255 255 255 / 48%);
+
+  pointer-events: none;
+}
+
+.admin-login__visual::before {
+  width: 20rem;
+  height: 20rem;
+
+  top: -8rem;
+  right: -6rem;
+}
+
+.admin-login__visual::after {
+  width: 14rem;
+  height: 14rem;
+
+  bottom: -5rem;
+  left: -5rem;
+}
+
+.admin-login__visual-decoration {
+  position: relative;
+  z-index: 1;
+
+  width: min(100%, 31rem);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.admin-login__illustration {
+  width: min(100%, 27rem);
+  max-height: 23rem;
+
+  margin-inline: auto;
+  margin-bottom: var(--space-4);
+
+  object-fit: contain;
+
+  user-select: none;
+
+  pointer-events: none;
+}
+
+.admin-login__visual-content {
+  width: min(100%, 27rem);
+
+  display: grid;
+  gap: var(--space-3);
+}
+
+.admin-login__visual-content strong {
+  color: var(--color-text);
+
+  font-size: clamp(1.45rem, 2.5vw, 1.8rem);
+
+  line-height: 1.25;
+}
+
+.admin-login__visual-content p {
+  max-width: 28rem;
+
+  margin-inline: auto;
+
+  color: var(--color-text-muted);
+
+  line-height: 1.7;
+}
+
+
+
+/* =========================================================
+   Responsividade
+   ========================================================= */
+
+@media (max-width: 56rem) {
+  .admin-login {
+    align-items: stretch;
+
+    padding: 0;
+  }
+
+  .admin-login__container {
+    min-height: 100vh;
+
+    grid-template-columns: 1fr;
+
+    border: 0;
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .admin-login__access {
+    min-height: 100vh;
+
+    padding:
+      var(--space-6)
+      clamp(
+        var(--space-4),
+        8vw,
+        var(--space-7)
+      );
+  }
+
+  .admin-login__visual {
+    display: none;
+  }
+
+  .admin-login__content {
+    width: min(100%, 30rem);
+
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 30rem) {
+  .admin-login__access {
+    padding:
+      var(--space-5)
+      var(--space-4);
+  }
+
+  .admin-login__brand-mark {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .admin-login__brand-name {
+    font-size: var(--font-size-base);
+  }
+
+  .admin-login__header {
+    margin-bottom: var(--space-5);
+  }
+
+  .admin-login__title {
+    font-size: clamp(
+      2rem,
+      10vw,
+      2.35rem
+    );
+  }
+
+  .admin-login__description {
+    font-size: var(--font-size-sm);
+  }
+}

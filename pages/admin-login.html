@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Acesso administrativo do Projeto Bem-Feito."
+    />
+
+    <title>Login Administrativo | Bem-Feito</title>
+
+    <!-- Estilos base -->
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <!-- Componentes compartilhados -->
+    <link rel="stylesheet" href="../css/components/brand.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+
+    <!-- Página -->
+    <link rel="stylesheet" href="../css/pages/admin-login.css" />
+  </head>
+
+  <body class="admin-login-page">
+    <a class="skip-link" href="#main-content">
+      Pular para o conteúdo principal
+    </a>
+
+    <main id="main-content" class="admin-login">
+      <div class="admin-login__container">
+        <!-- ==================================================
+             Área de acesso
+             ================================================== -->
+        <section
+          class="admin-login__access"
+          aria-labelledby="admin-login-title"
+        >
+          <a
+            class="admin-login__brand"
+            href="../index.html"
+            aria-label="Voltar para a página inicial do Bem-Feito"
+          >
+            <img
+              class="admin-login__brand-mark"
+              src="../assets/images/brand/brand-mark.png"
+              alt=""
+              width="42"
+              height="42"
+            />
+
+            <span class="admin-login__brand-name"> Bem-Feito </span>
+          </a>
+
+          <div class="admin-login__content">
+            <header class="admin-login__header">
+              <span class="admin-login__eyebrow"> Área administrativa </span>
+
+              <h1 id="admin-login-title" class="admin-login__title">
+                Acesso Administrativo
+              </h1>
+
+              <p class="admin-login__description">
+                Entre com suas credenciais para acessar o gerenciamento do
+                Bem-Feito.
+              </p>
+            </header>
+
+            <form class="admin-login__form" data-admin-login-form novalidate>
+              <div class="admin-login__field">
+                <label class="admin-login__label" for="admin-email">
+                  E-mail
+                </label>
+
+                <input
+                  class="admin-login__input"
+                  id="admin-email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  placeholder="Digite seu e-mail"
+                  aria-describedby="admin-email-error"
+                  required
+                  data-admin-email
+                />
+
+                <span
+                  id="admin-email-error"
+                  class="admin-login__field-error"
+                  data-admin-email-error
+                  aria-live="polite"
+                ></span>
+              </div>
+
+              <div class="admin-login__field">
+                <label class="admin-login__label" for="admin-password">
+                  Senha
+                </label>
+
+                <div class="admin-login__password">
+                  <input
+                    class="admin-login__input admin-login__input--password"
+                    id="admin-password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="Digite sua senha"
+                    aria-describedby="admin-password-error"
+                    required
+                    data-admin-password
+                  />
+
+                  <button
+                    class="admin-login__password-toggle"
+                    type="button"
+                    aria-label="Mostrar senha"
+                    aria-pressed="false"
+                    data-password-toggle
+                  >
+                    <svg
+                      class="admin-login__password-icon"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+                      ></path>
+
+                      <circle cx="12" cy="12" r="3"></circle>
+
+                      <path
+                        class="admin-login__password-slash"
+                        d="M4 4 20 20"
+                        data-password-slash
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <span
+                  id="admin-password-error"
+                  class="admin-login__field-error"
+                  data-admin-password-error
+                  aria-live="polite"
+                ></span>
+              </div>
+
+              <!--
+                Reservado para mensagens retornadas pela futura
+                autenticação do backend.
+              -->
+              <div
+                class="admin-login__message"
+                role="status"
+                aria-live="polite"
+                data-admin-login-message
+                hidden
+              ></div>
+
+              <button
+                class="button button--primary admin-login__submit"
+                type="submit"
+              >
+                Entrar
+              </button>
+            </form>
+
+            <a class="admin-login__back" href="../index.html">
+              <span aria-hidden="true">←</span>
+              Voltar para o site
+            </a>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             Painel visual
+             ================================================== -->
+        <aside
+          class="admin-login__visual"
+          aria-label="Área administrativa do Bem-Feito"
+        >
+          <div class="admin-login__visual-decoration">
+            <img
+              class="admin-login__illustration"
+              src="../assets/images/admin/admin-login.png"
+              alt=""
+            />
+
+            <div class="admin-login__visual-content">
+              <strong> Informações organizadas fazem a diferença. </strong>
+
+              <p>
+                A área administrativa permite manter os dados das instituições e
+                suas necessidades sempre atualizados.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>
