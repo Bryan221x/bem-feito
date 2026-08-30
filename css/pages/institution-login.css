@@ -1,13 +1,13 @@
 /* =========================================================
-   Página de Login Administrativo
+   Área de acesso da instituição
    ========================================================= */
 
-.admin-login-page {
+.institution-login-page {
   min-height: 100vh;
   background-color: var(--color-background);
 }
 
-.admin-login {
+.institution-login {
   min-height: 100vh;
 
   display: flex;
@@ -21,7 +21,7 @@
    Container
    ========================================================= */
 
-.admin-login__container {
+.institution-login__container {
   width: min(100%, 70rem);
   min-height: 42rem;
 
@@ -44,14 +44,14 @@
    Área de acesso
    ========================================================= */
 
-.admin-login__access {
+.institution-login__access {
   display: flex;
   flex-direction: column;
 
   padding: clamp(var(--space-5), 5vw, var(--space-7));
 }
 
-.admin-login__brand {
+.institution-login__brand {
   width: fit-content;
 
   display: inline-flex;
@@ -62,29 +62,29 @@
   text-decoration: none;
 }
 
-.admin-login__brand-mark {
+.institution-login__brand-mark {
   width: 2.5rem;
   height: 2.5rem;
 
   object-fit: contain;
 }
 
-.admin-login__brand-name {
+.institution-login__brand-name {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
 }
 
-.admin-login__content {
+.institution-login__content {
   width: min(100%, 27rem);
 
   margin-block: auto;
 }
 
-.admin-login__header {
+.institution-login__header {
   margin-bottom: var(--space-6);
 }
 
-.admin-login__eyebrow {
+.institution-login__eyebrow {
   display: inline-flex;
 
   margin-bottom: var(--space-3);
@@ -99,7 +99,7 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.admin-login__title {
+.institution-login__title {
   margin-bottom: var(--space-3);
 
   font-size: clamp(2rem, 4vw, 2.75rem);
@@ -107,7 +107,7 @@
   line-height: 1.1;
 }
 
-.admin-login__description {
+.institution-login__description {
   color: var(--color-text-muted);
   line-height: 1.7;
 }
@@ -116,24 +116,24 @@
    Formulário
    ========================================================= */
 
-.admin-login__form {
+.institution-login__form {
   display: grid;
   gap: var(--space-4);
 }
 
-.admin-login__field {
+.institution-login__field {
   display: grid;
   gap: var(--space-2);
 }
 
-.admin-login__label {
+.institution-login__label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
 
   color: var(--color-text);
 }
 
-.admin-login__input {
+.institution-login__input {
   width: 100%;
   min-height: 3.25rem;
 
@@ -153,22 +153,22 @@
     background-color 180ms ease;
 }
 
-.admin-login__input::placeholder {
+.institution-login__input::placeholder {
   color: var(--color-text-muted);
 }
 
-.admin-login__input:hover {
+.institution-login__input:hover {
   border-color: var(--color-primary-soft);
 }
 
-.admin-login__input:focus {
+.institution-login__input:focus {
   border-color: var(--color-primary);
 
   box-shadow: 0 0 0 0.2rem
     color-mix(in srgb, var(--color-primary) 16%, transparent);
 }
 
-.admin-login__input[aria-invalid="true"] {
+.institution-login__input[aria-invalid="true"] {
   border-color: var(--color-danger, #b42318);
 }
 
@@ -176,15 +176,15 @@
    Senha
    ========================================================= */
 
-.admin-login__password {
+.institution-login__password {
   position: relative;
 }
 
-.admin-login__input--password {
+.institution-login__input--password {
   padding-right: 3.5rem;
 }
 
-.admin-login__password-toggle {
+.institution-login__password-toggle {
   position: absolute;
   top: 50%;
   right: var(--space-3);
@@ -212,17 +212,17 @@
     background-color 180ms ease;
 }
 
-.admin-login__password-toggle:hover {
+.institution-login__password-toggle:hover {
   color: var(--color-primary);
   background-color: var(--color-primary-soft);
 }
 
-.admin-login__password-toggle:focus-visible {
+.institution-login__password-toggle:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.admin-login__password-icon {
+.institution-login__password-icon {
   width: 1.25rem;
   height: 1.25rem;
 
@@ -234,13 +234,13 @@
   stroke-linejoin: round;
 }
 
-.admin-login__password-slash {
+.institution-login__password-slash {
   opacity: 1;
 
   transition: opacity 180ms ease;
 }
 
-.admin-login__password-slash.is-hidden {
+.institution-login__password-slash.is-hidden {
   opacity: 0;
 }
 
@@ -248,7 +248,7 @@
    Mensagens
    ========================================================= */
 
-.admin-login__field-error {
+.institution-login__field-error {
   min-height: 1.1rem;
 
   color: var(--color-danger, #b42318);
@@ -256,7 +256,7 @@
   font-size: var(--font-size-xs);
 }
 
-.admin-login__message {
+.institution-login__message {
   padding:
     var(--space-3)
     var(--space-4);
@@ -274,14 +274,14 @@
   line-height: 1.5;
 }
 
-.admin-login__submit {
+.institution-login__submit {
   width: 100%;
   min-height: 3.25rem;
 
   margin-top: var(--space-1);
 }
 
-.admin-login__back {
+.institution-login__back {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -296,7 +296,7 @@
   text-decoration: none;
 }
 
-.admin-login__back:hover {
+.institution-login__back:hover {
   text-decoration: underline;
 }
 
@@ -304,7 +304,7 @@
    Painel visual
    ========================================================= */
 
-.admin-login__visual {
+.institution-login__visual {
   position: relative;
 
   min-height: 100%;
@@ -324,8 +324,8 @@
   );
 }
 
-.admin-login__visual::before,
-.admin-login__visual::after {
+.institution-login__visual::before,
+.institution-login__visual::after {
   content: "";
 
   position: absolute;
@@ -337,7 +337,7 @@
   pointer-events: none;
 }
 
-.admin-login__visual::before {
+.institution-login__visual::before {
   width: 20rem;
   height: 20rem;
 
@@ -345,7 +345,7 @@
   right: -6rem;
 }
 
-.admin-login__visual::after {
+.institution-login__visual::after {
   width: 14rem;
   height: 14rem;
 
@@ -353,7 +353,7 @@
   left: -5rem;
 }
 
-.admin-login__visual-decoration {
+.institution-login__visual-decoration {
   position: relative;
   z-index: 1;
 
@@ -366,7 +366,7 @@
   text-align: center;
 }
 
-.admin-login__illustration {
+.institution-login__illustration {
   width: min(100%, 27rem);
   max-height: 23rem;
 
@@ -380,14 +380,14 @@
   pointer-events: none;
 }
 
-.admin-login__visual-content {
+.institution-login__visual-content {
   width: min(100%, 27rem);
 
   display: grid;
   gap: var(--space-3);
 }
 
-.admin-login__visual-content strong {
+.institution-login__visual-content strong {
   color: var(--color-text);
 
   font-size: clamp(1.45rem, 2.5vw, 1.8rem);
@@ -395,7 +395,7 @@
   line-height: 1.25;
 }
 
-.admin-login__visual-content p {
+.institution-login__visual-content p {
   max-width: 28rem;
 
   margin-inline: auto;
@@ -412,13 +412,13 @@
    ========================================================= */
 
 @media (max-width: 56rem) {
-  .admin-login {
+  .institution-login {
     align-items: stretch;
 
     padding: 0;
   }
 
-  .admin-login__container {
+  .institution-login__container {
     min-height: 100vh;
 
     grid-template-columns: 1fr;
@@ -429,7 +429,7 @@
     box-shadow: none;
   }
 
-  .admin-login__access {
+  .institution-login__access {
     min-height: 100vh;
 
     padding:
@@ -441,11 +441,11 @@
       );
   }
 
-  .admin-login__visual {
+  .institution-login__visual {
     display: none;
   }
 
-  .admin-login__content {
+  .institution-login__content {
     width: min(100%, 30rem);
 
     margin-inline: auto;
@@ -453,26 +453,26 @@
 }
 
 @media (max-width: 30rem) {
-  .admin-login__access {
+  .institution-login__access {
     padding:
       var(--space-5)
       var(--space-4);
   }
 
-  .admin-login__brand-mark {
+  .institution-login__brand-mark {
     width: 2.25rem;
     height: 2.25rem;
   }
 
-  .admin-login__brand-name {
+  .institution-login__brand-name {
     font-size: var(--font-size-base);
   }
 
-  .admin-login__header {
+  .institution-login__header {
     margin-bottom: var(--space-5);
   }
 
-  .admin-login__title {
+  .institution-login__title {
     font-size: clamp(
       2rem,
       10vw,
@@ -480,7 +480,7 @@
     );
   }
 
-  .admin-login__description {
+  .institution-login__description {
     font-size: var(--font-size-sm);
   }
 }

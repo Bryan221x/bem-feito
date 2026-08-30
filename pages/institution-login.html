@@ -7,10 +7,10 @@
 
     <meta
       name="description"
-      content="Acesso administrativo do Projeto Bem-Feito."
+      content="Acesso dos responsáveis pelas instituições cadastradas no Bem-Feito."
     />
 
-    <title>Login Administrativo | Bem-Feito</title>
+    <title>Área da Instituição | Bem-Feito</title>
 
     <!-- Estilos base -->
     <link rel="stylesheet" href="../css/reset.css" />
@@ -22,106 +22,111 @@
     <link rel="stylesheet" href="../css/components/buttons.css" />
 
     <!-- Página -->
-    <link rel="stylesheet" href="../css/pages/admin-login.css" />
+    <link rel="stylesheet" href="../css/pages/institution-login.css" />
   </head>
 
-  <body class="admin-login-page">
+  <body class="institution-login-page">
     <a class="skip-link" href="#main-content">
       Pular para o conteúdo principal
     </a>
 
-    <main id="main-content" class="admin-login">
-      <div class="admin-login__container">
+    <main id="main-content" class="institution-login">
+      <div class="institution-login__container">
         <!-- ==================================================
              Área de acesso
              ================================================== -->
         <section
-          class="admin-login__access"
-          aria-labelledby="admin-login-title"
+          class="institution-login__access"
+          aria-labelledby="institution-login-title"
         >
           <a
-            class="admin-login__brand"
+            class="institution-login__brand"
             href="../index.html"
             aria-label="Voltar para a página inicial do Bem-Feito"
           >
             <img
-              class="admin-login__brand-mark"
+              class="institution-login__brand-mark"
               src="../assets/images/brand/brand-mark.png"
               alt=""
               width="42"
               height="42"
             />
 
-            <span class="admin-login__brand-name"> Bem-Feito </span>
+            <span class="institution-login__brand-name"> Bem-Feito </span>
           </a>
 
-          <div class="admin-login__content">
-            <header class="admin-login__header">
-              <span class="admin-login__eyebrow"> Área administrativa </span>
+          <div class="institution-login__content">
+            <header class="institution-login__header">
+              <span class="institution-login__eyebrow">
+                Área da instituição
+              </span>
 
-              <h1 id="admin-login-title" class="admin-login__title">
-                Acesso Administrativo
+              <h1 id="institution-login-title" class="institution-login__title">
+                Acesso da Instituição
               </h1>
 
-              <p class="admin-login__description">
-                Entre com suas credenciais para acessar o gerenciamento do
-                Bem-Feito.
+              <p class="institution-login__description">
+                Entre com as credenciais vinculadas à sua instituição para
+                manter suas informações atualizadas no Bem-Feito.
               </p>
             </header>
 
-            <form class="admin-login__form" data-admin-login-form novalidate>
-              <div class="admin-login__field">
-                <label class="admin-login__label" for="admin-email">
+            <form class="institution-login__form" data-institution-login-form novalidate>
+              <div class="institution-login__field">
+                <label class="institution-login__label" for="institution-email">
                   E-mail
                 </label>
 
                 <input
-                  class="admin-login__input"
-                  id="admin-email"
+                  class="institution-login__input"
+                  id="institution-email"
                   name="email"
                   type="email"
                   autocomplete="username"
                   placeholder="Digite seu e-mail"
-                  aria-describedby="admin-email-error"
+                  aria-describedby="institution-email-error"
                   required
-                  data-admin-email
+                  data-institution-email
                 />
 
                 <span
-                  id="admin-email-error"
-                  class="admin-login__field-error"
-                  data-admin-email-error
+                  id="institution-email-error"
+                  class="institution-login__field-error"
+                  data-institution-email-error
                   aria-live="polite"
                 ></span>
               </div>
 
-              <div class="admin-login__field">
-                <label class="admin-login__label" for="admin-password">
+              <div class="institution-login__field">
+                <label
+                  class="institution-login__label"
+                  for="institution-password"
+                >
                   Senha
                 </label>
 
-                <div class="admin-login__password">
+                <div class="institution-login__password">
                   <input
-                    class="admin-login__input admin-login__input--password"
-                    id="admin-password"
+                    class="institution-login__input institution-login__input--password"
+                    id="institution-password"
                     name="password"
                     type="password"
                     autocomplete="current-password"
                     placeholder="Digite sua senha"
-                    aria-describedby="admin-password-error"
+                    aria-describedby="institution-password-error"
                     required
-                    data-admin-password
+                    data-institution-password
                   />
 
                   <button
-                    class="admin-login__password-toggle"
+                    class="institution-login__password-toggle"
                     type="button"
                     aria-label="Mostrar senha"
                     aria-pressed="false"
                     data-password-toggle
                   >
                     <svg
-                      class="admin-login__password-icon"
+                      class="institution-login__password-icon"
                       viewBox="0 0 24 24"
                       aria-hidden="true"
                     >
@@ -132,7 +137,7 @@
                       <circle cx="12" cy="12" r="3"></circle>
 
                       <path
-                        class="admin-login__password-slash"
+                        class="institution-login__password-slash"
                         d="M4 4 20 20"
                         data-password-slash
                       ></path>
@@ -141,9 +146,9 @@
                 </div>
 
                 <span
-                  id="admin-password-error"
-                  class="admin-login__field-error"
-                  data-admin-password-error
+                  id="institution-password-error"
+                  class="institution-login__field-error"
+                  data-institution-password-error
                   aria-live="polite"
                 ></span>
               </div>
@@ -153,22 +158,22 @@
                 autenticação do backend.
               -->
               <div
-                class="admin-login__message"
+                class="institution-login__message"
                 role="status"
                 aria-live="polite"
-                data-admin-login-message
+                data-institution-login-message
                 hidden
               ></div>
 
               <button
-                class="button button--primary admin-login__submit"
+                class="button button--primary institution-login__submit"
                 type="submit"
               >
                 Entrar
               </button>
             </form>
 
-            <a class="admin-login__back" href="../index.html">
+            <a class="institution-login__back" href="../index.html">
               <span aria-hidden="true">←</span>
               Voltar para o site
             </a>
@@ -179,22 +184,22 @@
              Painel visual
              ================================================== -->
         <aside
-          class="admin-login__visual"
-          aria-label="Área administrativa do Bem-Feito"
+          class="institution-login__visual"
+          aria-label="Área da instituição no Bem-Feito"
         >
-          <div class="admin-login__visual-decoration">
+          <div class="institution-login__visual-decoration">
             <img
-              class="admin-login__illustration"
-              src="../assets/images/admin/admin-login.png"
+              class="institution-login__illustration"
+              src="../assets/images/admin/institution-login.png"
               alt=""
             />
 
-            <div class="admin-login__visual-content">
-              <strong> Informações organizadas fazem a diferença. </strong>
+            <div class="institution-login__visual-content">
+              <strong> Mantenha sua instituição sempre atualizada. </strong>
 
               <p>
-                A área administrativa permite manter os dados das instituições e
-                suas necessidades sempre atualizados.
+                Atualize informações, contatos, localização e necessidades para
+                que as pessoas saibam como ajudar.
               </p>
             </div>
           </div>

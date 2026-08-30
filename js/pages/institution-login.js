@@ -1,17 +1,17 @@
-export function initAdminLoginPage() {
-  const page = document.querySelector(".admin-login-page");
+export function initInstitutionLoginPage() {
+  const page = document.querySelector(".institution-login-page");
 
   if (!page) return;
 
-  const form = page.querySelector("[data-admin-login-form]");
+  const form = page.querySelector("[data-institution-login-form]");
 
-  const emailInput = page.querySelector("[data-admin-email]");
+  const emailInput = page.querySelector("[data-institution-email]");
 
-  const passwordInput = page.querySelector("[data-admin-password]");
+  const passwordInput = page.querySelector("[data-institution-password]");
 
   const passwordToggle = page.querySelector("[data-password-toggle]");
 
-  const message = page.querySelector("[data-admin-login-message]");
+  const message = page.querySelector("[data-institution-login-message]");
 
   if (!form || !emailInput || !passwordInput) {
     return;
@@ -19,7 +19,7 @@ export function initAdminLoginPage() {
 
   initPasswordToggle(passwordInput, passwordToggle);
 
-  initFieldValidation(emailInput, passwordInput);
+  initFieldValidation(emailInput, passwordInput, message);
 
   initLoginForm(form, emailInput, passwordInput, message);
 }
@@ -108,7 +108,7 @@ function initLoginForm(form, emailInput, passwordInput, message) {
      */
     showLoginMessage(
       message,
-      "A autenticação será disponibilizada com a integração da área administrativa.",
+      "O acesso da instituição será disponibilizado após a integração com o sistema de autenticação.",
     );
   });
 }
@@ -156,9 +156,9 @@ function validatePassword(input) {
 function showFieldError(input, message) {
   input.setAttribute("aria-invalid", "true");
 
-  const field = input.closest(".admin-login__field");
+  const field = input.closest(".institution-login__field");
 
-  const error = field?.querySelector(".admin-login__field-error");
+  const error = field?.querySelector(".institution-login__field-error");
 
   if (error) {
     error.textContent = message;
@@ -168,9 +168,9 @@ function showFieldError(input, message) {
 function clearFieldError(input) {
   input.removeAttribute("aria-invalid");
 
-  const field = input.closest(".admin-login__field");
+  const field = input.closest(".institution-login__field");
 
-  const error = field?.querySelector(".admin-login__field-error");
+  const error = field?.querySelector(".institution-login__field-error");
 
   if (error) {
     error.textContent = "";
