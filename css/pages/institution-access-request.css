@@ -1,0 +1,58 @@
+.institution-access-request__layout {
+  grid-template-columns: minmax(0, 1.45fr) minmax(20rem, 0.8fr);
+}
+
+.institution-access-request__layout .registration-request__aside {
+  width: 100%;
+  min-width: 0;
+}
+
+.institution-access-request__search {
+  display: grid;
+  justify-items: stretch;
+  gap: var(--space-4);
+
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-5);
+
+  text-align: center;
+}
+
+.institution-access-request__search .registration-review__icon {
+  margin-inline: auto;
+}
+
+.institution-access-request__search h2 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+}
+
+.institution-access-request__search p,
+.institution-access-request__notice {
+  margin: 0;
+
+  color: var(--color-text-muted);
+}
+
+.institution-access-request__search p {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  text-wrap: pretty;
+}
+
+.institution-access-request__search .button {
+  width: 100%;
+}
+
+@media (max-width: 64rem) {
+  .institution-access-request__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 30rem) {
+  .institution-access-request__search {
+    padding: var(--space-4);
+  }
+}

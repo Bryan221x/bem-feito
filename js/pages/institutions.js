@@ -108,7 +108,13 @@ export function renderInstitutions(page, institutions) {
   hidePageStates(page);
   list.replaceChildren();
 
-  if (institutions.length === 0) {
+  const validInstitutions = institutions.filter(
+    (institution) =>
+      institution?.id &&
+      String(institution?.displayName || institution?.name || "").trim(),
+  );
+
+  if (validInstitutions.length === 0) {
     const emptyState = page.querySelector("[data-institutions-empty]");
 
     if (emptyState) {
@@ -126,7 +132,7 @@ export function renderInstitutions(page, institutions) {
 
   const fragment = document.createDocumentFragment();
 
-  institutions.forEach((institution) => {
+  validInstitutions.forEach((institution) => {
     const card = createInstitutionCard(institution, cityId);
 
     fragment.appendChild(card);

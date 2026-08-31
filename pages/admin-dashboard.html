@@ -2,318 +2,44 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <meta
-      name="description"
-      content="Painel administrativo do Projeto Bem-Feito."
-    />
-
-    <title>Painel Administrativo | Bem-Feito</title>
-
-    <!-- Estilos base -->
-    <link rel="stylesheet" href="../css/reset.css" />
-    <link rel="stylesheet" href="../css/variables.css" />
-    <link rel="stylesheet" href="../css/global.css" />
-
-    <!-- Componentes -->
-    <link rel="stylesheet" href="../css/components/buttons.css" />
-    <link rel="stylesheet" href="../css/components/admin-layout.css" />
-
-    <!-- Página -->
-    <link rel="stylesheet" href="../css/pages/admin-dashboard.css" />
+    <meta name="description" content="Visão geral da administração da plataforma Bem-Feito." />
+    <link rel="icon" type="image/png" href="../assets/images/brand/brand-mark.png" />
+    <title>Dashboard Geral | Bem-Feito</title>
+    <link rel="stylesheet" href="../css/reset.css" /><link rel="stylesheet" href="../css/variables.css" /><link rel="stylesheet" href="../css/global.css" /><link rel="stylesheet" href="../css/components/buttons.css" /><link rel="stylesheet" href="../css/components/admin-layout.css" /><link rel="stylesheet" href="../css/pages/admin-dashboard.css" />
   </head>
-
   <body class="admin-dashboard-page">
-    <a class="skip-link" href="#main-content">
-      Pular para o conteúdo principal
-    </a>
-
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
     <div class="admin-shell">
-      <!-- ===============================================
-           Navegação administrativa
-           =============================================== -->
-      <aside
-        id="admin-sidebar"
-        class="admin-sidebar"
-        aria-label="Navegação administrativa"
-        data-admin-sidebar
-      >
-        <a class="admin-sidebar__brand" href="./admin-dashboard.html">
-          <img
-            class="admin-sidebar__brand-mark"
-            src="../assets/images/brand/brand-mark-light.png"
-            alt=""
-          />
-
-          <span class="admin-sidebar__brand-name"> Bem-Feito </span>
-        </a>
-
-        <nav class="admin-sidebar__nav" aria-label="Menu do painel">
-          <a
-            class="admin-sidebar__link"
-            href="./admin-dashboard.html"
-            aria-current="page"
-          >
-            <svg
-              class="admin-sidebar__icon"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-            </svg>
-
-            Dashboard
-          </a>
-
-          <!--
-            Esses itens serão transformados em links quando
-            suas respectivas páginas forem implementadas.
-          -->
-          <span
-            class="admin-sidebar__link admin-sidebar__link--disabled"
-            aria-disabled="true"
-          >
-            <svg
-              class="admin-sidebar__icon"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path d="M4 21V8l8-5 8 5v13"></path>
-              <path d="M9 21v-6h6v6"></path>
-            </svg>
-
-            Instituições
-          </span>
-
-          <span
-            class="admin-sidebar__link admin-sidebar__link--disabled"
-            aria-disabled="true"
-          >
-            <svg
-              class="admin-sidebar__icon"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path d="M9 11l3 3L22 4"></path>
-              <path
-                d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-              ></path>
-            </svg>
-
-            Necessidades
-          </span>
+      <aside id="admin-sidebar" class="admin-sidebar" aria-label="Administração geral do Bem-Feito" data-admin-sidebar>
+        <a class="admin-sidebar__brand" href="./admin-dashboard.html"><img class="admin-sidebar__brand-mark" src="../assets/images/brand/brand-mark-light.png" alt="" /><span class="admin-sidebar__brand-name">Bem-Feito</span></a>
+        <nav class="admin-sidebar__nav" aria-label="Menu administrativo">
+          <a class="admin-sidebar__link" href="./admin-dashboard.html" aria-current="page"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-3H4zM14 7h6V4h-6z"></path></svg>Dashboard</a>
+          <a class="admin-sidebar__link" href="./admin-institutions.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg>Instituições</a>
+          <a class="admin-sidebar__link" href="./admin-requests.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"></path><path d="M14 3v4h4M9 12h6M9 16h4"></path></svg>Solicitações</a>
         </nav>
-
-        <div class="admin-sidebar__footer">
-          <a class="admin-sidebar__site-link" href="../index.html">
-            <span aria-hidden="true">←</span>
-            Voltar para o site
-          </a>
-        </div>
+        <div class="admin-sidebar__footer"><a class="admin-sidebar__site-link" href="../index.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6M9 12h11M4 4v16"></path></svg>Voltar para o site</a></div>
       </aside>
-
-      <button
-        class="admin-sidebar__overlay"
-        type="button"
-        aria-label="Fechar menu administrativo"
-        data-admin-sidebar-overlay
-      ></button>
-
-      <!-- ===============================================
-           Conteúdo
-           =============================================== -->
+      <button class="admin-sidebar__overlay" type="button" aria-label="Fechar menu administrativo" data-admin-sidebar-overlay></button>
       <div class="admin-shell__main">
-        <header class="admin-mobile-header">
-          <a class="admin-mobile-header__brand" href="./admin-dashboard.html">
-            <img src="../assets/images/brand/brand-mark.png" alt="" />
-
-            Bem-Feito
-          </a>
-
-          <button
-            class="admin-mobile-header__toggle"
-            type="button"
-            aria-label="Abrir menu administrativo"
-            aria-expanded="false"
-            aria-controls="admin-sidebar"
-            data-admin-sidebar-toggle
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 7h16"></path>
-              <path d="M4 12h16"></path>
-              <path d="M4 17h16"></path>
-            </svg>
-          </button>
-        </header>
-
-        <main
-          id="main-content"
-          class="admin-shell__content"
-          data-admin-dashboard
-        >
-          <header class="admin-dashboard__header">
-            <div>
-              <span class="admin-dashboard__eyebrow">
-                Área administrativa
-              </span>
-
-              <h1 class="admin-dashboard__title">Dashboard</h1>
-
-              <p class="admin-dashboard__description">
-                Acompanhe e organize as informações utilizadas pelo Bem-Feito.
-              </p>
-            </div>
-          </header>
-
-          <!-- =============================================
-               Resumo
-               ============================================= -->
-          <section
-            class="admin-dashboard__summary"
-            aria-labelledby="summary-title"
-          >
-            <h2 id="summary-title" class="sr-only">Resumo do sistema</h2>
-
-            <article class="admin-stat-card">
-              <span class="admin-stat-card__label">
-                Instituições cadastradas
-              </span>
-
-              <strong
-                class="admin-stat-card__value"
-                data-admin-stat-institutions
-                aria-label="Dado ainda não disponível"
-              >
-                —
-              </strong>
-
-              <span class="admin-stat-card__caption">
-                Total registrado no sistema
-              </span>
-            </article>
-
-            <article class="admin-stat-card">
-              <span class="admin-stat-card__label"> Cidades atendidas </span>
-
-              <strong
-                class="admin-stat-card__value"
-                data-admin-stat-cities
-                aria-label="Dado ainda não disponível"
-              >
-                —
-              </strong>
-
-              <span class="admin-stat-card__caption">
-                Cidades com instituições
-              </span>
-            </article>
-
-            <article class="admin-stat-card">
-              <span class="admin-stat-card__label"> Itens ativos </span>
-
-              <strong
-                class="admin-stat-card__value"
-                data-admin-stat-items
-                aria-label="Dado ainda não disponível"
-              >
-                —
-              </strong>
-
-              <span class="admin-stat-card__caption">
-                Necessidades cadastradas
-              </span>
-            </article>
+        <header class="admin-mobile-header"><a class="admin-mobile-header__brand" href="./admin-dashboard.html"><img src="../assets/images/brand/brand-mark.png" alt="" />Bem-Feito</a><button class="admin-mobile-header__toggle" type="button" aria-label="Abrir menu administrativo" aria-expanded="false" aria-controls="admin-sidebar" data-admin-sidebar-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button></header>
+        <main id="main-content" class="admin-shell__content admin-dashboard" data-admin-dashboard-page>
+          <header class="admin-dashboard__header"><div class="admin-dashboard__heading"><span class="admin-dashboard__eyebrow">Administração geral</span><h1 class="admin-dashboard__title">Dashboard</h1><p class="admin-dashboard__description">Visão operacional de toda a plataforma Bem-Feito, separada da gestão institucional.</p></div><div class="admin-dashboard__data-status"><span aria-hidden="true"></span>Dados aguardando integração</div></header>
+          <div class="admin-dashboard__feedback" role="status" aria-live="polite" data-admin-dashboard-feedback hidden></div>
+          <section class="admin-dashboard__metrics" aria-label="Indicadores gerais">
+            <article class="admin-metric-card"><span class="admin-metric-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M9 12h6"></path></svg></span><div><span class="admin-metric-card__label">Solicitações pendentes</span><strong data-admin-metric="pendingRequests" aria-label="Dado não disponível">—</strong><small>Aguardando análise</small></div></article>
+            <article class="admin-metric-card"><span class="admin-metric-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg></span><div><span class="admin-metric-card__label">Instituições</span><strong data-admin-metric="institutions" aria-label="Dado não disponível">—</strong><small>Total cadastrado</small></div></article>
+            <article class="admin-metric-card"><span class="admin-metric-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"></circle><path d="M3 21v-2a6 6 0 0 1 12 0v2M17 8h4M19 6v4"></path></svg></span><div><span class="admin-metric-card__label">Responsáveis</span><strong data-admin-metric="managers" aria-label="Dado não disponível">—</strong><small>Vínculos de acesso</small></div></article>
+            <article class="admin-metric-card"><span class="admin-metric-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V9l6-3v15M10 21V5l10 4v12"></path></svg></span><div><span class="admin-metric-card__label">Unidades</span><strong data-admin-metric="units" aria-label="Dado não disponível">—</strong><small>Total cadastrado</small></div></article>
           </section>
-
-          <!-- =============================================
-               Instituições
-               ============================================= -->
-          <section
-            class="admin-dashboard__section"
-            aria-labelledby="institutions-title"
-          >
-            <div class="admin-dashboard__section-header">
-              <div>
-                <h2 id="institutions-title">Instituições</h2>
-
-                <p>
-                  Visualize as instituições cadastradas e acompanhe suas
-                  informações.
-                </p>
-              </div>
-            </div>
-
-            <div class="admin-dashboard__table-wrapper">
-              <table class="admin-dashboard__table">
-                <thead>
-                  <tr>
-                    <th scope="col">Instituição</th>
-                    <th scope="col">Cidade</th>
-                    <th scope="col">Necessidades</th>
-                    <th scope="col">Atualização</th>
-                  </tr>
-                </thead>
-
-                <tbody data-admin-institution-list></tbody>
-              </table>
-
-              <div class="admin-dashboard__empty" data-admin-institutions-empty>
-                <div class="admin-dashboard__empty-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M4 21V8l8-5 8 5v13"></path>
-                    <path d="M9 21v-6h6v6"></path>
-                  </svg>
-                </div>
-
-                <strong> Nenhuma instituição disponível </strong>
-
-                <p>
-                  As instituições cadastradas serão exibidas aqui após a
-                  integração com os dados do sistema.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <!-- =============================================
-               Atualizações
-               ============================================= -->
-          <section
-            class="admin-dashboard__section"
-            aria-labelledby="updates-title"
-          >
-            <div class="admin-dashboard__section-header">
-              <div>
-                <h2 id="updates-title">Atualizações recentes</h2>
-
-                <p>
-                  Alterações realizadas nas informações do Bem-Feito aparecerão
-                  nesta área.
-                </p>
-              </div>
-            </div>
-
-            <div
-              class="admin-dashboard__empty admin-dashboard__empty--compact"
-              data-admin-updates-empty
-            >
-              <strong> Nenhuma atualização registrada </strong>
-
-              <p>
-                As atividades administrativas aparecerão aqui quando houver
-                dados integrados.
-              </p>
-            </div>
-          </section>
+          <div class="admin-dashboard__primary-grid">
+            <section class="admin-dashboard-card admin-dashboard-card--requests" aria-labelledby="requests-title"><header class="admin-dashboard-card__header"><div><h2 id="requests-title">Solicitações recentes</h2><p>Pedidos de cadastro recebidos pela plataforma.</p></div><a class="button button--outline" href="./admin-requests.html">Ver todas</a></header><div class="admin-dashboard-table" data-admin-requests-table hidden><table><caption class="sr-only">Solicitações recentes</caption><thead><tr><th scope="col">Instituição</th><th scope="col">Data</th><th scope="col">Status</th><th scope="col">Ação</th></tr></thead><tbody data-admin-request-list></tbody></table></div><div class="admin-dashboard-empty" data-admin-requests-empty><strong>Nenhuma solicitação disponível</strong><p>Os pedidos aparecerão após a integração com o sistema.</p></div></section>
+            <section class="admin-dashboard-card" aria-labelledby="activities-title"><header class="admin-dashboard-card__header"><div><h2 id="activities-title">Atividades recentes</h2><p>Eventos administrativos de toda a plataforma.</p></div></header><ol class="admin-activity-list" data-admin-activity-list hidden></ol><div class="admin-dashboard-empty admin-dashboard-empty--compact" data-admin-activities-empty><strong>Nenhuma atividade registrada</strong><p>Os eventos reais serão exibidos aqui.</p></div></section>
+          </div>
+          <section class="admin-dashboard__reports" aria-label="Relatórios"><article class="admin-dashboard-card admin-report-card"><header class="admin-dashboard-card__header"><div><h2>Instituições por cidade</h2><p>Distribuição geográfica dos cadastros.</p></div></header><ul class="admin-bar-list" data-admin-city-chart hidden></ul><div class="admin-dashboard-empty admin-dashboard-empty--compact" data-admin-city-empty><strong>Nenhum dado disponível</strong><p>A distribuição será apresentada quando houver dados agregados.</p></div></article></section>
         </main>
       </div>
     </div>
-
     <script type="module" src="../js/main.js"></script>
   </body>
 </html>

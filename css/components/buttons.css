@@ -49,3 +49,11 @@
 .button--outline:hover {
   background-color: var(--color-primary-light);
 }
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+  transform: none;
+}

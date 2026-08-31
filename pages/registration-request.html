@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Solicite o cadastro da sua instituição no Bem-Feito." />
+    <link rel="icon" type="image/png" href="../assets/images/brand/brand-mark.png" />
+    <title>Solicitar Cadastro | Bem-Feito</title>
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/components/brand.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/navbar.css" />
+    <link rel="stylesheet" href="../css/pages/registration-request.css" />
+  </head>
+  <body class="registration-request-page">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+    <header class="site-header"><nav class="navbar container" aria-label="Navegação principal">
+      <a class="navbar__brand brand" href="../index.html" aria-label="Bem-Feito - Página inicial"><img class="brand__mark" src="../assets/images/brand/brand-mark.png" alt="" /><span class="brand__name">Bem-Feito</span></a>
+      <button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Abrir menu" data-menu-toggle><span class="navbar__toggle-line"></span><span class="navbar__toggle-line"></span><span class="navbar__toggle-line"></span></button>
+      <div class="navbar__menu" id="primary-navigation" data-menu><ul class="navbar__links"><li><a class="navbar__link" href="../index.html">Início</a></li><li><a class="navbar__link" href="./how-it-works.html">Como funciona</a></li><li><a class="navbar__link" href="./cities.html">Instituições</a></li><li><a class="navbar__link" href="./about.html">Sobre</a></li></ul><a class="button button--outline" href="./institution-login.html">Área da Instituição</a></div>
+    </nav></header>
+    <main id="main-content" class="registration-request" data-registration-request-page>
+      <div class="container">
+        <nav class="registration-request__breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Início</a><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span aria-current="page">Solicitar cadastro</span></nav>
+        <header class="registration-request__header"><span class="registration-request__eyebrow">Faça parte do Bem-Feito</span><h1>Solicitar cadastro</h1><p>Envie as informações iniciais da instituição, do responsável e da primeira unidade. A solicitação será analisada antes da publicação.</p></header>
+        <div class="registration-request__layout">
+          <section class="registration-request__card registration-request__form-card" aria-labelledby="registration-form-title">
+            <div class="registration-request__card-heading"><span class="registration-request__heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg></span><div><h2 id="registration-form-title">Solicitação inicial</h2><p>Campos marcados são obrigatórios.</p></div></div>
+            <form data-registration-request-form novalidate>
+              <fieldset class="registration-request__section"><legend>1. Instituição</legend><div class="registration-request__fields">
+                <div class="registration-field"><label for="registration-display-name">Nome de exibição / Nome fantasia</label><input id="registration-display-name" name="displayName" type="text" autocomplete="organization" maxlength="150" required aria-describedby="error-displayName" /><span class="registration-field__error" id="error-displayName" data-error-for="displayName" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="registration-legal-name">Razão social</label><input id="registration-legal-name" name="legalName" type="text" maxlength="180" required aria-describedby="error-legalName" /><span class="registration-field__error" id="error-legalName" data-error-for="legalName" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="registration-document">CNPJ</label><input id="registration-document" name="document" type="text" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required aria-describedby="error-document" data-cnpj /><span class="registration-field__error" id="error-document" data-error-for="document" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="registration-category">Categoria</label><input id="registration-category" name="category" type="text" maxlength="100" required aria-describedby="error-category" /><span class="registration-field__error" id="error-category" data-error-for="category" aria-live="polite"></span></div>
+                <div class="registration-field registration-field--wide"><label for="registration-objective">Objetivo</label><textarea id="registration-objective" name="objective" rows="3" maxlength="500" required aria-describedby="error-objective"></textarea><span class="registration-field__error" id="error-objective" data-error-for="objective" aria-live="polite"></span></div>
+                <div class="registration-field registration-field--wide"><label for="registration-description">Descrição / Sobre a instituição</label><textarea id="registration-description" name="description" rows="6" maxlength="1000" required aria-describedby="registration-description-count error-description" data-description></textarea><div class="registration-field__meta"><span class="registration-field__error" id="error-description" data-error-for="description" aria-live="polite"></span><span id="registration-description-count" data-description-count>0/1000</span></div></div>
+                <div class="registration-field registration-field--wide"><label for="registration-website">Site <span>(opcional)</span></label><input id="registration-website" name="website" type="url" inputmode="url" /></div>
+              </div></fieldset>
+
+              <fieldset class="registration-request__section"><legend>2. Responsável pelo acesso</legend><p class="registration-request__section-note">O e-mail de acesso identifica o responsável e não será publicado como contato institucional.</p><div class="registration-request__fields">
+                <div class="registration-field"><label for="responsible-name">Nome</label><input id="responsible-name" name="responsibleName" type="text" autocomplete="name" required aria-describedby="error-responsibleName" /><span class="registration-field__error" id="error-responsibleName" data-error-for="responsibleName" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="responsible-role">Função <span>(opcional)</span></label><input id="responsible-role" name="responsibleRole" type="text" /></div>
+                <div class="registration-field"><label for="responsible-email">E-mail de acesso</label><input id="responsible-email" name="responsibleEmail" type="email" autocomplete="email" required aria-describedby="error-responsibleEmail" /><span class="registration-field__error" id="error-responsibleEmail" data-error-for="responsibleEmail" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="responsible-phone">Telefone ou WhatsApp</label><input id="responsible-phone" name="responsiblePhone" type="tel" autocomplete="tel" maxlength="15" required aria-describedby="error-responsiblePhone" data-phone /><span class="registration-field__error" id="error-responsiblePhone" data-error-for="responsiblePhone" aria-live="polite"></span></div>
+              </div></fieldset>
+
+              <fieldset class="registration-request__section"><legend>3. Contatos públicos</legend><p class="registration-request__section-note">Adicione pelo menos um contato que poderá aparecer na página pública.</p><div class="registration-contact-editor"><div class="registration-request__fields">
+                <div class="registration-field"><label for="public-contact-type">Tipo</label><select id="public-contact-type" data-public-contact-type><option value="EMAIL">E-mail</option><option value="PHONE">Telefone</option><option value="WHATSAPP">WhatsApp</option></select></div>
+                <div class="registration-field"><label for="public-contact-value">Contato</label><input id="public-contact-value" type="text" data-public-contact-value /></div>
+                <div class="registration-field"><label for="public-contact-label">Identificação <span>(opcional)</span></label><input id="public-contact-label" type="text" placeholder="Ex.: Recepção" data-public-contact-label /></div>
+                <div class="registration-contact-editor__action"><button class="button button--outline" type="button" data-add-public-contact>Adicionar contato</button></div>
+              </div><span class="registration-field__error" data-public-contact-error aria-live="polite"></span></div><ul class="registration-contact-list" data-public-contact-list></ul><p class="registration-contact-empty" data-public-contact-empty>Nenhum contato público adicionado.</p></fieldset>
+
+              <fieldset class="registration-request__section"><legend>4. Unidade principal</legend><p class="registration-request__section-note">Toda instituição começa com uma unidade. Outras poderão ser adicionadas depois.</p><div class="registration-request__fields">
+                <div class="registration-field registration-field--wide"><label for="main-unit-name">Nome da unidade</label><input id="main-unit-name" name="unitName" type="text" required aria-describedby="error-unitName" /><span class="registration-field__error" id="error-unitName" data-error-for="unitName" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-postal">CEP</label><input id="main-unit-postal" name="postalCode" type="text" inputmode="numeric" maxlength="9" required aria-describedby="error-postalCode" data-postal /><span class="registration-field__error" id="error-postalCode" data-error-for="postalCode" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-address">Endereço</label><input id="main-unit-address" name="street" type="text" autocomplete="street-address" required aria-describedby="error-street" /><span class="registration-field__error" id="error-street" data-error-for="street" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-number">Número</label><input id="main-unit-number" name="number" type="text" required aria-describedby="error-number" /><span class="registration-field__error" id="error-number" data-error-for="number" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-complement">Complemento <span>(opcional)</span></label><input id="main-unit-complement" name="complement" type="text" /></div>
+                <div class="registration-field"><label for="main-unit-neighborhood">Bairro</label><input id="main-unit-neighborhood" name="neighborhood" type="text" required aria-describedby="error-neighborhood" /><span class="registration-field__error" id="error-neighborhood" data-error-for="neighborhood" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-city">Cidade</label><input id="main-unit-city" name="city" type="text" autocomplete="address-level2" required aria-describedby="error-city" /><span class="registration-field__error" id="error-city" data-error-for="city" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-state">Estado (UF)</label><input id="main-unit-state" name="state" type="text" autocomplete="address-level1" maxlength="2" required aria-describedby="error-state" data-state /><span class="registration-field__error" id="error-state" data-error-for="state" aria-live="polite"></span></div>
+              </div></fieldset>
+
+              <div class="registration-request__form-message" role="status" aria-live="polite" data-registration-form-message hidden></div>
+              <div class="registration-request__actions"><div class="registration-request__notice"><span aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg></span><p>O envio não aprova, publica nem cria acesso automaticamente.</p></div><button class="button button--primary" type="submit">Enviar solicitação</button></div>
+            </form>
+          </section>
+          <aside class="registration-request__aside">
+            <section class="registration-benefits"><div class="registration-benefits__heading"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"></path></svg></span><h2>Benefícios de participar</h2></div><ul><li>Divulgar informações e necessidades reais.</li><li>Organizar unidades e contatos públicos.</li><li>Facilitar o encontro com pessoas dispostas a ajudar.</li></ul></section>
+            <section class="registration-review"><h2>Análise antes da publicação</h2><p>A equipe verificará as informações e entrará em contato pelos dados do responsável.</p></section>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

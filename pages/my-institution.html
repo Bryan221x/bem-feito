@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Gerencie os dados da instituição selecionada no Bem-Feito." />
+    <link rel="icon" type="image/png" href="../assets/images/brand/brand-mark.png" />
+    <title>Minha Instituição | Bem-Feito</title>
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/admin-layout.css" />
+    <link rel="stylesheet" href="../css/pages/my-institution.css" />
+  </head>
+  <body class="my-institution-page">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+    <div class="admin-shell">
+      <aside id="institution-sidebar" class="admin-sidebar" aria-label="Navegação da área da instituição" data-admin-sidebar>
+        <a class="admin-sidebar__brand" href="./my-institution.html"><img class="admin-sidebar__brand-mark" src="../assets/images/brand/brand-mark-light.png" alt="" /><span class="admin-sidebar__brand-name">Bem-Feito</span></a>
+        <nav class="admin-sidebar__nav" aria-label="Menu da instituição">
+          <a class="admin-sidebar__link" href="./institution-selection.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13"></path><path d="M8 21v-5h8v5"></path><path d="m8 11 2 2 4-4"></path></svg>Selecionar instituição</a>
+          <a class="admin-sidebar__link" href="./my-institution.html" aria-current="page"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path><path d="M8 10h.01M16 10h.01"></path></svg>Minha Instituição</a>
+          <a class="admin-sidebar__link" href="./my-institution.html#units"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V9l6-3v15"></path><path d="M10 21V5l10 4v12"></path><path d="M7 12h.01M7 16h.01M14 11h.01M17 12h.01M14 16h.01M17 17h.01"></path></svg>Unidades</a>
+        </nav>
+        <div class="admin-sidebar__footer"><a class="admin-sidebar__site-link" href="../index.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path><path d="M9 12h11"></path><path d="M4 4v16"></path></svg>Voltar para o site</a></div>
+      </aside>
+      <button class="admin-sidebar__overlay" type="button" aria-label="Fechar menu da instituição" data-admin-sidebar-overlay></button>
+      <div class="admin-shell__main">
+        <header class="admin-mobile-header"><a class="admin-mobile-header__brand" href="./my-institution.html"><img src="../assets/images/brand/brand-mark.png" alt="" />Bem-Feito</a><button class="admin-mobile-header__toggle" type="button" aria-label="Abrir menu da instituição" aria-expanded="false" aria-controls="institution-sidebar" data-admin-sidebar-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button></header>
+        <main id="main-content" class="admin-shell__content my-institution" data-my-institution-page>
+          <header class="my-institution__header">
+            <div class="my-institution__heading"><span class="my-institution__eyebrow">Área da instituição</span><h1 class="my-institution__title">Minha Instituição</h1><p class="my-institution__description">Consulte e atualize somente os dados necessários da instituição selecionada.</p></div>
+            <div class="my-institution__header-actions">
+              <div class="my-institution-selector"><label class="my-institution-selector__label" for="institution-selector">Instituição atual</label><select class="my-institution-selector__control" id="institution-selector" data-institution-selector disabled><option value="">Nenhuma instituição disponível</option></select></div>
+              <a class="button button--outline my-institution__public-link" aria-disabled="true" tabindex="-1" target="_blank" rel="noopener noreferrer" data-public-page-link><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7"></path><path d="m10 14 11-11"></path><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path></svg>Ver página pública</a>
+            </div>
+          </header>
+          <div class="my-institution__feedback" role="status" aria-live="polite" data-my-institution-feedback hidden></div>
+          <section class="my-institution-profile" aria-labelledby="selected-institution-title">
+            <div class="my-institution-profile__identity"><div class="my-institution-profile__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg></div><div><span class="my-institution-profile__label">Instituição selecionada</span><div class="my-institution-profile__name-row"><h2 id="selected-institution-title" class="my-institution-profile__name" data-institution-name>Nenhuma instituição selecionada</h2><span class="my-institution-status" data-institution-status>Status indisponível</span></div></div></div>
+            <dl class="my-institution-profile__metadata"><div class="my-institution-profile__metadata-item"><dt>CNPJ</dt><dd data-institution-document>Não disponível</dd></div><div class="my-institution-profile__metadata-item"><dt>Localização principal</dt><dd data-institution-location>Não disponível</dd></div><div class="my-institution-profile__metadata-item"><dt>Cadastrada em</dt><dd data-institution-created-at>Não disponível</dd></div><div class="my-institution-profile__metadata-item"><dt>Última atualização</dt><dd data-institution-updated-at>Não disponível</dd></div></dl>
+            <div class="my-institution-profile__empty" data-institution-empty><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5h.01"></path></svg><p>Selecione uma instituição real para habilitar a edição, os contatos, as unidades e a página pública.</p></div>
+          </section>
+          <div class="my-institution__content-grid">
+            <section class="my-institution-card" aria-labelledby="general-data-title">
+              <header class="my-institution-card__header"><div><span class="my-institution-card__step" aria-hidden="true">1</span><h2 id="general-data-title">Dados gerais</h2></div><button class="button button--outline my-institution-card__action" type="button" data-edit-general data-requires-institution disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>Editar</button></header>
+              <div data-general-view><dl class="my-institution-data">
+                <div class="my-institution-data__item"><dt>Nome de exibição / Nome fantasia</dt><dd data-general-display-name>Não informado</dd></div><div class="my-institution-data__item"><dt>Razão social</dt><dd data-general-legal-name>Não informado</dd></div><div class="my-institution-data__item"><dt>CNPJ</dt><dd data-general-document>Não informado</dd></div><div class="my-institution-data__item"><dt>Categoria</dt><dd data-general-category>Não informado</dd></div><div class="my-institution-data__item my-institution-data__item--wide"><dt>Objetivo</dt><dd data-general-objective>Não informado</dd></div><div class="my-institution-data__item my-institution-data__item--wide"><dt>Descrição / Sobre a instituição</dt><dd data-general-description>Não informado</dd></div><div class="my-institution-data__item"><dt>Site</dt><dd data-general-website>Não informado</dd></div>
+              </dl></div>
+              <form class="my-institution-form" data-general-form hidden novalidate><p class="my-institution-form__intro">Altere apenas os campos desejados. Os demais valores serão preservados no pedido de atualização.</p><div class="my-institution-form__grid">
+                <div class="my-institution-form__field"><label for="general-display-name">Nome de exibição / Nome fantasia</label><input id="general-display-name" name="displayName" type="text" required /></div><div class="my-institution-form__field"><label for="general-legal-name">Razão social</label><input id="general-legal-name" name="legalName" type="text" required /></div><div class="my-institution-form__field"><label for="general-document">CNPJ</label><input id="general-document" name="document" type="text" inputmode="numeric" maxlength="18" required /></div><div class="my-institution-form__field"><label for="general-category">Categoria</label><input id="general-category" name="category" type="text" required /></div><div class="my-institution-form__field my-institution-form__field--wide"><label for="general-objective">Objetivo</label><textarea id="general-objective" name="objective" rows="3" required></textarea></div><div class="my-institution-form__field my-institution-form__field--wide"><label for="general-description">Descrição</label><textarea id="general-description" name="description" rows="5" required></textarea></div><div class="my-institution-form__field"><label for="general-website">Site <span>(opcional)</span></label><input id="general-website" name="website" type="url" inputmode="url" /></div>
+              </div><div class="my-institution-form__actions"><button class="button button--primary" type="submit">Preparar alterações</button><button class="button button--outline" type="button" data-cancel-general>Cancelar</button></div></form>
+            </section>
+            <section class="my-institution-card" aria-labelledby="contacts-title">
+              <header class="my-institution-card__header"><div><span class="my-institution-card__step" aria-hidden="true">2</span><h2 id="contacts-title">Contatos públicos</h2></div><button class="button button--outline my-institution-card__action" type="button" data-add-contact data-requires-institution disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar contato</button></header>
+              <div class="my-institution-contacts" data-contact-list></div><div class="my-institution-card__empty" data-contacts-empty><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"></path><path d="m4 6 8 6 8-6"></path></svg><strong>Nenhum contato disponível</strong><p>Adicione e controle quais contatos poderão ser publicados.</p></div>
+              <form class="my-institution-form" data-contact-form hidden novalidate><input name="contactId" type="hidden" /><h3 data-contact-form-title>Adicionar contato</h3><div class="my-institution-form__grid"><div class="my-institution-form__field"><label for="contact-type">Tipo</label><select id="contact-type" name="type" required><option value="EMAIL">E-mail</option><option value="PHONE">Telefone</option><option value="WHATSAPP">WhatsApp</option></select></div><div class="my-institution-form__field"><label for="contact-label">Identificação <span>(opcional)</span></label><input id="contact-label" name="label" type="text" placeholder="Ex.: Recepção" /></div><div class="my-institution-form__field my-institution-form__field--wide"><label for="contact-value">Contato</label><input id="contact-value" name="value" type="text" required /></div></div><div class="my-institution-form__flags"><label><input name="isPrimary" type="checkbox" />Contato principal</label><label><input name="isPublic" type="checkbox" />Exibir na página pública</label></div><div class="my-institution-form__actions"><button class="button button--primary" type="submit">Preparar contato</button><button class="button button--outline" type="button" data-cancel-contact>Cancelar</button></div></form>
+            </section>
+            <section id="units" class="my-institution-card" aria-labelledby="units-title">
+              <header class="my-institution-card__header"><div><span class="my-institution-card__step" aria-hidden="true">3</span><h2 id="units-title">Unidades</h2></div><a class="button button--outline my-institution-card__action" aria-disabled="true" tabindex="-1" data-add-unit data-requires-institution>+ Adicionar unidade</a></header>
+              <div class="my-institution-units" data-unit-list></div><div class="my-institution-card__empty" data-units-empty><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V9l6-3v15"></path><path d="M10 21V5l10 4v12"></path></svg><strong>Nenhuma unidade disponível</strong><p>As unidades reais vinculadas à instituição serão exibidas aqui.</p></div>
+            </section>
+            <section class="my-institution-card" aria-labelledby="summary-title"><header class="my-institution-card__header"><div><span class="my-institution-card__step" aria-hidden="true">4</span><h2 id="summary-title">Resumo rápido</h2></div></header><div class="my-institution-summary"><article class="my-institution-summary__item"><strong data-summary-contacts>—</strong><span>contatos</span></article><article class="my-institution-summary__item"><strong data-summary-units>—</strong><span>unidades</span></article><article class="my-institution-summary__item"><strong data-summary-needs>—</strong><span>necessidades ativas</span></article></div></section>
+          </div>
+          <aside class="my-institution-reminder"><div class="my-institution-reminder__content"><strong>Mantenha as informações sempre atualizadas.</strong><p>Dados corretos ajudam pessoas e parceiros a encontrarem a instituição e entenderem como contribuir.</p></div><button class="button button--outline" type="button" data-edit-reminder data-requires-institution disabled>Editar informações</button></aside>
+        </main>
+      </div>
+    </div>
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

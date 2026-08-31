@@ -97,7 +97,9 @@
 }
 
 .institution-profile__category[hidden],
-.institution-profile__description[hidden] {
+.institution-profile__description[hidden],
+.institution-profile__objective[hidden],
+.institution-profile__website[hidden] {
   display: none;
 }
 
@@ -111,6 +113,20 @@
   max-width: 42rem;
 
   color: var(--color-text-muted);
+}
+
+.institution-profile__objective {
+  margin-bottom: var(--space-3);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.institution-profile__website {
+  display: inline-flex;
+  margin-top: var(--space-4);
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-semibold);
 }
 
 .institution-section {
@@ -189,6 +205,74 @@
   color: var(--color-text-muted);
 
   overflow-wrap: anywhere;
+}
+
+.institution-units {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.institution-unit-card {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-background);
+}
+
+.institution-unit-card h3,
+.institution-unit-card h4,
+.institution-unit-card p {
+  margin: 0;
+}
+
+.institution-unit-card__address {
+  margin-top: var(--space-2) !important;
+  color: var(--color-text-muted);
+}
+
+.institution-unit-card__section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.institution-unit-card__section h4 {
+  font-size: var(--font-size-base);
+}
+
+.institution-tags,
+.institution-unit-needs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.institution-unit-need {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.institution-unit-need span,
+.institution-unit-need p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.institution-unit-empty {
+  padding: var(--space-5);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.institution-unit-empty[hidden] {
+  display: none;
 }
 
 /* =========================================================
@@ -358,7 +442,9 @@
   }
 
   .institution-needs,
-  .institution-contact {
+  .institution-contact,
+  .institution-tags,
+  .institution-unit-needs {
     grid-template-columns: 1fr;
   }
 

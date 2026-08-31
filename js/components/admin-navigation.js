@@ -10,6 +10,8 @@ export function initAdminNavigation() {
   }
 
   const desktopBreakpoint = window.matchMedia("(min-width: 64.0625rem)");
+  const openLabel = toggle.getAttribute("aria-label") || "Abrir menu";
+  const navigationName = openLabel.replace(/^Abrir\s+/i, "") || "menu";
 
   function openNavigation() {
     sidebar.classList.add("is-open");
@@ -17,7 +19,7 @@ export function initAdminNavigation() {
 
     toggle.setAttribute("aria-expanded", "true");
 
-    toggle.setAttribute("aria-label", "Fechar menu administrativo");
+    toggle.setAttribute("aria-label", `Fechar ${navigationName}`);
 
     document.body.classList.add("admin-navigation-open");
   }
@@ -28,7 +30,7 @@ export function initAdminNavigation() {
 
     toggle.setAttribute("aria-expanded", "false");
 
-    toggle.setAttribute("aria-label", "Abrir menu administrativo");
+    toggle.setAttribute("aria-label", `Abrir ${navigationName}`);
 
     document.body.classList.remove("admin-navigation-open");
   }
@@ -47,7 +49,9 @@ export function initAdminNavigation() {
   overlay.addEventListener("click", closeNavigation);
 
   document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
+    if (event.key !== "Escape" || !sidebar.classList.contains("is-open")) {
+      return;
+    }
 
     closeNavigation();
     toggle.focus();

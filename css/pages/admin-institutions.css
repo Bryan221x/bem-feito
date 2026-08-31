@@ -1,0 +1,16 @@
+.admin-list-page { color: var(--color-text); }
+.admin-list-page__header { display: flex; align-items: end; justify-content: space-between; gap: var(--space-5); margin-bottom: var(--space-6); }
+.admin-list-page__header h1 { margin: var(--space-2) 0; font-size: var(--font-size-3xl); }
+.admin-list-page__header p { margin: 0; color: var(--color-text-muted); }
+.admin-list-page__eyebrow { color: var(--color-primary); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); letter-spacing: 0.09em; text-transform: uppercase; }
+.admin-list-state { display: grid; place-items: center; gap: var(--space-3); min-height: 20rem; padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); text-align: center; box-shadow: var(--shadow-sm); }
+.admin-list-state[hidden], .admin-list-table[hidden] { display: none; }
+.admin-list-state p { max-width: 36rem; margin: 0; color: var(--color-text-muted); }
+.admin-list-table { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.admin-list-table table { width: 100%; border-collapse: collapse; }
+.admin-list-table th, .admin-list-table td { padding: var(--space-4); border-bottom: 1px solid var(--color-border); text-align: left; vertical-align: middle; }
+.admin-list-table th { color: var(--color-text-muted); font-size: var(--font-size-xs); text-transform: uppercase; }
+.admin-list-table tbody tr:last-child td { border-bottom: 0; }
+.admin-list-table__status { display: inline-flex; padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); color: var(--color-primary-dark); background: var(--color-primary-light); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); }
+.admin-list-table__action { border: 0; color: var(--color-primary-dark); background: transparent; font-weight: var(--font-weight-semibold); cursor: pointer; }
+@media (max-width: 48rem) { .admin-list-page__header { align-items: flex-start; flex-direction: column; } .admin-list-table table, .admin-list-table tbody, .admin-list-table tr, .admin-list-table td { display: block; } .admin-list-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .admin-list-table tr { padding: var(--space-3); border-bottom: 1px solid var(--color-border); } .admin-list-table td { display: grid; grid-template-columns: minmax(7rem, 0.45fr) 1fr; gap: var(--space-3); padding: var(--space-2); border: 0; } .admin-list-table td::before { content: attr(data-label); color: var(--color-text-muted); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); text-transform: uppercase; } }

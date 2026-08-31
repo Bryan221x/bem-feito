@@ -179,6 +179,8 @@
    ========================================================= */
 
 .about-problem {
+  overflow-x: clip;
+
   padding-block: var(--space-6) var(--space-7);
 }
 

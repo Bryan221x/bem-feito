@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Adicione ou edite uma unidade vinculada à sua instituição no Bem-Feito."
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="../assets/images/brand/brand-mark.png"
+    />
+
+    <title>Adicionar unidade | Bem-Feito</title>
+
+    <!-- Base visual compartilhada. -->
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <!-- Componentes reutilizados pela área da instituição. -->
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/admin-layout.css" />
+
+    <!-- Estilos específicos da página. -->
+    <link rel="stylesheet" href="../css/pages/unit-form.css" />
+  </head>
+
+  <body class="unit-form-page">
+    <a class="skip-link" href="#main-content">
+      Pular para o conteúdo principal
+    </a>
+
+    <div class="admin-shell">
+      <aside
+        id="institution-sidebar"
+        class="admin-sidebar"
+        aria-label="Navegação da área da instituição"
+        data-admin-sidebar
+      >
+        <a class="admin-sidebar__brand" href="./my-institution.html">
+          <img
+            class="admin-sidebar__brand-mark"
+            src="../assets/images/brand/brand-mark-light.png"
+            alt=""
+          />
+
+          <span class="admin-sidebar__brand-name"> Bem-Feito </span>
+        </a>
+
+        <nav class="admin-sidebar__nav" aria-label="Menu da instituição">
+          <a
+            class="admin-sidebar__link"
+            href="./institution-selection.html"
+          >
+            <svg
+              class="admin-sidebar__icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M4 21V8l8-5 8 5v13"></path>
+              <path d="M8 21v-5h8v5"></path>
+              <path d="m8 11 2 2 4-4"></path>
+            </svg>
+
+            Selecionar instituição
+          </a>
+
+          <a class="admin-sidebar__link" href="./my-institution.html">
+            <svg
+              class="admin-sidebar__icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M4 21V8l8-5 8 5v13"></path>
+              <path d="M9 21v-6h6v6"></path>
+              <path d="M8 10h.01"></path>
+              <path d="M16 10h.01"></path>
+            </svg>
+
+            Minha Instituição
+          </a>
+
+          <a
+            class="admin-sidebar__link"
+            href="./unit-form.html"
+            aria-current="page"
+          >
+            <svg
+              class="admin-sidebar__icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M4 21V9l6-3v15"></path>
+              <path d="M10 21V5l10 4v12"></path>
+              <path d="M7 12h.01"></path>
+              <path d="M7 16h.01"></path>
+              <path d="M14 11h.01"></path>
+              <path d="M17 12h.01"></path>
+              <path d="M14 16h.01"></path>
+              <path d="M17 17h.01"></path>
+            </svg>
+
+            Unidades
+          </a>
+
+        </nav>
+
+        <div class="admin-sidebar__footer">
+          <a class="admin-sidebar__site-link" href="../index.html">
+            <svg
+              class="admin-sidebar__icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="m15 18-6-6 6-6"></path>
+              <path d="M9 12h11"></path>
+              <path d="M4 4v16"></path>
+            </svg>
+
+            Voltar para o site
+          </a>
+        </div>
+      </aside>
+
+      <button
+        class="admin-sidebar__overlay"
+        type="button"
+        aria-label="Fechar menu da instituição"
+        data-admin-sidebar-overlay
+      ></button>
+
+      <div class="admin-shell__main">
+        <header class="admin-mobile-header">
+          <a class="admin-mobile-header__brand" href="./my-institution.html">
+            <img src="../assets/images/brand/brand-mark.png" alt="" />
+
+            Bem-Feito
+          </a>
+
+          <button
+            class="admin-mobile-header__toggle"
+            type="button"
+            aria-label="Abrir menu da instituição"
+            aria-expanded="false"
+            aria-controls="institution-sidebar"
+            data-admin-sidebar-toggle
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+          </button>
+        </header>
+
+        <main
+          id="main-content"
+          class="admin-shell__content unit-form"
+          data-unit-form-page
+        >
+          <nav class="unit-form__breadcrumb" aria-label="Breadcrumb">
+            <ol>
+              <li>
+                <a href="./my-institution.html">Minha Instituição</a>
+              </li>
+
+              <li aria-hidden="true">/</li>
+
+              <li>
+                <a href="./my-institution.html#units">Unidades</a>
+              </li>
+
+              <li aria-hidden="true">/</li>
+
+              <li aria-current="page" data-unit-breadcrumb-current>
+                Adicionar unidade
+              </li>
+            </ol>
+          </nav>
+
+          <header class="unit-form__header">
+            <div class="unit-form__heading">
+              <span class="unit-form__eyebrow"> Área da instituição </span>
+
+              <h1 class="unit-form__title" data-unit-page-title>
+                Adicionar unidade
+              </h1>
+
+              <p class="unit-form__description" data-unit-page-description>
+                Preencha apenas as informações disponíveis para cadastrar uma
+                nova unidade.
+              </p>
+            </div>
+
+            <div class="unit-form__institution-selector">
+              <label for="unit-institution-selector">Instituição atual</label>
+
+              <select
+                id="unit-institution-selector"
+                data-unit-institution-selector
+                disabled
+              >
+                <option value="">Nenhuma instituição disponível</option>
+              </select>
+            </div>
+          </header>
+
+          <ol class="unit-stepper" aria-label="Etapas do formulário">
+            <li
+              class="unit-stepper__item is-active"
+              aria-current="step"
+              data-step-indicator="1"
+            >
+              <span class="unit-stepper__number">1</span>
+              <span class="unit-stepper__label">Dados da unidade</span>
+            </li>
+
+            <li class="unit-stepper__item" data-step-indicator="2">
+              <span class="unit-stepper__number">2</span>
+              <span class="unit-stepper__label">Endereço e contatos</span>
+            </li>
+
+            <li class="unit-stepper__item" data-step-indicator="3">
+              <span class="unit-stepper__number">3</span>
+              <span class="unit-stepper__label">Atuação e necessidades</span>
+            </li>
+          </ol>
+
+          <div
+            class="unit-form__feedback"
+            role="status"
+            aria-live="polite"
+            data-unit-form-feedback
+            hidden
+          ></div>
+
+          <form data-unit-form novalidate>
+            <section
+              class="unit-form__step"
+              aria-labelledby="unit-data-title"
+              data-unit-step="1"
+              tabindex="-1"
+            >
+              <article class="unit-form-card">
+                <header class="unit-form-card__header">
+                  <div class="unit-form-card__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 21V9l6-3v15"></path>
+                      <path d="M10 21V5l10 4v12"></path>
+                    </svg>
+                  </div>
+
+                  <div>
+                    <h2 id="unit-data-title">Dados da unidade</h2>
+
+                    <p>
+                      Identifique a unidade sem repetir dados que não precisam
+                      ser alterados.
+                    </p>
+                  </div>
+                </header>
+
+                <div class="unit-fields unit-fields--two-columns">
+                  <div class="unit-field">
+                    <label for="unit-name">Nome da unidade</label>
+                    <input
+                      id="unit-name"
+                      name="name"
+                      type="text"
+                      autocomplete="organization"
+                      placeholder="Digite o nome da unidade"
+                      aria-describedby="unit-name-error"
+                    />
+                    <span
+                      id="unit-name-error"
+                      class="unit-field__error"
+                      data-field-error="name"
+                      aria-live="polite"
+                    ></span>
+                  </div>
+
+                  <div class="unit-field">
+                    <label for="unit-document">
+                      CNPJ da unidade
+                      <span>(opcional)</span>
+                    </label>
+                    <input
+                      id="unit-document"
+                      name="document"
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="18"
+                      placeholder="00.000.000/0000-00"
+                      data-unit-document
+                    />
+                  </div>
+
+                  <div class="unit-field unit-field--wide">
+                    <label for="unit-description">
+                      Descrição da unidade
+                      <span>(opcional)</span>
+                    </label>
+                    <textarea
+                      id="unit-description"
+                      name="description"
+                      rows="5"
+                      placeholder="Inclua informações específicas desta unidade"
+                    ></textarea>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <section
+              class="unit-form__step"
+              aria-labelledby="address-title"
+              data-unit-step="2"
+              tabindex="-1"
+              hidden
+            >
+              <div class="unit-form__step-grid">
+                <article class="unit-form-card">
+                  <header class="unit-form-card__header">
+                    <div class="unit-form-card__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <path
+                          d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                        ></path>
+                        <circle cx="12" cy="10" r="2.5"></circle>
+                      </svg>
+                    </div>
+
+                    <div>
+                      <h2 id="address-title">Endereço</h2>
+
+                      <p>Informe a localização específica desta unidade.</p>
+                    </div>
+                  </header>
+
+                  <div class="unit-fields unit-fields--address">
+                    <div class="unit-field">
+                      <label for="unit-postal-code">CEP</label>
+
+                      <div class="unit-field__compound">
+                        <input
+                          id="unit-postal-code"
+                          name="postalCode"
+                          type="text"
+                          inputmode="numeric"
+                          autocomplete="postal-code"
+                          maxlength="9"
+                          placeholder="00000-000"
+                          data-postal-code
+                        />
+
+                        <button
+                          class="button button--outline"
+                          type="button"
+                          data-search-postal-code
+                        >
+                          Buscar CEP
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="unit-field unit-field--address-line">
+                      <label for="unit-address">Endereço</label>
+                      <input
+                        id="unit-address"
+                        name="address"
+                        type="text"
+                        autocomplete="address-line1"
+                        placeholder="Rua, avenida ou praça"
+                      />
+                    </div>
+
+                    <div class="unit-field">
+                      <label for="unit-address-number">Número</label>
+                      <input
+                        id="unit-address-number"
+                        name="number"
+                        type="text"
+                        autocomplete="address-line2"
+                        placeholder="Número ou s/n"
+                      />
+                    </div>
+
+                    <div class="unit-field">
+                      <label for="unit-address-complement">
+                        Complemento
+                        <span>(opcional)</span>
+                      </label>
+                      <input
+                        id="unit-address-complement"
+                        name="complement"
+                        type="text"
+                        placeholder="Sala, bloco ou referência"
+                      />
+                    </div>
+
+                    <div class="unit-field">
+                      <label for="unit-neighborhood">Bairro</label>
+                      <input
+                        id="unit-neighborhood"
+                        name="neighborhood"
+                        type="text"
+                        autocomplete="address-level3"
+                        placeholder="Digite o bairro"
+                      />
+                    </div>
+
+                    <div class="unit-field unit-field--city">
+                      <label for="unit-city">Cidade</label>
+                      <input
+                        id="unit-city"
+                        name="city"
+                        type="text"
+                        autocomplete="address-level2"
+                        placeholder="Digite a cidade"
+                      />
+                    </div>
+
+                    <div class="unit-field unit-field--state">
+                      <label for="unit-state">Estado</label>
+                      <input
+                        id="unit-state"
+                        name="state"
+                        type="text"
+                        autocomplete="address-level1"
+                        maxlength="2"
+                        placeholder="UF"
+                        data-state-input
+                      />
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  class="unit-form-card"
+                  aria-labelledby="unit-contacts-title"
+                >
+                  <header
+                    class="unit-form-card__header unit-form-card__header--action"
+                  >
+                    <div class="unit-form-card__heading">
+                      <div class="unit-form-card__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path
+                            d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"
+                          ></path>
+                        </svg>
+                      </div>
+
+                      <div>
+                        <h2 id="unit-contacts-title">Contatos da unidade</h2>
+
+                        <p>
+                          Adicione somente os contatos específicos desta
+                          unidade.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      class="button button--outline unit-form-card__action"
+                      type="button"
+                      data-add-unit-contact
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
+                      </svg>
+
+                      Adicionar contato
+                    </button>
+                  </header>
+
+                  <div class="unit-contact-list" data-unit-contact-list></div>
+
+                  <div class="unit-contact-empty" data-unit-contacts-empty>
+                    <div class="unit-contact-empty__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <circle cx="9" cy="8" r="3"></circle>
+                        <path d="M3 20v-2a6 6 0 0 1 12 0v2"></path>
+                        <path d="M19 8v6"></path>
+                        <path d="M16 11h6"></path>
+                      </svg>
+                    </div>
+
+                    <strong>Nenhum contato adicionado</strong>
+
+                    <p>Telefones, e-mails e outros contatos aparecerão aqui.</p>
+                  </div>
+
+                  <div
+                    class="unit-contact-editor"
+                    data-unit-contact-editor
+                    hidden
+                  >
+                    <input
+                      name="contactId"
+                      type="hidden"
+                      form="unit-contact-form"
+                    />
+
+                    <h3 data-unit-contact-editor-title>Adicionar contato</h3>
+
+                    <div class="unit-fields unit-fields--contact">
+                      <div class="unit-field">
+                        <label for="unit-contact-type">Tipo</label>
+                        <select
+                          id="unit-contact-type"
+                          name="contactType"
+                          form="unit-contact-form"
+                        >
+                          <option value="PHONE">Telefone</option>
+                          <option value="WHATSAPP">WhatsApp</option>
+                          <option value="EMAIL">E-mail</option>
+                        </select>
+                      </div>
+
+                      <div class="unit-field">
+                        <label for="unit-contact-label">
+                          Identificação <span>(opcional)</span>
+                        </label>
+                        <input
+                          id="unit-contact-label"
+                          name="contactLabel"
+                          type="text"
+                          form="unit-contact-form"
+                          placeholder="Ex.: Contato principal"
+                        />
+                      </div>
+
+                      <div class="unit-field unit-field--wide">
+                        <label for="unit-contact-value">Contato</label>
+                        <input
+                          id="unit-contact-value"
+                          name="contactValue"
+                          type="text"
+                          form="unit-contact-form"
+                          autocomplete="off"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div class="unit-contact-editor__flags">
+                      <label>
+                        <input
+                          name="contactIsPrimary"
+                          type="checkbox"
+                          form="unit-contact-form"
+                        />
+                        Contato principal
+                      </label>
+                      <label>
+                        <input
+                          name="contactIsPublic"
+                          type="checkbox"
+                          form="unit-contact-form"
+                        />
+                        Exibir na página pública
+                      </label>
+                    </div>
+
+                    <div class="unit-contact-editor__actions">
+                      <button
+                        class="button button--primary"
+                        type="submit"
+                        form="unit-contact-form"
+                      >
+                        Preparar contato
+                      </button>
+
+                      <button
+                        class="button button--outline"
+                        type="button"
+                        data-cancel-unit-contact
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              class="unit-form__step"
+              aria-labelledby="unit-needs-title"
+              data-unit-step="3"
+              tabindex="-1"
+              hidden
+            >
+              <article class="unit-form-card">
+                <header class="unit-form-card__header">
+                  <div class="unit-form-card__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
+                      ></path>
+                    </svg>
+                  </div>
+
+                  <div>
+                    <h2 id="unit-needs-title">Áreas de atuação</h2>
+
+                    <p>
+                      Selecione as categorias relacionadas ao trabalho desta
+                      unidade.
+                    </p>
+                  </div>
+                </header>
+
+                <fieldset class="unit-needs">
+                  <legend class="sr-only">
+                    Áreas de atuação da unidade
+                  </legend>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="FOOD" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M5 9h14l-1 11H6Z"></path>
+                          <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                        </svg>
+                      </span>
+                      <strong>Alimentos</strong>
+                      <span>Alimentos e refeições</span>
+                    </span>
+                  </label>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="CLOTHING" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path
+                            d="m8 4 4 2 4-2 5 4-3 4-2-1v9H8v-9l-2 1-3-4Z"
+                          ></path>
+                        </svg>
+                      </span>
+                      <strong>Roupas</strong>
+                      <span>Roupas e agasalhos</span>
+                    </span>
+                  </label>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="HYGIENE" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M7 8h10v12H7Z"></path>
+                          <path d="M9 8V5h6v3"></path>
+                          <path d="M12 2v3"></path>
+                          <path d="M9 13h6"></path>
+                        </svg>
+                      </span>
+                      <strong>Higiene</strong>
+                      <span>Higiene pessoal e limpeza</span>
+                    </span>
+                  </label>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="CHILDREN" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <circle cx="12" cy="9" r="4"></circle>
+                          <path d="M5 21a7 7 0 0 1 14 0"></path>
+                          <path d="M8 5 6 3"></path>
+                          <path d="m16 5 2-2"></path>
+                        </svg>
+                      </span>
+                      <strong>Crianças</strong>
+                      <span>Apoio a crianças</span>
+                    </span>
+                  </label>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="ELDERLY" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <circle cx="12" cy="7" r="3"></circle>
+                          <path d="M8 21v-5a4 4 0 0 1 8 0v5"></path>
+                          <path d="M16 14h3v7"></path>
+                        </svg>
+                      </span>
+                      <strong>Idosos</strong>
+                      <span>Assistência a idosos</span>
+                    </span>
+                  </label>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="ANIMALS" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <circle cx="7" cy="8" r="2"></circle>
+                          <circle cx="17" cy="8" r="2"></circle>
+                          <circle cx="5" cy="13" r="2"></circle>
+                          <circle cx="19" cy="13" r="2"></circle>
+                          <path
+                            d="M8 18c0-3 2-5 4-5s4 2 4 5c0 2-2 3-4 3s-4-1-4-3Z"
+                          ></path>
+                        </svg>
+                      </span>
+                      <strong>Animais</strong>
+                      <span>Cuidados com animais</span>
+                    </span>
+                  </label>
+
+                  <label class="unit-needs__option">
+                    <input type="checkbox" name="serviceAreas" value="OTHER" />
+                    <span class="unit-needs__content">
+                      <span class="unit-needs__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <circle cx="5" cy="12" r="1"></circle>
+                          <circle cx="12" cy="12" r="1"></circle>
+                          <circle cx="19" cy="12" r="1"></circle>
+                        </svg>
+                      </span>
+                      <strong>Outros</strong>
+                      <span>Outras áreas de atuação</span>
+                    </span>
+                  </label>
+                </fieldset>
+
+                <div class="unit-field unit-field--observations">
+                  <label for="unit-needs-observations">
+                    Observações sobre a atuação
+                    <span>(opcional)</span>
+                  </label>
+
+                  <textarea
+                    id="unit-needs-observations"
+                    name="serviceAreasObservations"
+                    rows="4"
+                    maxlength="300"
+                    placeholder="Inclua informações adicionais sobre as áreas de atuação"
+                    data-needs-observations
+                  ></textarea>
+
+                  <span class="unit-field__counter" data-observations-counter>
+                    0/300
+                  </span>
+                </div>
+              </article>
+
+              <article class="unit-form-card unit-needs-editor" aria-labelledby="current-needs-title">
+                <header class="unit-form-card__header unit-form-card__header--action">
+                  <div class="unit-form-card__heading">
+                    <div class="unit-form-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="M8 9h8M8 13h5"></path></svg></div>
+                    <div><h2 id="current-needs-title">Necessidades atuais</h2><p>Registre necessidades específicas desta unidade, separadas das áreas de atuação.</p></div>
+                  </div>
+                  <button class="button button--outline unit-form-card__action" type="button" data-add-unit-need>Adicionar necessidade</button>
+                </header>
+
+                <div class="unit-contact-empty" data-unit-needs-empty>
+                  <strong>Nenhuma necessidade adicionada</strong>
+                  <p>As necessidades reais e atuais da unidade aparecerão aqui.</p>
+                </div>
+                <div class="unit-need-list" data-unit-need-list></div>
+
+                <div class="unit-contact-editor" data-unit-need-editor hidden>
+                  <input name="needId" type="hidden" />
+                  <h3 data-unit-need-editor-title>Adicionar necessidade</h3>
+                  <div class="unit-fields unit-fields--contact">
+                    <div class="unit-field"><label for="unit-need-name">Nome</label><input id="unit-need-name" name="needName" type="text" required /></div>
+                    <div class="unit-field"><label for="unit-need-priority">Prioridade</label><select id="unit-need-priority" name="needPriority"><option value="LOW">Baixa</option><option value="MEDIUM">Média</option><option value="HIGH">Alta</option></select></div>
+                    <div class="unit-field"><label for="unit-need-status">Status</label><select id="unit-need-status" name="needStatus"><option value="ACTIVE">Ativa</option><option value="FULFILLED">Atendida</option></select></div>
+                    <div class="unit-field unit-field--wide"><label for="unit-need-description">Descrição <span>(opcional)</span></label><textarea id="unit-need-description" name="needDescription" rows="3"></textarea></div>
+                  </div>
+                  <div class="unit-contact-editor__actions"><button class="button button--primary" type="button" data-save-unit-need>Preparar necessidade</button><button class="button button--outline" type="button" data-cancel-unit-need>Cancelar</button></div>
+                </div>
+              </article>
+            </section>
+
+            <footer class="unit-form__actions">
+              <button
+                class="button button--outline"
+                type="button"
+                data-previous-step
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6"></path>
+                </svg>
+
+                Voltar
+              </button>
+
+              <button
+                class="button button--primary"
+                type="button"
+                data-next-step
+              >
+                Próximo
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+
+              <button
+                class="button button--primary"
+                type="submit"
+                data-submit-unit
+                disabled
+                hidden
+              >
+                Preparar cadastro
+              </button>
+            </footer>
+          </form>
+
+          <form id="unit-contact-form" data-unit-contact-form></form>
+        </main>
+      </div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

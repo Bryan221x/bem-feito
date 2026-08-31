@@ -53,10 +53,12 @@ export function initMobileMenu() {
    * Permite fechar a navegação pelo teclado.
    */
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeMenu();
-      menuToggle.focus();
-    }
+    const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+
+    if (event.key !== "Escape" || !isOpen) return;
+
+    closeMenu();
+    menuToggle.focus();
   });
 
   /*

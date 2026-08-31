@@ -1,3 +1,5 @@
+import { renderInstitutionDetails } from "../components/institution-details.js";
+
 export function initInstitutionPage() {
   const page = document.querySelector(".institution-page");
 
@@ -23,6 +25,22 @@ export function initInstitutionPage() {
   }
 
   prepareSelectedInstitutionState(page, institutionId);
+}
+
+/*
+ * Ponto de entrada para a futura camada de dados. Somente uma instituição
+ * previamente validada pelo serviço deve ser entregue a este módulo.
+ */
+export function renderInstitution(page, institution) {
+  if (
+    !page ||
+    !institution?.id ||
+    !(institution?.displayName || institution?.name)
+  ) return;
+
+  hideInstitutionStates(page);
+  prepareSelectedInstitutionState(page, String(institution.id));
+  renderInstitutionDetails(page, institution);
 }
 
 /*

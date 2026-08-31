@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Solicite acesso à gestão de uma instituição cadastrada no Bem-Feito." />
+    <link rel="icon" type="image/png" href="../assets/images/brand/brand-mark.png" />
+    <title>Solicitar Acesso | Bem-Feito</title>
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/components/brand.css" />
+    <link rel="stylesheet" href="../css/components/buttons.css" />
+    <link rel="stylesheet" href="../css/components/navbar.css" />
+    <link rel="stylesheet" href="../css/pages/registration-request.css" />
+    <link rel="stylesheet" href="../css/pages/institution-access-request.css?v=2" />
+  </head>
+  <body class="registration-request-page">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegação principal">
+        <a class="navbar__brand brand" href="../index.html" aria-label="Bem-Feito - Página inicial"><img class="brand__mark" src="../assets/images/brand/brand-mark.png" alt="" /><span class="brand__name">Bem-Feito</span></a>
+        <button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Abrir menu" data-menu-toggle><span class="navbar__toggle-line"></span><span class="navbar__toggle-line"></span><span class="navbar__toggle-line"></span></button>
+        <div class="navbar__menu" id="primary-navigation" data-menu>
+          <ul class="navbar__links"><li><a class="navbar__link" href="../index.html">Início</a></li><li><a class="navbar__link" href="./how-it-works.html">Como funciona</a></li><li><a class="navbar__link" href="./cities.html">Instituições</a></li><li><a class="navbar__link" href="./about.html">Sobre</a></li></ul>
+          <a class="button button--outline" href="./institution-login.html">Área da Instituição</a>
+        </div>
+      </nav>
+    </header>
+    <main id="main-content" class="registration-request" data-institution-access-request-page>
+      <div class="container">
+        <nav class="registration-request__breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Início</a><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><a href="./institution-selection.html">Selecionar instituição</a><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span aria-current="page">Solicitar acesso</span></nav>
+        <header class="registration-request__header"><span class="registration-request__eyebrow">Vínculo institucional</span><h1>Solicitar acesso</h1><p>Informe a instituição e os dados do responsável. A solicitação será analisada antes de qualquer liberação de acesso.</p></header>
+        <div class="registration-request__layout institution-access-request__layout">
+          <section class="registration-request__card registration-request__form-card" aria-labelledby="access-form-title">
+            <div class="registration-request__card-heading"><span class="registration-request__heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg></span><div><h2 id="access-form-title">Dados da solicitação</h2><p>Campos marcados são obrigatórios.</p></div></div>
+            <form data-institution-access-form novalidate>
+              <div class="registration-request__fields">
+                <div class="registration-field registration-field--wide"><label for="access-institution-query">Nome ou CNPJ da instituição</label><input id="access-institution-query" name="institutionQuery" type="text" maxlength="150" required aria-describedby="access-institution-query-error" /><span class="registration-field__error" id="access-institution-query-error" data-error-for="institutionQuery" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="access-name">Nome do responsável</label><input id="access-name" name="responsibleName" type="text" autocomplete="name" maxlength="120" required aria-describedby="access-name-error" /><span class="registration-field__error" id="access-name-error" data-error-for="responsibleName" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="access-role">Função <span>(opcional)</span></label><input id="access-role" name="role" type="text" maxlength="100" placeholder="Ex.: Diretoria" /></div>
+                <div class="registration-field"><label for="access-email">E-mail de acesso</label><input id="access-email" name="email" type="email" autocomplete="email" maxlength="160" required aria-describedby="access-email-error" /><span class="registration-field__error" id="access-email-error" data-error-for="email" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="access-phone">Telefone ou WhatsApp</label><input id="access-phone" name="phone" type="tel" autocomplete="tel" maxlength="15" required aria-describedby="access-phone-error" data-phone /><span class="registration-field__error" id="access-phone-error" data-error-for="phone" aria-live="polite"></span></div>
+                <div class="registration-field registration-field--wide"><label for="access-justification">Justificativa <span>(opcional)</span></label><textarea id="access-justification" name="justification" rows="5" maxlength="700" placeholder="Explique brevemente seu vínculo com a instituição."></textarea></div>
+              </div>
+              <div class="registration-request__form-message" role="status" aria-live="polite" data-access-message hidden></div>
+              <div class="registration-request__actions"><p class="institution-access-request__notice">A interface não pesquisa instituições nem concede acesso automaticamente.</p><button class="button button--primary" type="submit">Preparar solicitação</button></div>
+            </form>
+          </section>
+          <aside class="registration-request__aside">
+            <section class="registration-request__card institution-access-request__search" aria-labelledby="future-search-title"><span class="registration-review__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></span><h2 id="future-search-title">Busca da instituição</h2><p>A busca por CNPJ ou nome será conectada à API. Nenhuma lista fictícia é exibida agora.</p><button class="button button--outline" type="button" disabled>Buscar instituição</button></section>
+            <section class="registration-review"><h2>Análise necessária</h2><p>O pedido deverá ser validado pela equipe Bem-Feito e pela política de vínculo institucional.</p></section>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,961 @@
+/* =========================================================
+   Minha Instituição
+   ========================================================= */
+
+.my-institution-page {
+  min-width: 20rem;
+}
+
+.my-institution {
+  --institution-control-height: 2.75rem;
+}
+
+.my-institution__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+
+  margin-bottom: var(--space-6);
+}
+
+.my-institution__heading {
+  max-width: 40rem;
+}
+
+.my-institution__eyebrow {
+  display: inline-flex;
+
+  margin-bottom: var(--space-2);
+
+  color: var(--color-accent-text);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.my-institution__title {
+  margin-bottom: var(--space-2);
+}
+
+.my-institution__description {
+  max-width: 37rem;
+}
+
+.my-institution__header-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.my-institution-selector {
+  display: grid;
+  gap: var(--space-1);
+
+  min-width: min(18rem, 100%);
+}
+
+.my-institution-selector__label {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-selector__control {
+  min-height: var(--institution-control-height);
+
+  padding: 0 var(--space-7) 0 var(--space-3);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  color: var(--color-text);
+  background-color: var(--color-surface);
+}
+
+.my-institution-selector__control:focus {
+  border-color: var(--color-primary);
+
+  outline: 0;
+
+  box-shadow: 0 0 0 0.2rem
+    color-mix(in srgb, var(--color-primary) 16%, transparent);
+}
+
+.my-institution-selector__control:disabled {
+  color: var(--color-text-muted);
+  background-color: var(--color-background);
+
+  cursor: not-allowed;
+}
+
+.my-institution__public-link {
+  min-height: var(--institution-control-height);
+
+  white-space: nowrap;
+}
+
+.my-institution__public-link svg,
+.my-institution-card__action svg {
+  width: 1.1rem;
+  height: 1.1rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.my-institution__public-link[aria-disabled="true"] {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background-color: var(--color-background);
+
+  pointer-events: none;
+}
+
+.my-institution__feedback {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+
+  font-size: var(--font-size-sm);
+}
+
+.my-institution__feedback[hidden] {
+  display: none;
+}
+
+/* =========================================================
+   Instituição selecionada
+   ========================================================= */
+
+.my-institution-profile {
+  display: grid;
+  gap: var(--space-5);
+
+  margin-bottom: var(--space-5);
+  padding: var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.my-institution-profile__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.my-institution-profile__mark {
+  width: 4.5rem;
+  height: 4.5rem;
+
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.my-institution-profile__mark svg {
+  width: 2.25rem;
+  height: 2.25rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.my-institution-profile__label {
+  display: block;
+
+  margin-bottom: var(--space-1);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-profile__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.my-institution-profile__name {
+  font-size: clamp(var(--font-size-xl), 3vw, var(--font-size-2xl));
+}
+
+.my-institution-status {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 1.75rem;
+
+  padding-inline: var(--space-3);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+
+  color: var(--color-text-muted);
+  background-color: var(--color-background);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-status[data-status="active"] {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-light);
+  background-color: var(--color-primary-light);
+}
+
+.my-institution-status[data-status="inactive"] {
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 24%, transparent);
+  background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
+}
+
+.my-institution-profile__metadata {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  border-block: 1px solid var(--color-border);
+}
+
+.my-institution-profile__metadata-item {
+  min-width: 0;
+
+  padding: var(--space-3) var(--space-4);
+}
+
+.my-institution-profile__metadata-item
+  + .my-institution-profile__metadata-item {
+  border-left: 1px solid var(--color-border);
+}
+
+.my-institution-profile__metadata-item dt {
+  margin-bottom: var(--space-1);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-profile__metadata-item dd {
+  margin: 0;
+
+  color: var(--color-text);
+
+  font-size: var(--font-size-sm);
+
+  overflow-wrap: anywhere;
+}
+
+.my-institution-profile__empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  padding: var(--space-3) var(--space-4);
+
+  border-radius: var(--radius-md);
+
+  background-color: var(--color-background);
+}
+
+.my-institution-profile__empty[hidden] {
+  display: none;
+}
+
+.my-institution-profile__empty svg {
+  width: 1.4rem;
+  height: 1.4rem;
+
+  flex: 0 0 auto;
+
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.my-institution-profile__empty p {
+  font-size: var(--font-size-sm);
+}
+
+/* =========================================================
+   Cards de gerenciamento
+   ========================================================= */
+
+.my-institution__content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--space-5);
+}
+
+.my-institution-card {
+  min-width: 0;
+
+  padding: var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.my-institution-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  margin-bottom: var(--space-5);
+}
+
+.my-institution-card__header > div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.my-institution-card__header h2 {
+  font-size: var(--font-size-xl);
+}
+
+.my-institution-card__step {
+  width: 1.65rem;
+  height: 1.65rem;
+
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+
+  border-radius: 50%;
+
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.my-institution-card__action {
+  min-height: 2.5rem;
+
+  flex: 0 0 auto;
+}
+
+.my-institution-card button:disabled,
+.my-institution-reminder button:disabled {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background-color: var(--color-background);
+
+  cursor: not-allowed;
+  transform: none;
+}
+
+.my-institution-data {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-4);
+}
+
+.my-institution-data__item {
+  min-width: 0;
+}
+
+.my-institution-data__item--wide {
+  grid-column: 1 / -1;
+}
+
+.my-institution-data dt {
+  margin-bottom: var(--space-1);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-data dd {
+  margin: 0;
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+
+  overflow-wrap: anywhere;
+}
+
+.my-institution-card__empty {
+  min-height: 10rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: var(--space-5);
+
+  border-radius: var(--radius-md);
+
+  text-align: center;
+
+  background-color: var(--color-background);
+}
+
+.my-institution-card__empty[hidden] {
+  display: none;
+}
+
+.my-institution-card__empty svg {
+  width: 2rem;
+  height: 2rem;
+
+  margin-bottom: var(--space-3);
+
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.my-institution-card__empty strong {
+  margin-bottom: var(--space-1);
+
+  font-size: var(--font-size-sm);
+}
+
+.my-institution-card__empty p {
+  max-width: 28rem;
+
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-relaxed);
+}
+
+/* =========================================================
+   Formulários de edição parcial
+   ========================================================= */
+
+.my-institution-form {
+  display: grid;
+  gap: var(--space-4);
+
+  padding-top: var(--space-4);
+
+  border-top: 1px solid var(--color-border);
+}
+
+.my-institution-form[hidden] {
+  display: none;
+}
+
+.my-institution-form h3 {
+  font-size: var(--font-size-base);
+}
+
+.my-institution-form__intro {
+  font-size: var(--font-size-sm);
+}
+
+.my-institution-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.my-institution-form__field {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+
+  min-width: 0;
+}
+
+.my-institution-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.my-institution-form__field label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-form__field input,
+.my-institution-form__field select,
+.my-institution-form__field textarea {
+  width: 100%;
+  min-height: 2.75rem;
+
+  padding: var(--space-3) var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  color: var(--color-text);
+  background-color: var(--color-surface);
+
+  outline: 0;
+}
+
+.my-institution-form__field textarea {
+  min-height: 7.5rem;
+
+  resize: vertical;
+}
+
+.my-institution-form__field input:focus,
+.my-institution-form__field select:focus,
+.my-institution-form__field textarea:focus {
+  border-color: var(--color-primary);
+
+  box-shadow: 0 0 0 0.2rem
+    color-mix(in srgb, var(--color-primary) 16%, transparent);
+}
+
+.my-institution-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.my-institution-form__flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.my-institution-form__flags label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.my-institution-form__flags input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--color-primary);
+}
+
+/* =========================================================
+   Contatos e unidades
+   ========================================================= */
+
+.my-institution-contacts,
+.my-institution-units {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.my-institution-contact,
+.my-institution-unit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  min-width: 0;
+
+  padding: var(--space-3);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.my-institution-contact__icon,
+.my-institution-unit__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+
+  border-radius: var(--radius-md);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.my-institution-contact__icon svg,
+.my-institution-unit__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.my-institution-contact__content,
+.my-institution-unit__content {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-1);
+
+  margin-right: auto;
+}
+
+.my-institution-contact__content strong,
+.my-institution-unit__content strong {
+  font-size: var(--font-size-sm);
+}
+
+.my-institution-contact__content span,
+.my-institution-unit__content span {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+
+  overflow-wrap: anywhere;
+}
+
+.my-institution-contact__content .my-institution-contact__meta {
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-xs);
+}
+
+.my-institution-unit__edit {
+  flex: 0 0 auto;
+  min-height: 2.25rem;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.my-institution-card__action[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.my-institution-contact__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+}
+
+.my-institution-contact__action {
+  width: 2.25rem;
+  height: 2.25rem;
+
+  display: inline-grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  color: var(--color-primary);
+  background-color: transparent;
+}
+
+.my-institution-contact__action:hover {
+  background-color: var(--color-primary-light);
+}
+
+.my-institution-contact__action--danger {
+  color: var(--color-danger);
+}
+
+.my-institution-contact__action--danger:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 9%, transparent);
+}
+
+.my-institution-contact__action svg {
+  width: 1.15rem;
+  height: 1.15rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* =========================================================
+   Resumo
+   ========================================================= */
+
+.my-institution-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.my-institution-summary__item {
+  min-width: 0;
+
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+
+  padding: var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.my-institution-summary__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: var(--radius-md);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.my-institution-summary__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.my-institution-summary__item strong {
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+}
+
+.my-institution-summary__item span {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+/* =========================================================
+   Lembrete
+   ========================================================= */
+
+.my-institution-reminder {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-light),
+    var(--color-surface)
+  );
+}
+
+.my-institution-reminder__icon {
+  width: 3rem;
+  height: 3rem;
+
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+
+  border-radius: var(--radius-md);
+
+  color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.my-institution-reminder__icon svg {
+  width: 1.6rem;
+  height: 1.6rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.my-institution-reminder__content {
+  min-width: 0;
+
+  margin-right: auto;
+}
+
+.my-institution-reminder__content strong {
+  display: block;
+
+  margin-bottom: var(--space-1);
+
+  font-size: var(--font-size-sm);
+}
+
+.my-institution-reminder__content p {
+  font-size: var(--font-size-xs);
+}
+
+/* =========================================================
+   Responsividade
+   ========================================================= */
+
+@media (max-width: 72rem) {
+  .my-institution__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .my-institution__header-actions {
+    width: 100%;
+
+    justify-content: flex-start;
+  }
+
+  .my-institution__content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 56rem) {
+  .my-institution-profile__metadata {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .my-institution-profile__metadata-item:nth-child(3) {
+    border-left: 0;
+  }
+
+  .my-institution-profile__metadata-item:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+@media (max-width: 40rem) {
+  .my-institution__header-actions {
+    display: grid;
+  }
+
+  .my-institution-selector,
+  .my-institution__public-link {
+    width: 100%;
+  }
+
+  .my-institution-profile,
+  .my-institution-card {
+    padding: var(--space-4);
+  }
+
+  .my-institution-profile__identity {
+    align-items: flex-start;
+  }
+
+  .my-institution-profile__mark {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .my-institution-profile__mark svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .my-institution-profile__metadata {
+    grid-template-columns: 1fr;
+  }
+
+  .my-institution-profile__metadata-item
+    + .my-institution-profile__metadata-item {
+    border-top: 1px solid var(--color-border);
+    border-left: 0;
+  }
+
+  .my-institution-card__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .my-institution-card__action {
+    width: 100%;
+  }
+
+  .my-institution-data,
+  .my-institution-form__grid,
+  .my-institution-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .my-institution-form__actions {
+    display: grid;
+  }
+
+  .my-institution-contact {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .my-institution-contact__content {
+    width: calc(100% - 3.25rem);
+  }
+
+  .my-institution-contact__actions {
+    width: 100%;
+
+    justify-content: flex-end;
+
+    padding-top: var(--space-2);
+
+    border-top: 1px solid var(--color-border);
+  }
+
+  .my-institution-reminder {
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    padding: var(--space-4);
+  }
+
+  .my-institution-reminder__content {
+    width: calc(100% - 4rem);
+  }
+
+  .my-institution-reminder .button {
+    width: 100%;
+  }
+}

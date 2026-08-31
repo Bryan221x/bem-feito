@@ -1,0 +1,581 @@
+.institution-selection-page {
+  min-width: 20rem;
+}
+
+.institution-selection__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+
+  margin-bottom: var(--space-5);
+}
+
+.institution-selection__heading {
+  max-width: 43rem;
+}
+
+.institution-selection__eyebrow {
+  display: inline-flex;
+
+  margin-bottom: var(--space-2);
+
+  color: var(--color-accent-text);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.institution-selection__heading h1 {
+  margin-bottom: var(--space-2);
+}
+
+.institution-selection__heading p {
+  max-width: 40rem;
+
+  line-height: var(--line-height-relaxed);
+}
+
+.institution-selection__request-link {
+  flex: 0 0 auto;
+
+  white-space: nowrap;
+}
+
+.institution-selection__request-link svg,
+.institution-selection-request-card svg {
+  width: 1.15rem;
+  height: 1.15rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.institution-selection__feedback {
+  min-height: 1.5rem;
+
+  margin-bottom: var(--space-3);
+
+  color: var(--color-primary-dark);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.institution-selection__continue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.institution-selection__continue[hidden] {
+  display: none;
+}
+
+.institution-selection__continue p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.institution-selection__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-4);
+
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+}
+
+.institution-selection__options[hidden] {
+  display: none;
+}
+
+.institution-selection__card-list {
+  display: contents;
+}
+
+.institution-selection-card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 20rem;
+
+  display: block;
+
+  cursor: pointer;
+}
+
+.institution-selection-card__content {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+
+  text-align: center;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.institution-selection-card:hover .institution-selection-card__content {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.institution-selection-card input:focus-visible
+  + .institution-selection-card__content {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.institution-selection-card.is-selected
+  .institution-selection-card__content {
+  border-color: var(--color-primary);
+  box-shadow:
+    0 0 0 1px var(--color-primary),
+    var(--shadow-md);
+}
+
+.institution-selection-card__indicator {
+  position: absolute;
+  z-index: 1;
+
+  top: var(--space-3);
+  right: var(--space-3);
+
+  width: 2rem;
+  height: 2rem;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+}
+
+.institution-selection-card.is-selected
+  .institution-selection-card__indicator {
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+}
+
+.institution-selection-card__indicator svg {
+  width: 1rem;
+  height: 1rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.institution-selection-card__mark {
+  width: 5rem;
+  height: 5rem;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: var(--space-4);
+
+  overflow: hidden;
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institution-selection-card__mark img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.institution-selection-card__mark svg {
+  width: 2.4rem;
+  height: 2.4rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.institution-selection-card__name {
+  margin-bottom: var(--space-3);
+
+  font-size: var(--font-size-lg);
+  overflow-wrap: anywhere;
+}
+
+.institution-selection-card__metadata {
+  display: grid;
+  gap: var(--space-1);
+
+  margin-bottom: var(--space-4);
+}
+
+.institution-selection-card__metadata span {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.institution-selection-card__status {
+  display: inline-flex;
+
+  min-height: 1.75rem;
+
+  margin-bottom: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+
+  color: var(--color-text-muted);
+  background-color: var(--color-background);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.institution-selection-card__status[data-status="active"] {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-light);
+  background-color: var(--color-primary-light);
+}
+
+.institution-selection-card__status[data-status="inactive"] {
+  color: var(--color-danger);
+  border-color: rgb(199 91 85 / 24%);
+  background-color: rgb(199 91 85 / 8%);
+}
+
+.institution-selection-card__selection-text {
+  margin-top: auto;
+
+  color: var(--color-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.institution-selection-card__selected-label {
+  display: none;
+}
+
+.institution-selection-card.is-selected
+  .institution-selection-card__selected-label {
+  display: inline;
+}
+
+.institution-selection-card.is-selected
+  .institution-selection-card__unselected-label {
+  display: none;
+}
+
+.institution-selection-request-card {
+  min-height: 20rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+
+  padding: var(--space-5);
+
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: rgb(234 243 236 / 38%);
+
+  text-align: center;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.institution-selection-request-card:hover {
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+  transform: translateY(-2px);
+}
+
+.institution-selection-request-card__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background-color: var(--color-surface);
+}
+
+.institution-selection-request-card strong {
+  color: var(--color-primary-dark);
+}
+
+.institution-selection-request-card > span:last-child {
+  max-width: 13rem;
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.institution-selection-state {
+  min-height: 22rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(var(--space-5), 6vw, var(--space-7));
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+
+  text-align: center;
+}
+
+.institution-selection-state[hidden] {
+  display: none;
+}
+
+.institution-selection-state__icon {
+  width: 4.5rem;
+  height: 4.5rem;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: var(--space-4);
+
+  border-radius: var(--radius-lg);
+
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.institution-selection-state__icon svg {
+  width: 2.25rem;
+  height: 2.25rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.institution-selection-state--error .institution-selection-state__icon {
+  color: var(--color-danger);
+  background-color: rgb(199 91 85 / 8%);
+}
+
+.institution-selection-state h2 {
+  margin-bottom: var(--space-2);
+
+  font-size: var(--font-size-2xl);
+}
+
+.institution-selection-state > p {
+  max-width: 38rem;
+
+  line-height: var(--line-height-relaxed);
+}
+
+.institution-selection-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+
+  margin-top: var(--space-5);
+}
+
+.institution-selection-state small {
+  max-width: 38rem;
+
+  margin-top: var(--space-4);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-relaxed);
+}
+
+.institution-selection-state__spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  margin-bottom: var(--space-4);
+
+  border: 3px solid var(--color-primary-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+
+  animation: institution-selection-spin 700ms linear infinite;
+}
+
+@keyframes institution-selection-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.institution-selection__context-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-light),
+    var(--color-surface)
+  );
+}
+
+.institution-selection__context-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+
+  border-radius: var(--radius-md);
+
+  color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.institution-selection__context-icon svg {
+  width: 1.4rem;
+  height: 1.4rem;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.institution-selection__context-note strong {
+  display: block;
+
+  margin-bottom: var(--space-1);
+
+  font-size: var(--font-size-sm);
+}
+
+.institution-selection__context-note p {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .institution-selection-state__spinner {
+    animation: none;
+  }
+}
+
+@media (max-width: 64rem) {
+  .institution-selection__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 40rem) {
+  .institution-selection__continue {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .institution-selection__continue .button {
+    width: 100%;
+  }
+  .institution-selection__request-link,
+  .institution-selection-state__actions,
+  .institution-selection-state__actions .button {
+    width: 100%;
+  }
+
+  .institution-selection__options {
+    grid-template-columns: 1fr;
+  }
+
+  .institution-selection-card,
+  .institution-selection-request-card {
+    min-height: 17rem;
+  }
+
+  .institution-selection-state {
+    min-height: 20rem;
+
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .institution-selection-state__actions {
+    display: grid;
+  }
+
+  .institution-selection__context-note {
+    align-items: flex-start;
+
+    padding: var(--space-4);
+  }
+}

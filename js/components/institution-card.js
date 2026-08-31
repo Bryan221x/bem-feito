@@ -4,7 +4,7 @@
  *
  * @typedef {Object} Institution
  * @property {string|number} id
- * @property {string} name
+ * @property {string} displayName
  * @property {string} [category]
  * @property {string} [description]
  */
@@ -17,7 +17,11 @@
  * @returns {HTMLElement}
  */
 export function createInstitutionCard(institution, cityId = null) {
-  if (!institution?.id || !institution?.name) {
+  const displayName = String(
+    institution?.displayName || institution?.name || "",
+  ).trim();
+
+  if (!institution?.id || !displayName) {
     throw new Error("A instituição precisa possuir identificador e nome.");
   }
 
@@ -38,7 +42,7 @@ export function createInstitutionCard(institution, cityId = null) {
 
   const title = document.createElement("h2");
   title.className = "institution-card__title";
-  title.textContent = institution.name;
+  title.textContent = displayName;
 
   content.appendChild(title);
 
