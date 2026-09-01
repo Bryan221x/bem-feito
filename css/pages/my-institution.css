@@ -332,6 +332,10 @@
   box-shadow: var(--shadow-sm);
 }
 
+.my-institution-card--wide {
+  grid-column: 1 / -1;
+}
+
 .my-institution-card__header {
   display: flex;
   align-items: center;
@@ -414,6 +418,11 @@
   line-height: var(--line-height-relaxed);
 
   overflow-wrap: anywhere;
+}
+
+.my-institution-data--reading dd {
+  max-width: 54rem;
+  white-space: pre-line;
 }
 
 .my-institution-card__empty {
@@ -528,6 +537,15 @@
   outline: 0;
 }
 
+.my-institution-form__field .my-institution-form__history {
+  min-height: 15rem;
+}
+
+.my-institution-form__field small {
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+}
+
 .my-institution-form__field textarea {
   min-height: 7.5rem;
 
@@ -569,6 +587,107 @@
   width: 1.1rem;
   height: 1.1rem;
   accent-color: var(--color-primary);
+}
+
+.my-institution-history-images {
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+}
+
+.my-institution-history-images legend {
+  padding-inline: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-history-images legend span,
+.my-institution-history-images > p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.my-institution-history-images__add {
+  margin-block: var(--space-4);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.my-institution-history-images__list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.my-institution-history-images__empty[hidden] {
+  display: none;
+}
+
+.my-institution-history-image {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.my-institution-history-image img {
+  width: 8rem;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.my-institution-history-image__fields {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.my-institution-history-image__fields label {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.my-institution-history-image__fields input {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.my-institution-history-image__fields input:focus {
+  border-color: var(--color-primary);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-primary) 16%, transparent);
+}
+
+.my-institution-history-image__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.my-institution-history-image__actions button {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding-inline: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary-dark);
+  background: var(--color-surface);
+}
+
+.my-institution-history-image__actions button:disabled {
+  opacity: 0.4;
 }
 
 /* =========================================================
@@ -923,6 +1042,19 @@
 
   .my-institution-form__actions {
     display: grid;
+  }
+
+  .my-institution-history-image {
+    grid-template-columns: 1fr;
+  }
+
+  .my-institution-history-image img {
+    width: 100%;
+    max-height: 14rem;
+  }
+
+  .my-institution-history-image__actions {
+    justify-content: flex-start;
   }
 
   .my-institution-contact {

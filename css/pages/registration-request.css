@@ -193,6 +193,15 @@
     background-color 180ms ease;
 }
 
+.registration-field .registration-field__history {
+  min-height: 16rem;
+}
+
+.registration-field small {
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+}
+
 .registration-field input {
   min-height: 3.25rem;
   padding-inline: var(--space-4);

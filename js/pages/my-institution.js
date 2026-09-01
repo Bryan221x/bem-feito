@@ -4,10 +4,9 @@ const GENERAL_FIELDS = [
   "legalName",
   "document",
   "category",
-  "objective",
-  "description",
   "website",
 ];
+const ABOUT_FIELDS = ["objective", "description", "history"];
 
 export function initMyInstitutionPage() {
   const page = document.querySelector("[data-my-institution-page]");
@@ -19,6 +18,8 @@ export function initMyInstitutionPage() {
     requestedInstitutionId: getQueryIdentifier("institutionId"),
     contacts: [],
     contactChanges: [],
+    historyImages: [],
+    historyImagesChanged: false,
   };
 
   pageStates.set(page, state);
@@ -38,6 +39,9 @@ export function renderMyInstitutionPage(page, institutions, selectedInstitutionI
   state.selectedInstitutionId = selected ? String(selected.id) : null;
   state.contacts = selected && Array.isArray(selected.contacts) ? selected.contacts.map(normalizeContact).filter(Boolean) : [];
   state.contactChanges = [];
+  releaseHistoryImagePreviews(state.historyImages);
+  state.historyImages = normalizeHistoryImages(selected?.historyImages);
+  state.historyImagesChanged = false;
 
   renderSelector(page, state);
   renderInstitution(page, state, selected);
@@ -59,6 +63,12 @@ function bindPageActions(page, state) {
   page.querySelector("[data-edit-reminder]")?.addEventListener("click", () => openGeneralForm(page, state));
   page.querySelector("[data-cancel-general]")?.addEventListener("click", () => closeGeneralForm(page));
   page.querySelector("[data-general-form]")?.addEventListener("submit", (event) => prepareGeneralChanges(event, page, state));
+  page.querySelector("[data-edit-about]")?.addEventListener("click", () => openAboutForm(page, state));
+  page.querySelector("[data-cancel-about]")?.addEventListener("click", () => closeAboutForm(page, state));
+  page.querySelector("[data-about-form]")?.addEventListener("submit", (event) => prepareAboutChanges(event, page, state));
+  page.querySelector("[data-history-image-input]")?.addEventListener("change", (event) => addHistoryImagePreviews(event, page, state));
+  page.querySelector("[data-history-image-list]")?.addEventListener("click", (event) => handleHistoryImageAction(event, page, state));
+  page.querySelector("[data-history-image-list]")?.addEventListener("input", (event) => updateHistoryImageMetadata(event, state));
   page.querySelector("[data-add-contact]")?.addEventListener("click", () => openContactForm(page));
   page.querySelector("[data-cancel-contact]")?.addEventListener("click", () => closeContactForm(page));
   page.querySelector("[data-contact-form]")?.addEventListener("submit", (event) => prepareContact(event, page, state));
@@ -111,6 +121,8 @@ function renderInstitution(page, state, institution) {
     const selector = `[data-general-${toDataName(field)}]`;
     setText(page, selector, displayValue(institution[field] ?? (field === "displayName" ? institution.name : null)));
   });
+  ABOUT_FIELDS.forEach((field) => setText(page, `[data-about-${toDataName(field)}]`, displayValue(institution[field])));
+  setText(page, "[data-about-history-images]", state.historyImages.length ? `${state.historyImages.length} ${state.historyImages.length === 1 ? "foto" : "fotos"}` : "Nenhuma foto adicionada ainda.");
 
   renderContacts(page, state.contacts);
   renderUnits(page, institution);
@@ -118,6 +130,7 @@ function renderInstitution(page, state, institution) {
   setText(page, "[data-summary-units]", String(Array.isArray(institution.units) ? institution.units.length : 0));
   setText(page, "[data-summary-needs]", String(countActiveNeeds(institution.units)));
   closeGeneralForm(page);
+  closeAboutForm(page, state);
   closeContactForm(page);
   hideFeedback(page);
 }
@@ -129,11 +142,14 @@ function renderEmptyInstitution(page) {
   status?.removeAttribute("data-status");
   ["document", "location", "created-at", "updated-at"].forEach((key) => setText(page, `[data-institution-${key}]`, "Não disponível"));
   GENERAL_FIELDS.forEach((field) => setText(page, `[data-general-${toDataName(field)}]`, "Não informado"));
+  ABOUT_FIELDS.forEach((field) => setText(page, `[data-about-${toDataName(field)}]`, "Não informado"));
+  setText(page, "[data-about-history-images]", "Nenhuma foto adicionada ainda.");
   page.querySelector("[data-institution-empty]")?.removeAttribute("hidden");
   renderContacts(page, []);
   renderUnits(page, null);
   ["contacts", "units", "needs"].forEach((key) => setText(page, `[data-summary-${key}]`, "—"));
   closeGeneralForm(page);
+  closeAboutForm(page);
   closeContactForm(page);
 }
 
@@ -192,6 +208,162 @@ function prepareGeneralChanges(event, page, state) {
   }));
   showFeedback(page, "As alterações parciais foram preparadas. A gravação dependerá da integração com o sistema.");
   closeGeneralForm(page);
+}
+
+function openAboutForm(page, state) {
+  const institution = getSelectedInstitution(state);
+  const form = page.querySelector("[data-about-form]");
+  if (!institution || !form) return;
+  if (!form.hidden) return;
+  ABOUT_FIELDS.forEach((field) => {
+    const control = form.elements.namedItem(field);
+    if (control) control.value = institution[field] ?? "";
+  });
+  state.historyImages = normalizeHistoryImages(institution.historyImages);
+  state.historyImagesChanged = false;
+  renderHistoryImageEditor(page, state);
+  page.querySelector("[data-about-view]")?.setAttribute("hidden", "");
+  form.hidden = false;
+  form.elements.namedItem("objective")?.focus();
+}
+
+function closeAboutForm(page, state = null) {
+  page.querySelector("[data-about-view]")?.removeAttribute("hidden");
+  const form = page.querySelector("[data-about-form]");
+  if (form) form.hidden = true;
+  if (state) {
+    releaseHistoryImagePreviews(state.historyImages);
+    const institution = getSelectedInstitution(state);
+    state.historyImages = normalizeHistoryImages(institution?.historyImages);
+    state.historyImagesChanged = false;
+  }
+}
+
+function prepareAboutChanges(event, page, state) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const institution = getSelectedInstitution(state);
+  if (!institution || !form.reportValidity()) return;
+  const changes = {};
+  ABOUT_FIELDS.forEach((field) => {
+    const next = form.elements.namedItem(field)?.value.trim() || "";
+    const current = String(institution[field] ?? "").trim();
+    if (next !== current) changes[field] = next || null;
+  });
+  if (state.historyImagesChanged) {
+    changes.historyImages = state.historyImages.map((image, order) => {
+      const prepared = {
+        alt: image.alt.trim(),
+        caption: image.caption.trim() || null,
+        order,
+      };
+      if (image.id !== null) prepared.id = image.id;
+      if (image.url) prepared.url = image.url;
+      if (image.file) prepared.file = image.file;
+      return prepared;
+    });
+  }
+  if (!Object.keys(changes).length) {
+    showFeedback(page, "Nenhuma alteração foi informada.");
+    return;
+  }
+  page.dispatchEvent(new CustomEvent("bemfeito:institution-partial-update-requested", {
+    bubbles: true,
+    detail: { institutionId: institution.id, changes },
+  }));
+  showFeedback(page, "As alterações parciais foram preparadas. As novas fotos permanecem temporárias até a futura integração.");
+  closeAboutForm(page, state);
+}
+
+function addHistoryImagePreviews(event, page, state) {
+  const files = [...(event.target.files || [])].filter((file) => file.type.startsWith("image/"));
+  files.forEach((file) => state.historyImages.push({
+    draftKey: createDraftKey(),
+    id: null,
+    url: null,
+    previewUrl: URL.createObjectURL(file),
+    file,
+    alt: "",
+    caption: "",
+  }));
+  if (files.length) state.historyImagesChanged = true;
+  event.target.value = "";
+  renderHistoryImageEditor(page, state);
+}
+
+function handleHistoryImageAction(event, page, state) {
+  const button = event.target.closest("[data-history-image-action]");
+  if (!button) return;
+  const index = state.historyImages.findIndex((image) => image.draftKey === button.dataset.historyImageKey);
+  if (index < 0) return;
+  const action = button.dataset.historyImageAction;
+  if (action === "remove") {
+    const [removed] = state.historyImages.splice(index, 1);
+    if (removed.previewUrl) URL.revokeObjectURL(removed.previewUrl);
+  } else {
+    const nextIndex = action === "up" ? index - 1 : index + 1;
+    if (nextIndex < 0 || nextIndex >= state.historyImages.length) return;
+    [state.historyImages[index], state.historyImages[nextIndex]] = [state.historyImages[nextIndex], state.historyImages[index]];
+  }
+  state.historyImagesChanged = true;
+  renderHistoryImageEditor(page, state);
+}
+
+function updateHistoryImageMetadata(event, state) {
+  const control = event.target.closest("[data-history-image-field]");
+  if (!control) return;
+  const image = state.historyImages.find((item) => item.draftKey === control.dataset.historyImageKey);
+  if (!image) return;
+  image[control.dataset.historyImageField] = control.value;
+  state.historyImagesChanged = true;
+}
+
+function renderHistoryImageEditor(page, state) {
+  const list = page.querySelector("[data-history-image-list]");
+  const empty = page.querySelector("[data-history-images-empty]");
+  if (!list || !empty) return;
+  list.replaceChildren(...state.historyImages.map((image, index) => createHistoryImageEditorItem(image, index, state.historyImages.length)));
+  empty.hidden = state.historyImages.length > 0;
+}
+
+function createHistoryImageEditorItem(image, index, total) {
+  const item = document.createElement("article");
+  item.className = "my-institution-history-image";
+  const preview = document.createElement("img");
+  preview.src = image.previewUrl || image.url;
+  preview.alt = "";
+  const fields = document.createElement("div");
+  fields.className = "my-institution-history-image__fields";
+  fields.append(createHistoryImageField("Texto alternativo", "alt", image, true), createHistoryImageField("Legenda (opcional)", "caption", image));
+  const actions = document.createElement("div");
+  actions.className = "my-institution-history-image__actions";
+  actions.append(createHistoryImageButton("up", image.draftKey, "Mover foto para antes", index === 0), createHistoryImageButton("down", image.draftKey, "Mover foto para depois", index === total - 1), createHistoryImageButton("remove", image.draftKey, "Remover foto"));
+  item.append(preview, fields, actions);
+  return item;
+}
+
+function createHistoryImageField(labelText, field, image, required = false) {
+  const label = document.createElement("label");
+  label.textContent = labelText;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = image[field];
+  input.required = required;
+  input.dataset.historyImageField = field;
+  input.dataset.historyImageKey = image.draftKey;
+  label.append(input);
+  return label;
+}
+
+function createHistoryImageButton(action, key, label, disabled = false) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.historyImageAction = action;
+  button.dataset.historyImageKey = key;
+  button.textContent = action === "up" ? "↑" : action === "down" ? "↓" : "Remover";
+  button.setAttribute("aria-label", label);
+  button.disabled = disabled;
+  return button;
 }
 
 function openContactForm(page, contact = null) {
@@ -360,6 +532,30 @@ function normalizeContact(contact) {
   };
 }
 
+function normalizeHistoryImages(images) {
+  if (!Array.isArray(images)) return [];
+  return images
+    .filter((image) => image?.url)
+    .map((image, index) => ({
+      draftKey: createDraftKey(),
+      id: image.id ?? null,
+      url: String(image.url),
+      previewUrl: null,
+      file: null,
+      alt: String(image.alt || ""),
+      caption: String(image.caption || ""),
+      order: Number.isFinite(Number(image.order)) ? Number(image.order) : index,
+    }))
+    .sort((first, second) => first.order - second.order);
+}
+
+function releaseHistoryImagePreviews(images) {
+  if (!Array.isArray(images)) return;
+  images.forEach((image) => {
+    if (image.previewUrl) URL.revokeObjectURL(image.previewUrl);
+  });
+}
+
 function getSelectedInstitution(state) {
   return state.institutions.find((item) => String(item.id) === state.selectedInstitutionId) || null;
 }
@@ -420,6 +616,10 @@ function toDataName(value) {
 
 function createDraftId() {
   return `draft-contact-${typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`;
+}
+
+function createDraftKey() {
+  return `history-image-${typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`;
 }
 
 function setText(page, selector, value) {

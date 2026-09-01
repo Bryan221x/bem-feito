@@ -40,6 +40,9 @@ function openRequestDialog(page, requestId) {
     ["Categoria", request.institution?.category],
     ["Objetivo", request.institution?.objective],
     ["Descrição", request.institution?.description],
+    ...(String(request.institution?.history || "").trim()
+      ? [["História da instituição", request.institution.history]]
+      : []),
     ["Responsável", request.responsible?.name || request.responsibleName],
     ["Cargo/Função", request.responsible?.role],
     ["E-mail de acesso", request.responsible?.accessEmail || request.email],

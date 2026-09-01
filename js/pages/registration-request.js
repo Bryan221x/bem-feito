@@ -50,6 +50,7 @@ function submitRequest(event, page, state) {
       category: clean(data.get("category")),
       objective: clean(data.get("objective")),
       description: clean(data.get("description")),
+      history: clean(data.get("history")) || null,
       website: clean(data.get("website")) || null,
     },
     responsible: {

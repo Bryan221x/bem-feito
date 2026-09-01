@@ -124,9 +124,256 @@
 
 .institution-profile__website {
   display: inline-flex;
-  margin-top: var(--space-4);
   color: var(--color-primary-dark);
   font-weight: var(--font-weight-semibold);
+}
+
+.institution-profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.institution-profile__history-link {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  color: var(--color-primary);
+  background: transparent;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.institution-profile__history-link[hidden] {
+  display: none;
+}
+
+.institution-profile__history-link:focus-visible {
+  border-radius: var(--radius-sm);
+  outline: 0.2rem solid var(--color-primary);
+  outline-offset: 0.2rem;
+}
+
+body.institution-history-open {
+  overflow: hidden;
+}
+
+.institution-history-dialog {
+  width: min(70rem, calc(100% - 3rem));
+  max-width: none;
+  max-height: min(54rem, calc(100dvh - 3rem));
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-xl);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 1.5rem 4rem rgb(23 26 24 / 20%);
+}
+
+.institution-history-dialog::backdrop {
+  background: rgb(23 26 24 / 58%);
+  backdrop-filter: blur(0.15rem);
+}
+
+.institution-history-dialog[open] {
+  animation: institution-history-enter 180ms ease-out;
+}
+
+.institution-history-dialog__shell {
+  max-height: min(54rem, calc(100dvh - 3rem));
+  padding: var(--space-6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.institution-history-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.institution-history-dialog__eyebrow {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.institution-history-dialog__header h2 {
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
+}
+
+.institution-history-dialog__close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.institution-history-dialog__close svg {
+  width: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.institution-history-dialog__close:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.institution-history-dialog__close:focus-visible,
+.institution-history-gallery button:focus-visible {
+  outline: 0.2rem solid var(--color-primary);
+  outline-offset: 0.15rem;
+}
+
+.institution-history-dialog__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(19rem, 0.95fr);
+  align-items: start;
+  gap: var(--space-7);
+}
+
+.institution-history-dialog__body--text-only {
+  display: block;
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+.institution-history-gallery__figure {
+  margin: 0;
+}
+
+.institution-history-gallery__figure img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  background: var(--color-background);
+  object-fit: cover;
+}
+
+.institution-history-gallery__figure figcaption {
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.institution-history-gallery__navigation {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.institution-history-gallery__navigation[hidden],
+.institution-history-gallery__thumbnails[hidden] {
+  display: none;
+}
+
+.institution-history-gallery__navigation > button {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-primary-dark);
+  background: var(--color-surface);
+}
+
+.institution-history-gallery__navigation > span {
+  min-width: 3rem;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.institution-history-gallery__dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.institution-history-gallery__dots span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-border);
+}
+
+.institution-history-gallery__dots .is-active {
+  background: var(--color-primary);
+}
+
+.institution-history-gallery__thumbnails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.5rem, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.institution-history-gallery__thumbnails button {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0.15rem solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+}
+
+.institution-history-gallery__thumbnails button[aria-current="true"] {
+  border-color: var(--color-primary);
+}
+
+.institution-history-gallery__thumbnails img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.institution-history-dialog__story h3 {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-xl);
+}
+
+.institution-history-dialog__text {
+  max-width: 43rem;
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.institution-history-dialog__text p + p {
+  margin-top: var(--space-5);
+}
+
+@keyframes institution-history-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.99);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .institution-history-dialog[open] {
+    animation: none;
+  }
 }
 
 .institution-section {
@@ -450,5 +697,40 @@
 
   .institution-location__map {
     min-height: 16rem;
+  }
+
+  .institution-history-dialog {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .institution-history-dialog__shell {
+    max-height: 100dvh;
+    padding: var(--space-5) var(--space-4) var(--space-7);
+  }
+
+  .institution-history-dialog__header {
+    margin-bottom: var(--space-5);
+  }
+
+  .institution-history-dialog__body {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .institution-history-dialog__body--text-only {
+    max-width: none;
+  }
+
+  .institution-history-gallery__thumbnails {
+    display: flex;
+    padding-bottom: var(--space-2);
+    overflow-x: auto;
+  }
+
+  .institution-history-gallery__thumbnails button {
+    flex: 0 0 4rem;
   }
 }
