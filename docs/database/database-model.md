@@ -21,6 +21,14 @@ O modelo de dados foi estruturado considerando:
 
 O banco de dados será implementado utilizando MySQL.
 
+## Dados de referência
+
+O arquivo `database/reference-data.sql` contém os 26 estados brasileiros e o Distrito Federal como dados territoriais de referência, além das taxonomias controladas pelo Bem-Feito: `institution_categories` (classificação das instituições), `service_areas` (públicos atendidos e áreas de atuação das unidades) e `need_categories` (classificação dos itens/necessidades de doação). Esses dados não são mocks nem cadastros de demonstração.
+
+O script deve ser executado após `database/schema.sql` e pode ser repetido: utiliza as constraints UNIQUE existentes e preserva os registros já cadastrados. Novas entradas das taxonomias iniciam com `active = TRUE`.
+
+Municípios serão obtidos separadamente de fonte oficial do IBGE, em uma próxima etapa; não fazem parte deste script.
+
 ---
 
 # 2. Convenções
