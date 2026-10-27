@@ -14,3 +14,9 @@ O desenvolvimento inicial utiliza:
 - GSAP
 
 Outras tecnologias serão incorporadas conforme as necessidades do projeto.
+
+## Backend e dados de referência
+
+O backend utiliza Java 25, Spring Boot, JPA e MySQL 8+. Consulte
+[Dados de referência](docs/database/reference-data.md) para preparar o banco,
+reproduzir a carga oficial do IBGE, consultar os endpoints e executar os testes.

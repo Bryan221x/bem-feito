@@ -85,6 +85,6 @@ INSERT INTO need_categories (name, active) VALUES
 ON DUPLICATE KEY UPDATE id = need_categories.id;
 
 -- Municípios serão carregados separadamente a partir de fonte oficial do IBGE.
--- A estratégia de importação será implementada na próxima etapa.
+-- Consulte docs/database/reference-data.md e database/cities.sql.
 
 COMMIT;

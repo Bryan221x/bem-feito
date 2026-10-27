@@ -1,5 +1,8 @@
 package com.bemfeito.api.location.state.entity;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +35,7 @@ public class State {
         unique = true,
         length = 2
     )
+    @JdbcTypeCode(SqlTypes.CHAR)
     private String uf;
 
     protected State() {
