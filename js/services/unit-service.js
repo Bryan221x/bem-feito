@@ -1,0 +1,10 @@
+import { apiRequest } from "./api-client.js";
+export const getUnit = (id) => apiRequest(`/api/management/units/${encodeURIComponent(id)}`);
+export const createUnit = (owner, body) => apiRequest(`/api/institutions/${encodeURIComponent(owner)}/units`, { method: "POST", body });
+export const patchUnit = (id, body) => apiRequest(`/api/units/${encodeURIComponent(id)}`, { method: "PATCH", body });
+export const getServiceAreas = () => apiRequest("/api/service-areas");
+export const getNeedCategories = () => apiRequest("/api/need-categories");
+export const saveServiceAreas = (id, serviceAreaIds) => apiRequest(`/api/units/${encodeURIComponent(id)}/service-areas`, { method: "PUT", body: { serviceAreaIds } });
+export const saveOpeningHours = (id, day, body) => apiRequest(`/api/units/${encodeURIComponent(id)}/opening-hours/${day}`, { method: "PUT", body });
+export const saveNeed = (unitId, id, body) => apiRequest(`/api/units/${encodeURIComponent(unitId)}/needs${id ? `/${encodeURIComponent(id)}` : ""}`, { method: id ? "PATCH" : "POST", body });
+export const deleteNeed = (unitId, id) => apiRequest(`/api/units/${encodeURIComponent(unitId)}/needs/${encodeURIComponent(id)}`, { method: "DELETE" });

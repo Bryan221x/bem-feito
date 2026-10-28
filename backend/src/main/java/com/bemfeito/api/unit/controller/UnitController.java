@@ -24,6 +24,8 @@ public class UnitController {
     private final UnitService service;
     private final UnitQueryService queries;
     public UnitController(UnitService service,UnitQueryService queries) { this.service=service;this.queries=queries; }
+    @GetMapping("/api/units/map")
+    public com.bemfeito.api.common.dto.PageResponse<com.bemfeito.api.unit.dto.UnitMapPoint> map(@org.springframework.web.bind.annotation.RequestParam(required=false) Long cityId,@org.springframework.web.bind.annotation.RequestParam(defaultValue="0") int page,@org.springframework.web.bind.annotation.RequestParam(defaultValue="100") int size) { return queries.map(cityId,page,size); }
     @GetMapping("/api/cities/available")
     public List<CityResponse> availableCities() { return queries.availableCities(); }
     @GetMapping("/api/units/{id}")

@@ -16,6 +16,13 @@ public interface UnitRepository extends JpaRepository<Unit,Long> {
         """)
     List<com.bemfeito.api.requests.dto.RequestOutput.Location> findAccessLocations(Long institutionId,org.springframework.data.domain.Pageable pageable);
 
+    @Query("""
+        select new com.bemfeito.api.unit.dto.UnitMapPoint(u.id,u.institution.id,u.name,u.latitude,u.longitude)
+        from Unit u where u.status=com.bemfeito.api.common.domain.UnitStatus.ACTIVE
+        and u.institution.status=com.bemfeito.api.common.domain.InstitutionStatus.ACTIVE
+        and u.latitude is not null and u.longitude is not null and (:cityId is null or u.city.id=:cityId) order by u.id
+        """)
+    org.springframework.data.domain.Page<com.bemfeito.api.unit.dto.UnitMapPoint> findMapPoints(Long cityId,org.springframework.data.domain.Pageable pageable);
     @Override @EntityGraph(attributePaths={"institution","city.state"}) Optional<Unit> findById(Long id);
     @EntityGraph(attributePaths={"city.state"})
     @Query("""

@@ -94,3 +94,20 @@ p {
 
     border: 0;
 }
+
+/* Controles de integração: preservam cores, escala e componentes existentes. */
+.api-pagination { display:flex; flex-wrap:wrap; align-items:end; gap:1rem; margin-block:1.5rem; }
+.api-pagination label, .api-detail-dialog label { display:grid; gap:.5rem; min-width:0; }
+.api-pagination input, .api-pagination select, .api-detail-dialog select, .api-hours-row input { max-width:100%; min-width:0; padding:.65rem; border:1px solid var(--color-border); border-radius:var(--radius-sm); background:var(--color-surface); color:var(--color-text); }
+.api-detail-dialog { width:min(48rem,calc(100% - 2rem)); max-height:90vh; margin:auto; padding:1.5rem; border:1px solid var(--color-border); border-radius:var(--radius-lg); overflow:auto; }
+.api-detail-dialog::backdrop { background:rgb(0 0 0 / 45%); }
+.api-detail-dialog > div { display:grid; gap:1rem; }
+.api-detail-dialog dd, .api-detail-dialog p, .institution-unit-card { overflow-wrap:anywhere; }
+.api-detail-dialog dt { font-weight:600; }
+.api-detail-dialog section { display:grid; gap:.75rem; border-top:1px solid var(--color-border); padding-block:1rem; }
+.api-hours-row { display:flex; flex-wrap:wrap; gap:.75rem; padding:1rem 0; border:0; border-top:1px solid var(--color-border); min-width:0; }
+.api-hours-row label { display:grid; gap:.25rem; min-width:0; }
+.city-card { display:block; padding:1rem; border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); overflow-wrap:anywhere; }
+.api-pagination [hidden] { display:none; }
+
+[hidden] { display:none !important; }

@@ -20,10 +20,7 @@ export async function initInstitutionSelectionPage() {
   } catch { showInstitutionSelectionError(page); }
 }
 
-/*
- * Ponto de entrada da futura API. A página recebe somente instituições às
- * quais a conta autenticada possui acesso; nenhum registro é criado aqui.
- */
+
 export function renderInstitutionSelection(
   page,
   institutions,
@@ -103,10 +100,7 @@ function initSelection(page, state) {
       `Instituição selecionada: ${getInstitutionName(institution)}.`,
     );
 
-    /*
-     * Ponto de integração do contexto global. A futura camada de sessão deve
-     * receber o ID, confirmar a permissão e então atualizar as demais páginas.
-     */
+
     page.dispatchEvent(
       new CustomEvent("bemfeito:institution-context-selected", {
         bubbles: true,
@@ -182,10 +176,8 @@ function createInstitutionCard(institution, index, selectedInstitutionId) {
   name.textContent = getInstitutionName(institution);
 
   metadata.className = "institution-selection-card__metadata";
-  documentText.textContent = institution.document
-    ? `CNPJ ${institution.document}`
-    : "CNPJ não informado";
-  locationText.textContent = getInstitutionLocation(institution);
+  documentText.textContent = { OWNER: "Proprietário", MANAGER: "Gestor", EDITOR: "Editor" }[institution.membershipRole] || "Membro institucional";
+  locationText.textContent = "Acesso vinculado à sua conta";
   metadata.append(documentText, locationText);
 
   status.className = "institution-selection-card__status";
@@ -278,7 +270,7 @@ function getStatusData(institution) {
   const statusLabels = {
     active: "Ativa",
     inactive: "Inativa",
-    pending: "Em análise",
+    pending: "Em análise", suspended: "Suspensa",
   };
   const hasKnownStatus = Object.hasOwn(statusLabels, status);
 

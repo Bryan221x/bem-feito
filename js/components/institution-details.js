@@ -1,4 +1,5 @@
-import { createUnitMap } from "../services/map-service.js";
+import { apiAssetUrl } from "../services/api-client.js";
+import { createUnitMap, hasCoordinates } from "../services/map-service.js";
 
 const historyDialogStates = new WeakMap();
 
@@ -16,6 +17,7 @@ export function renderInstitutionDetails(page, institution) {
   renderHistory(details, institution);
   renderWebsite(details, institution.website);
   renderGeneralContacts(details, institution.contacts);
+  details.hidden = false;
   const markers = renderUnits(details, institution.units);
   renderMapArchitecture(details, markers);
 
@@ -62,9 +64,9 @@ function createHistoryParagraphs(history) {
 function normalizePublicHistoryImages(images) {
   if (!Array.isArray(images)) return [];
   return images
-    .filter((image) => image?.url && isSafeImageUrl(image.url))
+    .filter((image) => image?.url && apiAssetUrl(image.url))
     .map((image, index) => ({
-      url: String(image.url),
+      url: apiAssetUrl(image.url),
       alt: String(image.alt || ""),
       caption: String(image.caption || "").trim(),
       order: Number.isFinite(Number(image.order)) ? Number(image.order) : index,
@@ -220,6 +222,7 @@ function renderActiveHistoryImage(state) {
 function renderWebsite(details, website) {
   const link = details.querySelector("[data-institution-website]");
   if (!link) return;
+  website = apiAssetUrl(website);
   link.hidden = !website;
   if (!website) {
     link.removeAttribute("href");
@@ -268,6 +271,7 @@ function createUnit(unit) {
   if (areas.length) card.append(createSubsection("Áreas de atuação", areas.map((area) => createTag(getServiceAreaLabel(area))), "institution-tags"));
   const needs = Array.isArray(unit.needs) ? unit.needs.filter((need) => need?.name && String(need.status || "ACTIVE").toUpperCase() === "ACTIVE") : [];
   if (needs.length) card.append(createSubsection("Necessidades atuais", needs.map(createNeed), "institution-unit-needs"));
+  card.append(createSubsection("Horários", renderOpeningHours(unit.openingHours), "institution-hours"));
   return card;
 }
 
@@ -282,12 +286,13 @@ function createSubsection(titleText, children, className) {
 function createContact(contact) {
   const item = document.createElement("div"); item.className = "institution-contact__item";
   const label = document.createElement("span"); label.className = "institution-contact__label"; label.textContent = contact.label || getContactTypeLabel(contact.type);
-  const value = document.createElement("span"); value.className = "institution-contact__value"; value.textContent = contact.value;
+  const href = contactHref(contact);
+  const value = document.createElement(href ? "a" : "span"); if (href) value.href = href; value.className = "institution-contact__value"; value.textContent = contact.value;
   item.append(label, value); return item;
 }
 
 function createTag(text) { const tag = document.createElement("span"); tag.className = "institution-needs__item"; tag.textContent = text; return tag; }
-function createNeed(need) { const item = document.createElement("article"); item.className = "institution-unit-need"; const name = document.createElement("strong"); name.textContent = need.name; const priority = document.createElement("span"); priority.textContent = `Prioridade ${getPriorityLabel(need.priority)}`; item.append(name, priority); if (need.description) { const description = document.createElement("p"); description.textContent = need.description; item.append(description); } return item; }
+function createNeed(need) { const item = document.createElement("article"); item.className = "institution-unit-need"; const name = document.createElement("strong"); name.textContent = need.name; const priority = document.createElement("span"); priority.textContent = `Prioridade ${getPriorityLabel(need.priority)}`; item.append(name, priority); const metadata = document.createElement("p"); metadata.textContent = [need.category, need.quantity != null ? `${need.quantity} ${need.unitLabel || ""}` : need.unitLabel].filter(Boolean).join(" • "); item.append(metadata); if (need.description) { const description = document.createElement("p"); description.textContent = need.description; item.append(description); } return item; }
 
 function renderMapArchitecture(details, markers) {
   const section = details.querySelector("[data-institution-map-section]");
@@ -301,11 +306,21 @@ function renderMapArchitecture(details, markers) {
   if (markers.length) createUnitMap(map, markers);
 }
 
-function getPublicContacts(contacts) { return Array.isArray(contacts) ? contacts.filter((contact) => contact?.value && contact.isPublic !== false) : []; }
-function getCoordinates(unit) { const latitude = Number(unit.coordinates?.latitude ?? unit.latitude); const longitude = Number(unit.coordinates?.longitude ?? unit.longitude); return Number.isFinite(latitude) && Number.isFinite(longitude) ? { latitude, longitude } : null; }
+function getPublicContacts(contacts) { return Array.isArray(contacts) ? contacts.filter((contact) => contact?.value && contact.isPublic === true) : []; }
+function getCoordinates(unit) { return hasCoordinates(unit) ? { latitude: Number(unit.latitude), longitude: Number(unit.longitude) } : null; }
 function formatAddress(address) { if (!address) return "Endereço não informado"; if (typeof address === "string") return address; const line = [address.street, address.number].filter(Boolean).join(", "); return [line, address.complement, address.neighborhood, [address.city, address.state].filter(Boolean).join(" - "), address.postalCode].filter(Boolean).join(" • ") || "Endereço não informado"; }
 function getContactTypeLabel(type) { return { EMAIL: "E-mail", PHONE: "Telefone", WHATSAPP: "WhatsApp" }[String(type || "").toUpperCase()] || "Contato"; }
-function getServiceAreaLabel(area) { return { FOOD: "Alimentação", CLOTHING: "Roupas", HYGIENE: "Higiene", CHILDREN: "Crianças", ELDERLY: "Idosos", ANIMALS: "Animais", OTHER: "Outros" }[String(area).toUpperCase()] || String(area); }
+function getServiceAreaLabel(area) { return area.name || ""; }
 function getPriorityLabel(priority) { return { LOW: "baixa", MEDIUM: "média", HIGH: "alta" }[String(priority || "MEDIUM").toUpperCase()] || "não informada"; }
-function setOptionalText(element, value) { if (!element || !value) return; element.textContent = String(value); element.hidden = false; }
+function setOptionalText(element, value) { if (!element) return; element.textContent = value ? String(value) : ""; element.hidden = !value; }
 function setText(root, selector, value) { const element = root.querySelector(selector); if (element) element.textContent = value; }
+
+export function contactHref(contact) {
+  if (contact.type === "EMAIL" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.value)) return `mailto:${encodeURIComponent(contact.value)}`;
+  if (!["PHONE", "WHATSAPP"].includes(contact.type) || !/^\+?[0-9]{8,15}$/.test(contact.value)) return null;
+  return contact.type === "WHATSAPP" ? `https://wa.me/${contact.value.replace(/\D/g, "")}` : `tel:${contact.value}`;
+}
+export function renderOpeningHours(hours) {
+  const days = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
+  return days.map((day, index) => { const h = hours?.find((item) => Number(item.dayOfWeek) === index + 1); const p = document.createElement("p"); p.textContent = `${day}: ${h ? h.closed ? "Fechado" : `${h.opensAt.slice(0,5)} às ${h.closesAt.slice(0,5)}` : "Não informado"}${h?.note ? ` — ${h.note}` : ""}`; return p; });
+}

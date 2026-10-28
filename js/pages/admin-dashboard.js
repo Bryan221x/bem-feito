@@ -1,15 +1,19 @@
+import { getAdminSummary } from "../services/admin-service.js";
 import { getRequestDashboard } from "../services/request-service.js";
 export function initAdminDashboardPage() {
   const page = document.querySelector("[data-admin-dashboard-page]");
   if (!page) return;
   renderAdminDashboard(page, { metrics: null, requests: [], activities: [], institutionsByCity: [] });
-  getRequestDashboard().then((data) => {
-    renderMetrics(page, { pendingRequests: data.pendingRequests });
+  showAdminDashboardLoading(page);
+  Promise.all([getRequestDashboard(), getAdminSummary()]).then(([data, summary]) => {
+    renderMetrics(page, { ...summary, pendingRequests: data.pendingRequests });
     renderRequests(page, data.requests);
+    renderCityDistribution(page, summary.institutionsByCity);
+    setFeedback(page, "Dados atualizados.");
   }).catch(() => setFeedback(page, "Não foi possível carregar as solicitações. Tente recarregar.", "error"));
 }
 
-/* Contrato de entrada para dados agregados da futura API administrativa. */
+
 export function renderAdminDashboard(page, data = {}) {
   if (!page) return;
   renderMetrics(page, data.metrics);

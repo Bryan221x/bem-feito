@@ -2,7 +2,7 @@
 
 O Bem-Feito é um projeto acadêmico desenvolvido para facilitar a conexão entre pessoas que desejam ajudar e instituições de caridade.
 
-A plataforma permitirá localizar instituições por cidade, consultar informações de contato e identificar os itens necessários para doação.
+A plataforma permite localizar instituições por cidade, consultar informações de contato e identificar os itens necessários para doação.
 
 ## Tecnologias
 
@@ -40,3 +40,11 @@ As notas de endpoints sem autorização da Parte 2 são históricas e foram supe
 A Parte 4 integra cadastro/acesso, revisão administrativa, convites e ativação real.
 Consulte [contratos, migração, configuração SMTP/manual e testes](docs/backend/requests-and-invitations.md).
 Banco existente precisa da migração de unicidade descrita nessa documentação.
+
+## Integração completa do frontend
+
+A Parte 5 conecta catálogo público, gestão institucional, unidades e administração
+às APIs reais, incluindo upload local de fotos JPEG/PNG/WebP, mapas e ViaCEP opcional.
+Consulte [serviços, endpoints, configuração, segurança e testes](docs/frontend/api-integration.md).
+O diretório de uploads é configurável por `APP_UPLOAD_DIR` e não é versionado.
+Esta Parte não requer nova migração de banco.

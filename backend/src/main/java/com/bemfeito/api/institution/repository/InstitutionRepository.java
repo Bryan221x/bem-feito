@@ -23,7 +23,8 @@ public interface InstitutionRepository extends JpaRepository<Institution,Long> {
     java.util.List<Institution> searchForAccess(String name,String cnpj,Pageable pageable);
     @Override @EntityGraph(attributePaths="category") Optional<Institution> findById(Long id);
     @Query("""
-        select new com.bemfeito.api.institution.dto.InstitutionSummary(i.id,i.displayName,i.category.id,i.category.name,substring(i.description,1,500))
+        select new com.bemfeito.api.institution.dto.InstitutionSummary(i.id,i.displayName,i.category.id,i.category.name,substring(i.description,1,500),
+            (select min(concat(u.city.name,' / ',u.city.state.uf)) from Unit u where u.institution=i and u.status=com.bemfeito.api.common.domain.UnitStatus.ACTIVE))
         from Institution i where i.status = com.bemfeito.api.common.domain.InstitutionStatus.ACTIVE
         and (:cityId is null or exists (select u.id from Unit u where u.institution=i and u.city.id=:cityId
             and u.status = com.bemfeito.api.common.domain.UnitStatus.ACTIVE))

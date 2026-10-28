@@ -1,120 +1,30 @@
-import { createCityMap } from "../services/map-service.js";
+import { createUnitMap } from "../services/map-service.js";
+import { getAvailableCities, getMapUnits } from "../services/public-catalog-service.js";
+import { element, errorMessage } from "../components/api-ui.js";
 
-export function initCitiesPage() {
-  const page = document.querySelector(".city-selection");
-
-  // Este módulo só executa quando a tela de seleção de cidades existe.
-  if (!page) return;
-
-  initCitySearch(page);
-  initCityMap(page);
-}
-
-/* =========================================================
-   Pesquisa de cidades
-   ========================================================= */
-
-function initCitySearch(page) {
-  const form = page.querySelector(".city-search");
-  const input = page.querySelector("#city-search-input");
-  const cityList = page.querySelector("[data-city-list]");
-
-  const emptyState = page.querySelector("[data-city-empty]");
-  const emptyMessage = page.querySelector("[data-city-empty-message]");
-
-  if (!form || !input || !cityList || !emptyState || !emptyMessage) {
-    return;
+export async function initCitiesPage() {
+  const page = document.querySelector(".city-selection"); if (!page) return;
+  const list = page.querySelector("[data-city-list]"), empty = page.querySelector("[data-city-empty]"), message = page.querySelector("[data-city-empty-message]");
+  const input = page.querySelector("#city-search-input"); let cities = [];
+  const status = element("p", "Carregando cidades…"); status.setAttribute("role", "status"); list.before(status); empty.hidden = true;
+  function render() {
+    const query = normalize(input.value); const filtered = cities.filter((city) => normalize(`${city.name} ${city.state.uf}`).includes(query));
+    list.replaceChildren(...filtered.map((city) => {
+      const link = element("a", `${city.name} — ${city.state.uf}`, "city-card"); link.href = `./institutions.html?cityId=${encodeURIComponent(city.id)}`; link.dataset.cityName = city.name; return link;
+    }));
+    empty.hidden = filtered.length > 0; message.textContent = cities.length ? "Nenhuma cidade corresponde à sua pesquisa." : "Ainda não há cidades com instituições publicadas.";
   }
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const query = normalizeText(input.value);
-
-    filterCities(cityList, emptyState, emptyMessage, query);
-  });
-
-  /*
-   * Quando o campo é completamente limpo, a listagem volta
-   * automaticamente ao estado original.
-   */
-  input.addEventListener("input", () => {
-    if (input.value.trim() !== "") return;
-
-    filterCities(cityList, emptyState, emptyMessage, "");
-  });
-}
-
-/*
- * A busca trabalha sobre os cards realmente presentes na página.
- * No futuro, esses cards poderão vir da API sem alterar esta lógica.
- */
-function filterCities(cityList, emptyState, emptyMessage, query) {
-  const cityCards = [...cityList.querySelectorAll("[data-city-name]")];
-
-  if (cityCards.length === 0) {
-    emptyMessage.textContent =
-      "Ainda não há cidades com instituições cadastradas no momento.";
-
-    emptyState.hidden = false;
-
-    return;
-  }
-
-  let visibleCities = 0;
-
-  cityCards.forEach((card) => {
-    const cityName = normalizeText(card.dataset.cityName ?? "");
-
-    const matchesSearch = cityName.includes(query);
-
-    card.hidden = !matchesSearch;
-
-    if (matchesSearch) {
-      visibleCities += 1;
+  page.querySelector(".city-search").addEventListener("submit", (event) => { event.preventDefault(); render(); }); input.addEventListener("input", render);
+  try { cities = await getAvailableCities(); status.textContent = ""; render(); }
+  catch (error) { status.textContent = errorMessage(error); return; }
+  const map = page.querySelector("[data-city-map]"); const mapStatus = element("p", "Carregando localizações…"); map.after(mapStatus);
+  try {
+    const data = await getMapUnits(); createUnitMap(map, data.content);
+    mapStatus.textContent = data.content.length ? `${data.content.length} unidades com coordenadas no mapa.` : "Ainda não há unidades publicadas com coordenadas informadas.";
+    if (data.totalPages > 1) {
+      let number = 0; const units = [...data.content]; const more = element("button", "Carregar mais localizações", "button button--outline"); more.type = "button"; mapStatus.after(more);
+      more.addEventListener("click", async () => { more.disabled = true; try { const result = await getMapUnits(null, number + 1); number++; units.push(...result.content); createUnitMap(map, units); mapStatus.textContent = `${units.length} unidades com coordenadas no mapa.`; more.hidden = number + 1 >= result.totalPages; } catch (error) { mapStatus.textContent = errorMessage(error); } finally { more.disabled = false; } });
     }
-  });
-
-  if (visibleCities === 0) {
-    emptyMessage.textContent = "Nenhuma cidade corresponde à sua pesquisa.";
-
-    emptyState.hidden = false;
-
-    return;
-  }
-
-  emptyState.hidden = true;
+  } catch (error) { createUnitMap(map, []); mapStatus.textContent = errorMessage(error); }
 }
-
-function normalizeText(value) {
-  return value
-    .trim()
-    .toLocaleLowerCase("pt-BR")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-/* =========================================================
-   Mapa
-   ========================================================= */
-
-function initCityMap(page) {
-  const mapContainer = page.querySelector("[data-city-map]");
-
-  if (!mapContainer) return;
-
-  /*
-   * Evita criar uma segunda instância do Leaflet no mesmo elemento
-   * caso a página venha a ser inicializada novamente no futuro.
-   */
-  if (mapContainer.dataset.mapInitialized === "true") return;
-
-  const map = createCityMap(mapContainer);
-
-  if (!map) {
-    console.warn("O mapa do Bem-Feito não pôde ser inicializado.");
-    return;
-  }
-
-  mapContainer.dataset.mapInitialized = "true";
-}
+function normalize(value) { return value.trim().toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }

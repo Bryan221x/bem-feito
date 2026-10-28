@@ -1,6 +1,7 @@
+import { getPublicInstitution } from "../services/public-catalog-service.js";
 import { renderInstitutionDetails } from "../components/institution-details.js";
 
-export function initInstitutionPage() {
+export async function initInstitutionPage() {
   const page = document.querySelector(".institution-page");
 
   // Este módulo só executa dentro da página de detalhes.
@@ -25,12 +26,12 @@ export function initInstitutionPage() {
   }
 
   prepareSelectedInstitutionState(page, institutionId);
+  showInstitutionLoading(page);
+  try { renderInstitution(page, await getPublicInstitution(institutionId)); }
+  catch (error) { if (error.status === 404) showInstitutionNotFound(page); else showInstitutionError(page); }
 }
 
-/*
- * Ponto de entrada para a futura camada de dados. Somente uma instituição
- * previamente validada pelo serviço deve ser entregue a este módulo.
- */
+
 export function renderInstitution(page, institution) {
   if (
     !page ||
@@ -43,14 +44,11 @@ export function renderInstitution(page, institution) {
   renderInstitutionDetails(page, institution);
 }
 
-/*
- * Recupera o identificador da instituição recebido pela URL.
- * A futura API será responsável por confirmar se ela existe.
- */
+
 function getSelectedInstitutionId() {
   const params = new URLSearchParams(window.location.search);
 
-  const institutionId = params.get("institutionId");
+  const institutionId = params.get("id") || params.get("institutionId");
 
   if (!institutionId) return null;
 
@@ -59,11 +57,7 @@ function getSelectedInstitutionId() {
   return normalizedId || null;
 }
 
-/*
- * Recupera a cidade de origem recebida pela URL.
- * O identificador é preservado, mas sua validação continuará
- * sendo responsabilidade da futura API.
- */
+
 function getSelectedCityId() {
   const params = new URLSearchParams(window.location.search);
 
@@ -133,9 +127,7 @@ function prepareSelectedInstitutionState(page, institutionId) {
   page.dataset.institutionId = institutionId;
 }
 
-/*
- * Será utilizado futuramente enquanto a API consulta a instituição.
- */
+
 export function showInstitutionLoading(page) {
   if (!page) return;
 

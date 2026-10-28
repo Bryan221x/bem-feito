@@ -54,7 +54,7 @@ class MySqlReferenceDataTests {
         String adminBefore=jdbc.queryForObject("SELECT SHA2(GROUP_CONCAT(CONCAT_WS('|',id,name,email,password_hash,platform_role,status,email_verified_at,created_at,updated_at) ORDER BY id SEPARATOR '|'),256) FROM users WHERE platform_role='PLATFORM_ADMIN'",String.class);
         var before = tables.stream().map(table -> jdbc.queryForObject("SELECT COUNT(*) FROM " + table, Long.class)).toList();
         for (String endpoint : List.of("/api/institutions", "/api/cities/available", "/api/management/institutions", "/api/institutions/access-search?q=Bem",
-                "/api/admin/registration-requests", "/api/admin/access-requests", "/api/admin/requests/summary")) {
+                "/api/admin/registration-requests", "/api/admin/access-requests", "/api/admin/requests/summary", "/api/admin/summary", "/api/admin/institutions", "/api/units/map")) {
             mvc.perform(get(endpoint)).andExpect(status().isOk());
         }
         var after = tables.stream().map(table -> jdbc.queryForObject("SELECT COUNT(*) FROM " + table, Long.class)).toList();

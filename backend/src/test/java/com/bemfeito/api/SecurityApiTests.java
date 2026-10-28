@@ -34,11 +34,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "spring.datasource.url=jdbc:h2:mem:security-${random.uuid};MODE=MySQL;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=VALUE;DB_CLOSE_DELAY=-1",
     "spring.datasource.username=sa","spring.datasource.password=","spring.sql.init.mode=always",
     "spring.sql.init.schema-locations=classpath:reference-schema.sql","spring.sql.init.data-locations=classpath:reference-fixtures.sql",
-    "app.bootstrap-admin.enabled=false"})
+    "app.bootstrap-admin.enabled=false","app.upload.dir=target/security-test-uploads"})
 @AutoConfigureMockMvc @Transactional @Sql("/institutional-fixtures.sql")
 @Import(SecurityApiTests.ProbeConfig.class)
 class SecurityApiTests {
     private static final String PASSWORD=UUID.randomUUID().toString();
+    @Test void uploadHonorsActiveMembershipAndResourceOwnership() throws Exception {
+        var output=new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(new java.awt.image.BufferedImage(2,2,java.awt.image.BufferedImage.TYPE_INT_RGB),"png",output);
+        var file=new org.springframework.mock.web.MockMultipartFile("file","image.png","image/png",output.toByteArray());
+        var editor=login("editor");
+        String body=mvc.perform(multipart(institutionPath()+"/history-images/upload").file(file).param("altText","Foto acessível").session(editor).header("X-CSRF-TOKEN",token(editor)))
+            .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        Number id=JsonPath.read(body,"$.id");
+        mvc.perform(multipart("/api/institutions/"+beta()+"/history-images/upload").file(file).param("altText","Foto").session(editor).header("X-CSRF-TOKEN",token(editor))).andExpect(status().isForbidden());
+        var other=login("other");
+        mvc.perform(delete("/api/institutions/"+beta()+"/history-images/"+id).session(other).header("X-CSRF-TOKEN",token(other))).andExpect(status().isForbidden());
+        for(String account:List.of("pending","revoked")) {
+            var session=login(account);
+            mvc.perform(multipart(institutionPath()+"/history-images/upload").file(file).param("altText","Foto").session(session).header("X-CSRF-TOKEN",token(session))).andExpect(status().isForbidden());
+        }
+    }
     private static final String HASH=new BCryptPasswordEncoder(4).encode(PASSWORD);
     @Autowired MockMvc mvc;
     @Autowired JdbcTemplate jdbc;

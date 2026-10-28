@@ -52,6 +52,11 @@ public class UnitQueryService {
     public List<UnitManagementResponse> managementForInstitution(Long id) { return load(units.findForInstitution(id,false),false); }
     @PreAuthorize("permitAll()")
     public List<CityResponse> availableCities() { return units.findAvailableCities().stream().map(CityResponse::from).toList(); }
+    @PreAuthorize("permitAll()")
+    public com.bemfeito.api.common.dto.PageResponse<com.bemfeito.api.unit.dto.UnitMapPoint> map(Long cityId,int page,int size) {
+        com.bemfeito.api.common.validation.RequestValidation.require(page>=0 && size>=1 && size<=100 && (cityId==null || cityId>0),"Paginação ou cidade inválida");
+        return com.bemfeito.api.common.dto.PageResponse.from(units.findMapPoints(cityId,org.springframework.data.domain.PageRequest.of(page,size)));
+    }
     private Unit required(Long id) { return units.findById(id).orElseThrow(()->notFound("Unidade")); }
 
     // Quatro consultas em lote para filhos, independentemente do número de unidades.

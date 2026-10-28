@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/health","/api/states","/api/cities","/api/cities/available",
                     "/api/institution-categories","/api/service-areas","/api/need-categories","/api/auth/csrf").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/institutions","/api/institutions/{id}","/api/institutions/{id}/units","/api/units/{id}").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/institutions/access-search").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/institutions/access-search","/api/history-media/{institutionId}/{key}").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/registration-requests","/api/access-requests",
                     "/api/account-invitations/inspect","/api/account-invitations/accept").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("PLATFORM_ADMIN")

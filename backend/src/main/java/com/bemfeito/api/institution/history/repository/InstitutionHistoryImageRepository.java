@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InstitutionHistoryImageRepository extends JpaRepository<InstitutionHistoryImage,Long> {
+    boolean existsByInstitutionIdAndImageUrl(Long institutionId,String imageUrl);
     List<InstitutionHistoryImage> findByInstitutionIdOrderByDisplayOrderAscIdAsc(Long institutionId);
     Optional<InstitutionHistoryImage> findByIdAndInstitutionId(Long id,Long institutionId);
 }

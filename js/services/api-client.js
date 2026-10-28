@@ -34,7 +34,9 @@ export async function apiRequest(path, { method = "GET", body, headers = {}, csr
   }
   let payload = body;
   if (body instanceof URLSearchParams) requestHeaders.set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-  else if (body !== undefined) {
+  else if (typeof FormData !== "undefined" && body instanceof FormData) {
+    requestHeaders.delete("Content-Type");
+  } else if (body !== undefined) {
     requestHeaders.set("Content-Type", "application/json");
     payload = JSON.stringify(body);
   }
@@ -52,4 +54,21 @@ export async function apiRequest(path, { method = "GET", body, headers = {}, csr
     throw new ApiError(response.status, result);
   }
   return result;
+}
+
+export function apiAssetUrl(value) {
+  if (typeof value !== "string") return null;
+  if (value.startsWith("/api/history-media/")) return `${baseUrl}${value}`;
+  try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password ? url.href : null; }
+  catch { return null; }
+}
+
+export async function lookupPostalCode(value) {
+  const cep = String(value).replace(/\D/g, "");
+  if (!/^[0-9]{8}$/.test(cep)) throw new Error("Informe um CEP com oito dígitos.");
+  const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { credentials: "omit", signal: AbortSignal.timeout(8000), referrerPolicy: "no-referrer" });
+  if (!response.ok) throw new Error("Consulta de CEP indisponível. Preencha manualmente.");
+  const data = await response.json();
+  if (data.erro) throw new Error("CEP não encontrado. Confira ou preencha manualmente.");
+  return data;
 }

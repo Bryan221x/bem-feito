@@ -1,3 +1,5 @@
+import { getPublicInstitutions } from "../services/public-catalog-service.js";
+import { createPagination } from "../components/api-ui.js";
 import { createInstitutionCard } from "../components/institution-card.js";
 
 export function initInstitutionsPage() {
@@ -8,19 +10,19 @@ export function initInstitutionsPage() {
 
   const cityId = getSelectedCityId();
 
-  if (!cityId) {
-    showCityRequiredState(page);
-    return;
+  if (cityId) prepareSelectedCityState(page, cityId);
+  let current = 0;
+  const pagination = createPagination(page.querySelector("[data-institution-list]"), (number) => load(number));
+  async function load(number = 0) {
+    current = number; showInstitutionsLoading(page);
+    page.querySelector("[data-institution-list]").replaceChildren(); pagination.busy();
+    try { const data = await getPublicInstitutions(cityId, current); renderInstitutions(page, data.content); pagination.update(data); }
+    catch { showInstitutionsError(page); pagination.failed(() => load(current)); }
   }
-
-  prepareSelectedCityState(page, cityId);
+  void load();
 }
 
-/*
- * Recupera o identificador da cidade informado pela navegação.
- * O valor será validado futuramente pela API antes de qualquer
- * instituição ser exibida.
- */
+
 function getSelectedCityId() {
   const params = new URLSearchParams(window.location.search);
   const cityId = params.get("cityId");
@@ -42,10 +44,7 @@ function showCityRequiredState(page) {
   }
 }
 
-/*
- * Preserva o identificador da cidade selecionada.
- * A futura API será responsável por validar sua existência.
- */
+
 function prepareSelectedCityState(page, cityId) {
   page.dataset.cityId = cityId;
 }
@@ -64,9 +63,7 @@ function hidePageStates(page) {
   });
 }
 
-/*
- * Será utilizado quando a futura API iniciar uma consulta.
- */
+
 export function showInstitutionsLoading(page) {
   if (!page) return;
 
@@ -79,9 +76,7 @@ export function showInstitutionsLoading(page) {
   }
 }
 
-/*
- * Será utilizado quando a futura consulta à API falhar.
- */
+
 export function showInstitutionsError(page) {
   if (!page) return;
 

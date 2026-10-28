@@ -54,13 +54,15 @@ export function createInstitutionCard(institution, cityId = null) {
     content.appendChild(description);
   }
 
+  if (institution.location) { const location = document.createElement("p"); location.textContent = institution.location; content.append(location); }
+
   const params = new URLSearchParams();
 
   if (cityId) {
     params.set("cityId", cityId);
   }
 
-  params.set("institutionId", String(institution.id));
+  params.set("id", String(institution.id));
 
   const link = document.createElement("a");
   link.className = "button button--outline institution-card__link";

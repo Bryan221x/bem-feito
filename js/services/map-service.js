@@ -26,6 +26,7 @@ export function createCityMap(container) {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
+  unitMaps.set(container, map);
   return map;
 }
 
@@ -38,15 +39,10 @@ export function createUnitMap(container, units) {
     return null;
   }
 
-  const validUnits = units.filter(
-    (unit) =>
-      Number.isFinite(Number(unit.latitude)) &&
-      Number.isFinite(Number(unit.longitude)),
-  );
-
-  if (!validUnits.length) return null;
-
   unitMaps.get(container)?.remove();
+  unitMaps.delete(container);
+  const validUnits = units.filter(hasCoordinates);
+  if (!validUnits.length) return createCityMap(container);
 
   const map = L.map(container, {
     zoomControl: true,
@@ -65,7 +61,7 @@ export function createUnitMap(container, units) {
     const coordinates = [Number(unit.latitude), Number(unit.longitude)];
     const marker = L.marker(coordinates).addTo(map);
 
-    if (unit.name) marker.bindPopup(String(unit.name));
+    if (unit.name) { const text = document.createElement("span"); text.textContent = String(unit.name); marker.bindPopup(text); }
 
     bounds.push(coordinates);
   });
@@ -75,4 +71,9 @@ export function createUnitMap(container, units) {
   unitMaps.set(container, map);
 
   return map;
+}
+
+export function hasCoordinates(unit) {
+  return unit?.latitude != null && unit?.longitude != null && String(unit.latitude).trim() !== "" && String(unit.longitude).trim() !== "" &&
+    Number.isFinite(Number(unit.latitude)) && Number.isFinite(Number(unit.longitude)) && Math.abs(Number(unit.latitude)) <= 90 && Math.abs(Number(unit.longitude)) <= 180;
 }

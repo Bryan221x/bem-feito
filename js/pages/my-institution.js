@@ -1,14 +1,19 @@
+import { getInstitution, patchInstitution, saveContact, deleteContact, contactPayload, uploadHistoryImage, patchHistoryImage, deleteHistoryImage } from "../services/institution-service.js";
+import { getMyInstitutions, getCurrentUser } from "../services/auth-service.js";
+import { getCategories } from "../services/request-service.js";
+import { apiAssetUrl } from "../services/api-client.js";
+import { saving, errorMessage, preserveContext } from "../components/api-ui.js";
 const pageStates = new WeakMap();
 const GENERAL_FIELDS = [
   "displayName",
   "legalName",
-  "document",
-  "category",
+  "cnpj",
+  "categoryId",
   "website",
 ];
 const ABOUT_FIELDS = ["objective", "description", "history"];
 
-export function initMyInstitutionPage() {
+export async function initMyInstitutionPage() {
   const page = document.querySelector("[data-my-institution-page]");
   if (!page) return;
 
@@ -25,9 +30,23 @@ export function initMyInstitutionPage() {
   pageStates.set(page, state);
   bindPageActions(page, state);
   renderMyInstitutionPage(page, [], state.requestedInstitutionId);
+  showFeedback(page, "Carregando instituição…");
+  try {
+    if (!state.requestedInstitutionId) throw new Error("Selecione uma instituição para continuar.");
+    const [institution, categories, user] = await Promise.all([getInstitution(state.requestedInstitutionId), getCategories(), getCurrentUser()]);
+    const memberships = user.platformRole === "PLATFORM_ADMIN" ? [] : await getMyInstitutions();
+    const select = page.querySelector('[name="categoryId"]');
+    select.replaceChildren(...categories.map((c) => new Option(c.name, c.id)));
+    if (!categories.some((c) => c.id === institution.categoryId)) select.add(new Option(institution.category, institution.categoryId));
+    state.memberships = memberships; state.admin = user.platformRole === "PLATFORM_ADMIN";
+    state.permissions = memberships.find((m) => String(m.institutionId) === String(institution.id))?.permissions || [];
+    renderMyInstitutionPage(page, [...memberships.filter((m) => String(m.institutionId) !== String(institution.id)).map((m) => ({ ...m, id: m.institutionId })), institution], institution.id);
+    preserveContext(institution.id);
+  } catch (error) { showFeedback(page, errorMessage(error)); }
+
 }
 
-/* Ponto de entrada para a futura camada de dados da conta autenticada. */
+
 export function renderMyInstitutionPage(page, institutions, selectedInstitutionId = null) {
   const state = pageStates.get(page);
   if (!state || !Array.isArray(institutions)) return;
@@ -50,13 +69,7 @@ export function renderMyInstitutionPage(page, institutions, selectedInstitutionI
 function bindPageActions(page, state) {
   page.querySelector("[data-institution-selector]")?.addEventListener("change", (event) => {
     const institutionId = normalizeIdentifier(event.target.value);
-    state.requestedInstitutionId = institutionId;
-    renderMyInstitutionPage(page, state.institutions, institutionId);
-    if (!institutionId) return;
-    page.dispatchEvent(new CustomEvent("bemfeito:institution-context-selected", {
-      bubbles: true,
-      detail: { institutionId },
-    }));
+    if (institutionId) location.href = `./my-institution.html?institutionId=${encodeURIComponent(institutionId)}`;
   });
 
   page.querySelector("[data-edit-general]")?.addEventListener("click", () => openGeneralForm(page, state));
@@ -111,7 +124,7 @@ function renderInstitution(page, state, institution) {
 
   setText(page, "[data-institution-name]", getDisplayName(institution));
   renderStatus(page, institution);
-  setText(page, "[data-institution-document]", displayValue(institution.document));
+  setText(page, "[data-institution-document]", displayValue(institution.cnpj));
   setText(page, "[data-institution-location]", getMainLocation(institution));
   setText(page, "[data-institution-created-at]", formatDate(institution.createdAt));
   setText(page, "[data-institution-updated-at]", formatDate(institution.updatedAt));
@@ -119,13 +132,17 @@ function renderInstitution(page, state, institution) {
 
   GENERAL_FIELDS.forEach((field) => {
     const selector = `[data-general-${toDataName(field)}]`;
-    setText(page, selector, displayValue(institution[field] ?? (field === "displayName" ? institution.name : null)));
+    setText(page, selector, displayValue(field === "categoryId" ? institution.category : institution[field] ?? (field === "displayName" ? institution.name : null)));
   });
   ABOUT_FIELDS.forEach((field) => setText(page, `[data-about-${toDataName(field)}]`, displayValue(institution[field])));
   setText(page, "[data-about-history-images]", state.historyImages.length ? `${state.historyImages.length} ${state.historyImages.length === 1 ? "foto" : "fotos"}` : "Nenhuma foto adicionada ainda.");
 
   renderContacts(page, state.contacts);
   renderUnits(page, institution);
+  const canProfile = state.admin || state.permissions?.includes("EDIT_PROFILE");
+  page.querySelectorAll("[data-edit-general], [data-edit-reminder]").forEach((control) => { control.disabled = !canProfile; });
+  const addUnit = page.querySelector("[data-add-unit]");
+  if (addUnit && !state.admin && !state.permissions?.includes("CREATE_UNIT")) { addUnit.removeAttribute("href"); addUnit.setAttribute("aria-disabled", "true"); addUnit.tabIndex = -1; }
   setText(page, "[data-summary-contacts]", String(state.contacts.length));
   setText(page, "[data-summary-units]", String(Array.isArray(institution.units) ? institution.units.length : 0));
   setText(page, "[data-summary-needs]", String(countActiveNeeds(institution.units)));
@@ -156,7 +173,7 @@ function renderEmptyInstitution(page) {
 function renderPublicLink(page, institution) {
   const link = page.querySelector("[data-public-page-link]");
   if (!link) return;
-  const publicUrl = institution?.publicUrl || (hasRealInstitutionIdentity(institution) ? `./institution.html?institutionId=${encodeURIComponent(institution.id)}` : null);
+  const publicUrl = institution?.publicUrl || (hasRealInstitutionIdentity(institution) ? `./institution.html?id=${encodeURIComponent(institution.id)}` : null);
   if (!publicUrl) {
     link.removeAttribute("href");
     link.setAttribute("aria-disabled", "true");
@@ -176,6 +193,7 @@ function openGeneralForm(page, state) {
     const control = form.elements.namedItem(field);
     if (control) control.value = institution[field] ?? (field === "displayName" ? institution.name || "" : "");
   });
+  for (const field of ["legalName", "cnpj"]) form.elements.namedItem(field).disabled = !state.admin && !state.permissions?.includes("EDIT_LEGAL_DATA");
   page.querySelector("[data-general-view]")?.setAttribute("hidden", "");
   form.hidden = false;
   form.elements.namedItem("displayName")?.focus();
@@ -194,20 +212,19 @@ function prepareGeneralChanges(event, page, state) {
   if (!institution || !form.reportValidity()) return;
   const changes = {};
   GENERAL_FIELDS.forEach((field) => {
+    if (form.elements.namedItem(field)?.disabled) return;
     const next = form.elements.namedItem(field)?.value.trim() || "";
     const current = String(institution[field] ?? (field === "displayName" ? institution.name || "" : "")).trim();
-    if (next !== current) changes[field] = next || null;
+    if (next !== current) changes[field] = field === "categoryId" ? Number(next) : field === "cnpj" ? next.replace(/\D/g, "") : next || null;
   });
   if (!Object.keys(changes).length) {
     showFeedback(page, "Nenhuma alteração foi informada.");
     return;
   }
-  page.dispatchEvent(new CustomEvent("bemfeito:institution-partial-update-requested", {
-    bubbles: true,
-    detail: { institutionId: institution.id, changes },
-  }));
-  showFeedback(page, "As alterações parciais foram preparadas. A gravação dependerá da integração com o sistema.");
-  closeGeneralForm(page);
+  void saving(page, (message) => showFeedback(page, message), async () => {
+    const updated = await patchInstitution(institution.id, changes);
+    renderMyInstitutionPage(page, state.institutions.map((item) => item.id === institution.id ? updated : item), institution.id);
+  });
 }
 
 function openAboutForm(page, state) {
@@ -254,7 +271,7 @@ function prepareAboutChanges(event, page, state) {
     changes.historyImages = state.historyImages.map((image, order) => {
       const prepared = {
         alt: image.alt.trim(),
-        caption: image.caption.trim() || null,
+        caption: String(image.caption || "").trim() || null,
         order,
       };
       if (image.id !== null) prepared.id = image.id;
@@ -267,12 +284,30 @@ function prepareAboutChanges(event, page, state) {
     showFeedback(page, "Nenhuma alteração foi informada.");
     return;
   }
-  page.dispatchEvent(new CustomEvent("bemfeito:institution-partial-update-requested", {
-    bubbles: true,
-    detail: { institutionId: institution.id, changes },
-  }));
-  showFeedback(page, "As alterações parciais foram preparadas. As novas fotos permanecem temporárias até a futura integração.");
-  closeAboutForm(page, state);
+  void saving(page, (message) => showFeedback(page, message), async () => {
+    const { historyImages, ...textChanges } = changes;
+    if (Object.keys(textChanges).length) {
+      await patchInstitution(institution.id, textChanges);
+      Object.assign(institution, textChanges);
+    }
+    if (historyImages) {
+      for (const old of [...(institution.historyImages || [])]) {
+        if (!state.historyImages.some((image) => String(image.id) === String(old.id))) {
+          await deleteHistoryImage(institution.id, old.id);
+          institution.historyImages = institution.historyImages.filter((image) => image.id !== old.id);
+        }
+      }
+      for (const [order, image] of state.historyImages.entries()) {
+        const result = image.file ? await uploadHistoryImage(institution.id, image.file, { ...image, order }) :
+          await patchHistoryImage(institution.id, image.id, { altText: image.alt.trim(), caption: String(image.caption || "").trim() || null, displayOrder: order });
+        if (image.previewUrl) URL.revokeObjectURL(image.previewUrl);
+        Object.assign(image, result, { file: null, previewUrl: null });
+        institution.historyImages = [...(institution.historyImages || []).filter((old) => old.id !== result.id), result];
+      }
+    }
+    const updated = await getInstitution(institution.id);
+    renderMyInstitutionPage(page, state.institutions.map((item) => item.id === institution.id ? updated : item), institution.id);
+  });
 }
 
 function addHistoryImagePreviews(event, page, state) {
@@ -330,7 +365,7 @@ function createHistoryImageEditorItem(image, index, total) {
   const item = document.createElement("article");
   item.className = "my-institution-history-image";
   const preview = document.createElement("img");
-  preview.src = image.previewUrl || image.url;
+  preview.src = image.previewUrl || apiAssetUrl(image.url) || "";
   preview.alt = "";
   const fields = document.createElement("div");
   fields.className = "my-institution-history-image__fields";
@@ -402,12 +437,12 @@ function prepareContact(event, page, state) {
     isPrimary: form.elements.isPrimary.checked,
     isPublic: form.elements.isPublic.checked,
   };
-  const action = contactId ? "update" : "create";
-  state.contacts = action === "update" ? state.contacts.map((item) => String(item.id) === contactId ? contact : item) : [...state.contacts, contact];
-  state.contactChanges.push({ action, contact });
-  renderContacts(page, state.contacts);
-  closeContactForm(page);
-  dispatchContactChanges(page, institution, state);
+  void saving(page, (message) => showFeedback(page, message), async () => {
+    const saved = await saveContact("institutions", institution.id, contactId, contactPayload(contact));
+    state.contacts = contactId ? state.contacts.map((item) => String(item.id) === contactId ? saved : item) : [...state.contacts, saved];
+    institution.contacts = state.contacts; renderContacts(page, state.contacts); closeContactForm(page);
+    setText(page, "[data-summary-contacts]", String(state.contacts.length));
+  });
 }
 
 function handleContactAction(event, page, state) {
@@ -420,18 +455,12 @@ function handleContactAction(event, page, state) {
     openContactForm(page, contact);
     return;
   }
-  state.contacts = state.contacts.filter((item) => String(item.id) !== contactId);
-  state.contactChanges.push({ action: "remove", contactId });
-  renderContacts(page, state.contacts);
-  dispatchContactChanges(page, getSelectedInstitution(state), state);
-}
-
-function dispatchContactChanges(page, institution, state) {
-  page.dispatchEvent(new CustomEvent("bemfeito:institution-contacts-change-requested", {
-    bubbles: true,
-    detail: { institutionId: institution.id, contactChanges: [...state.contactChanges] },
-  }));
-  showFeedback(page, "A alteração de contatos foi preparada. A gravação dependerá da integração com o sistema.");
+  void saving(page, (message) => showFeedback(page, message), async () => {
+    await deleteContact("institutions", state.selectedInstitutionId, contactId);
+    state.contacts = state.contacts.filter((item) => String(item.id) !== contactId);
+    getSelectedInstitution(state).contacts = state.contacts; renderContacts(page, state.contacts);
+    setText(page, "[data-summary-contacts]", String(state.contacts.length));
+  });
 }
 
 function renderContacts(page, contacts) {
@@ -487,7 +516,8 @@ function createUnitItem(institutionId, unit) {
   name.textContent = unit.name || "Unidade sem nome";
   const location = document.createElement("span");
   location.textContent = getUnitLocation(unit);
-  content.append(name, location);
+  const meta = document.createElement("small"); meta.textContent = `${unit.status === "ACTIVE" ? "Ativa" : "Inativa"} • ${(unit.serviceAreas || []).map((area) => area.name).join(", ")} • ${countActiveNeeds([unit])} necessidades ativas`;
+  content.append(name, location, meta);
   const edit = document.createElement("a");
   edit.className = "button button--outline my-institution-unit__edit";
   edit.textContent = "Editar";
@@ -511,7 +541,7 @@ function renderStatus(page, institution) {
   const element = page.querySelector("[data-institution-status]");
   if (!element) return;
   const status = String(institution.status || "unknown").toLowerCase();
-  const labels = { active: "Ativa", inactive: "Inativa", pending: "Em análise" };
+  const labels = { active: "Ativa", inactive: "Inativa", pending: "Em análise", suspended: "Suspensa" };
   element.dataset.status = status;
   element.textContent = institution.statusLabel || labels[status] || "Status não informado";
 }
