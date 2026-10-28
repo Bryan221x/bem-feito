@@ -1,5 +1,17 @@
 node_modules/
 
+# Saidas de build, bytecode e arquivos temporarios locais.
+target/
+*.class
+__pycache__/
+*.pyc
+*.pyo
+*.tmp
+*.temp
+*~
+hs_err_pid*.log
+replay_pid*.log
+
 .env
 .env.*
 !.env.example

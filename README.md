@@ -20,3 +20,10 @@ Outras tecnologias serão incorporadas conforme as necessidades do projeto.
 O backend utiliza Java 25, Spring Boot, JPA e MySQL 8+. Consulte
 [Dados de referência](docs/database/reference-data.md) para preparar o banco,
 reproduzir a carga oficial do IBGE, consultar os endpoints e executar os testes.
+
+## Núcleo institucional
+
+A Parte 2 inclui instituições, unidades, contatos, necessidades, horários e
+referências de imagens. Consulte [contratos, testes e segurança temporária](docs/backend/institutional-core.md).
+Os endpoints de escrita e de gestão ainda não possuem autorização; não devem
+ser disponibilizados publicamente antes da Parte 3 (Spring Security).

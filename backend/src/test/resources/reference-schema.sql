@@ -1,4 +1,4 @@
--- DDL das cinco tabelas de referência, extraído de database/schema.sql.
+-- DDL das tabelas mapeadas, extraído de database/schema.sql.
 CREATE TABLE states (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
@@ -63,4 +63,317 @@ CREATE TABLE need_categories (
 
     CONSTRAINT uq_need_categories_name
         UNIQUE (name)
+) ENGINE = InnoDB;
+
+CREATE TABLE institutions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    category_id BIGINT UNSIGNED NOT NULL,
+
+    display_name VARCHAR(150) NOT NULL,
+    legal_name VARCHAR(200) NOT NULL,
+    cnpj CHAR(14) NOT NULL,
+
+    objective TEXT NULL,
+    description TEXT NULL,
+    history TEXT NULL,
+
+    website VARCHAR(255) NULL,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_institutions_cnpj
+        UNIQUE (cnpj),
+
+    CONSTRAINT chk_institutions_cnpj_format
+        CHECK (cnpj REGEXP '^[0-9]{14}$'),
+
+    CONSTRAINT chk_institutions_status
+        CHECK (status IN (
+            'ACTIVE',
+            'INACTIVE',
+            'SUSPENDED'
+        )),
+
+    CONSTRAINT fk_institutions_category
+        FOREIGN KEY (category_id)
+        REFERENCES institution_categories(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE units (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    institution_id BIGINT UNSIGNED NOT NULL,
+    city_id BIGINT UNSIGNED NOT NULL,
+
+    name VARCHAR(150) NOT NULL,
+    document CHAR(14) NULL,
+    description TEXT NULL,
+
+    postal_code CHAR(8) NOT NULL,
+    street VARCHAR(180) NOT NULL,
+    number VARCHAR(30) NOT NULL,
+    complement VARCHAR(120) NULL,
+    neighborhood VARCHAR(120) NOT NULL,
+
+    latitude DECIMAL(10, 8) NULL,
+    longitude DECIMAL(11, 8) NULL,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_units_document_format
+        CHECK (
+            document IS NULL
+            OR document REGEXP '^[0-9]{14}$'
+        ),
+
+    CONSTRAINT chk_units_postal_code_format
+        CHECK (
+            postal_code REGEXP '^[0-9]{8}$'
+        ),
+
+    CONSTRAINT chk_units_status
+        CHECK (status IN ('ACTIVE', 'INACTIVE')),
+
+    CONSTRAINT chk_units_latitude
+        CHECK (
+            latitude IS NULL
+            OR latitude BETWEEN -90 AND 90
+        ),
+
+    CONSTRAINT chk_units_longitude
+        CHECK (
+            longitude IS NULL
+            OR longitude BETWEEN -180 AND 180
+        ),
+
+    CONSTRAINT chk_units_coordinates_pair
+        CHECK (
+            (latitude IS NULL AND longitude IS NULL)
+            OR
+            (latitude IS NOT NULL AND longitude IS NOT NULL)
+        ),
+
+    CONSTRAINT fk_units_institution
+        FOREIGN KEY (institution_id)
+        REFERENCES institutions(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_units_city
+        FOREIGN KEY (city_id)
+        REFERENCES cities(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE institution_contacts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    institution_id BIGINT UNSIGNED NOT NULL,
+
+    type VARCHAR(30) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    label VARCHAR(100) NULL,
+
+    is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+    is_public BOOLEAN NOT NULL DEFAULT TRUE,
+
+    display_order INT UNSIGNED NOT NULL DEFAULT 0,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_institution_contacts_value
+        UNIQUE (institution_id, type, value),
+
+    CONSTRAINT chk_institution_contacts_type
+        CHECK (type IN (
+            'EMAIL',
+            'PHONE',
+            'WHATSAPP'
+        )),
+
+    CONSTRAINT fk_institution_contacts_institution
+        FOREIGN KEY (institution_id)
+        REFERENCES institutions(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE unit_contacts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    unit_id BIGINT UNSIGNED NOT NULL,
+
+    type VARCHAR(30) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    label VARCHAR(100) NULL,
+
+    is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+    is_public BOOLEAN NOT NULL DEFAULT TRUE,
+
+    display_order INT UNSIGNED NOT NULL DEFAULT 0,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_unit_contacts_value
+        UNIQUE (unit_id, type, value),
+
+    CONSTRAINT chk_unit_contacts_type
+        CHECK (type IN (
+            'EMAIL',
+            'PHONE',
+            'WHATSAPP'
+        )),
+
+    CONSTRAINT fk_unit_contacts_unit
+        FOREIGN KEY (unit_id)
+        REFERENCES units(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE unit_opening_hours (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    unit_id BIGINT UNSIGNED NOT NULL,
+
+    day_of_week TINYINT UNSIGNED NOT NULL,
+
+    opens_at TIME NULL,
+    closes_at TIME NULL,
+
+    closed BOOLEAN NOT NULL DEFAULT FALSE,
+
+    note VARCHAR(150) NULL,
+
+    CONSTRAINT uq_unit_opening_hours_day
+        UNIQUE (unit_id, day_of_week),
+
+    CONSTRAINT chk_opening_hours_day
+        CHECK (day_of_week BETWEEN 1 AND 7),
+
+    CONSTRAINT chk_opening_hours_values
+        CHECK (
+            (
+                closed = TRUE
+                AND opens_at IS NULL
+                AND closes_at IS NULL
+            )
+            OR
+            (
+                closed = FALSE
+                AND opens_at IS NOT NULL
+                AND closes_at IS NOT NULL
+                AND opens_at < closes_at
+            )
+        ),
+
+    CONSTRAINT fk_opening_hours_unit
+        FOREIGN KEY (unit_id)
+        REFERENCES units(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE unit_service_areas (
+    unit_id BIGINT UNSIGNED NOT NULL,
+    service_area_id BIGINT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (unit_id, service_area_id),
+
+    CONSTRAINT fk_unit_service_area_unit
+        FOREIGN KEY (unit_id)
+        REFERENCES units(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_unit_service_area_service_area
+        FOREIGN KEY (service_area_id)
+        REFERENCES service_areas(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE needs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    unit_id BIGINT UNSIGNED NOT NULL,
+    category_id BIGINT UNSIGNED NOT NULL,
+
+    title VARCHAR(150) NOT NULL,
+    description TEXT NULL,
+
+    quantity DECIMAL(10, 2) NULL,
+    unit_label VARCHAR(50) NULL,
+
+    priority VARCHAR(20) NOT NULL DEFAULT 'MEDIUM',
+    status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_needs_quantity
+        CHECK (quantity IS NULL OR quantity >= 0),
+
+    CONSTRAINT chk_needs_priority
+        CHECK (priority IN (
+            'LOW',
+            'MEDIUM',
+            'HIGH'
+        )),
+
+    CONSTRAINT chk_needs_status
+        CHECK (status IN (
+            'ACTIVE',
+            'FULFILLED',
+            'INACTIVE'
+        )),
+
+    CONSTRAINT fk_needs_unit
+        FOREIGN KEY (unit_id)
+        REFERENCES units(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_needs_category
+        FOREIGN KEY (category_id)
+        REFERENCES need_categories(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE institution_history_images (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    institution_id BIGINT UNSIGNED NOT NULL,
+
+    image_url VARCHAR(500) NOT NULL,
+    alt_text VARCHAR(255) NOT NULL,
+    caption VARCHAR(255) NULL,
+
+    display_order INT UNSIGNED NOT NULL DEFAULT 0,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_history_images_institution
+        FOREIGN KEY (institution_id)
+        REFERENCES institutions(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) ENGINE = InnoDB;
