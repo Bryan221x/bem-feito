@@ -148,6 +148,13 @@
   color: var(--color-surface);
 }
 
+.admin-sidebar__site-link[data-auth-logout] {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
 /* =========================================================
    Conteúdo principal
    ========================================================= */

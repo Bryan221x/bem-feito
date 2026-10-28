@@ -1,4 +1,5 @@
 package com.bemfeito.api.unit.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.contact.dto.ContactResponse;
 import com.bemfeito.api.common.domain.InstitutionStatus;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional(readOnly=true)
 public class UnitQueryService {
     private final UnitRepository units;
@@ -34,16 +36,21 @@ public class UnitQueryService {
             UnitServiceAreaRepository areas, NeedRepository needs) {
         this.units=units; this.contacts=contacts; this.hours=hours; this.areas=areas; this.needs=needs;
     }
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#id)")
     public UnitManagementResponse management(Long id) { return load(List.of(required(id)),false).getFirst(); }
+    @PreAuthorize("permitAll()")
     public UnitPublicResponse publicDetail(Long id) {
         Unit unit=required(id);
         if (unit.getStatus()!=UnitStatus.ACTIVE || unit.getInstitution().getStatus()!=InstitutionStatus.ACTIVE) throw notFound("Unidade");
         return toPublic(load(List.of(unit),true).getFirst());
     }
+    @PreAuthorize("permitAll()")
     public List<UnitPublicResponse> publicForInstitution(Long id) {
         return load(units.findForInstitution(id,true),true).stream().map(this::toPublic).toList();
     }
+    @PreAuthorize("@institutionAuthorization.canViewInstitution(#id)")
     public List<UnitManagementResponse> managementForInstitution(Long id) { return load(units.findForInstitution(id,false),false); }
+    @PreAuthorize("permitAll()")
     public List<CityResponse> availableCities() { return units.findAvailableCities().stream().map(CityResponse::from).toList(); }
     private Unit required(Long id) { return units.findById(id).orElseThrow(()->notFound("Unidade")); }
 

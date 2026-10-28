@@ -1,4 +1,5 @@
 package com.bemfeito.api.institution.contact.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.contact.dto.ContactPatch;
 import com.bemfeito.api.common.contact.dto.ContactRequest;
@@ -13,6 +14,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class InstitutionContactService {
     private final InstitutionContactRepository repository;
@@ -23,6 +25,7 @@ public class InstitutionContactService {
         this.validation=validation;
         this.owners=owners;
     }
+    @PreAuthorize("@institutionAuthorization.canManageInstitution(#institutionId)")
     public ContactResponse create(Long institutionId, ContactRequest request) {
         InstitutionContact entity=new InstitutionContact();
         entity.setInstitution(owners.findById(institutionId).orElseThrow(()->notFound("Institution")));
@@ -34,12 +37,14 @@ public class InstitutionContactService {
         if (!owners.existsById(institutionId)) throw notFound("Institution");
         return repository.findByIdAndInstitutionId(id,institutionId).orElseThrow(()->notFound("InstitutionContact"));
     }
+    @PreAuthorize("@institutionAuthorization.child('institutionContact',#institutionId,#id)")
     public ContactResponse replace(Long institutionId, Long id, ContactRequest request) {
         InstitutionContact entity=required(institutionId,id);
         apply(entity,request);
         repository.flush();
         return ContactResponse.from(entity);
     }
+    @PreAuthorize("@institutionAuthorization.child('institutionContact',#institutionId,#id)")
     public ContactResponse patch(Long institutionId, Long id, ContactPatch patch) {
         InstitutionContact entity=required(institutionId,id);
         var merged=new ContactRequest(
@@ -52,12 +57,15 @@ public class InstitutionContactService {
         return replace(institutionId,id,merged);
     }
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.child('institutionContact',#institutionId,#id)")
     public ContactResponse find(Long institutionId, Long id) { return ContactResponse.from(required(institutionId,id)); }
+    @PreAuthorize("@institutionAuthorization.child('institutionContact',#institutionId,#id)")
     public void delete(Long institutionId, Long id) {
         InstitutionContact entity=required(institutionId,id);
         repository.delete(entity);
     }
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.canManageInstitution(#institutionId)")
     public java.util.List<ContactResponse> list(Long institutionId) {
         if(!owners.existsById(institutionId)) throw notFound("institution");
         return repository.findForOwners(java.util.List.of(institutionId),false).stream().map(ContactResponse::from).toList();

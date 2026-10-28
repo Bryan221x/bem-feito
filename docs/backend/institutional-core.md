@@ -1,5 +1,9 @@
 # Parte 2 — Núcleo institucional
 
+> Registro histórico da Parte 2. A limitação de segurança temporária descrita
+> abaixo foi encerrada pela Parte 3. Consulte [segurança atual](security.md)
+> para os endpoints protegidos, sessão, CSRF e a matriz de autorização.
+
 ## Segurança temporária e limite de uso
 
 **Os endpoints de escrita e as consultas de gestão desta entrega NÃO possuem

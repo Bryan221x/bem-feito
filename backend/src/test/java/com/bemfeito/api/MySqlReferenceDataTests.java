@@ -46,9 +46,10 @@ class MySqlReferenceDataTests {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles="PLATFORM_ADMIN")
     void institutionalQueriesUseRealSchemaWithoutWritingOperationalData() throws Exception {
         var tables = List.of("institutions", "units", "institution_contacts", "unit_contacts",
-            "unit_opening_hours", "unit_service_areas", "needs", "institution_history_images");
+            "unit_opening_hours", "unit_service_areas", "needs", "institution_history_images", "users", "institution_memberships");
         var before = tables.stream().map(table -> jdbc.queryForObject("SELECT COUNT(*) FROM " + table, Long.class)).toList();
         for (String endpoint : List.of("/api/institutions", "/api/cities/available", "/api/management/institutions")) {
             mvc.perform(get(endpoint)).andExpect(status().isOk());

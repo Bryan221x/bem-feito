@@ -1,4 +1,5 @@
 package com.bemfeito.api.unit.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.validation.RequestValidation;
 import com.bemfeito.api.institution.repository.InstitutionRepository;
@@ -14,6 +15,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class UnitService {
     private final UnitRepository repository;
@@ -28,6 +30,7 @@ public class UnitService {
         this.references=references;
         this.queries=queries;
     }
+    @PreAuthorize("@institutionAuthorization.createUnit(#institutionId,#request)")
     public UnitManagementResponse create(Long institutionId, UnitRequest request) {
         Unit entity=new Unit();
         entity.setInstitution(owners.findById(institutionId).orElseThrow(()->notFound("Institution")));
@@ -38,12 +41,14 @@ public class UnitService {
     private Unit required(Long id) {
         return repository.findById(id).orElseThrow(()->notFound("Unit"));
     }
+    @PreAuthorize("@institutionAuthorization.unitReplace(#id,#request)")
     public UnitManagementResponse replace(Long id, UnitRequest request) {
         Unit entity=required(id);
         apply(entity,request);
         repository.flush();
         return queries.management(entity.getId());
     }
+    @PreAuthorize("@institutionAuthorization.unitPatch(#id,#patch)")
     public UnitManagementResponse patch(Long id, UnitPatch patch) {
         Unit entity=required(id);
         var merged=new UnitRequest(

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="auth-pending">
   <head>
     <meta charset="UTF-8" />
 
@@ -23,7 +23,8 @@
 
     <!-- Página -->
     <link rel="stylesheet" href="../css/pages/institution-login.css" />
-  </head>
+  <style>html.auth-pending body { visibility: hidden; }</style>
+</head>
 
   <body class="institution-login-page">
     <a class="skip-link" href="#main-content">
@@ -154,8 +155,7 @@
               </div>
 
               <!--
-                Reservado para mensagens retornadas pela futura
-                autenticação do backend.
+                Mensagens retornadas pela autenticação do backend.
               -->
               <div
                 class="institution-login__message"

@@ -1,4 +1,5 @@
 package com.bemfeito.api.need.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.validation.RequestValidation;
 import com.bemfeito.api.need.category.repository.NeedCategoryRepository;
@@ -16,6 +17,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class NeedService {
     private final NeedRepository repository;
@@ -28,6 +30,7 @@ public class NeedService {
         this.owners=owners;
         this.references=references;
     }
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#unitId)")
     public NeedResponse create(Long unitId, NeedRequest request) {
         Need entity=new Need();
         entity.setUnit(owners.findById(unitId).orElseThrow(()->notFound("Unit")));
@@ -39,12 +42,14 @@ public class NeedService {
         if (!owners.existsById(unitId)) throw notFound("Unit");
         return repository.findByIdAndUnitId(id,unitId).orElseThrow(()->notFound("Need"));
     }
+    @PreAuthorize("@institutionAuthorization.child('need',#unitId,#id)")
     public NeedResponse replace(Long unitId, Long id, NeedRequest request) {
         Need entity=required(unitId,id);
         apply(entity,request);
         repository.flush();
         return NeedResponse.from(entity);
     }
+    @PreAuthorize("@institutionAuthorization.child('need',#unitId,#id)")
     public NeedResponse patch(Long unitId, Long id, NeedPatch patch) {
         Need entity=required(unitId,id);
         var merged=new NeedRequest(
@@ -58,7 +63,9 @@ public class NeedService {
         return replace(unitId,id,merged);
     }
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.child('need',#unitId,#id)")
     public NeedResponse find(Long unitId, Long id) { return NeedResponse.from(required(unitId,id)); }
+    @PreAuthorize("@institutionAuthorization.child('need',#unitId,#id)")
     public void delete(Long unitId, Long id) {
         Need entity=required(unitId,id);
         if (entity.getStatus()!=com.bemfeito.api.common.domain.NeedStatus.INACTIVE)
@@ -66,6 +73,7 @@ public class NeedService {
         repository.delete(entity);
     }
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#unitId)")
     public java.util.List<NeedResponse> list(Long unitId) {
         if(!owners.existsById(unitId)) throw notFound("unit");
         return repository.findForUnits(java.util.List.of(unitId),false).stream().map(NeedResponse::from).toList();

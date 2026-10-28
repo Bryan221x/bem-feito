@@ -1,4 +1,6 @@
-export function initInstitutionLoginPage() {
+import { login, getCurrentUser } from "../services/auth-service.js";
+import { userDestination } from "../services/auth-guard.js";
+export async function initInstitutionLoginPage() {
   const page = document.querySelector(".institution-login-page");
 
   if (!page) return;
@@ -15,6 +17,15 @@ export function initInstitutionLoginPage() {
 
   if (!form || !emailInput || !passwordInput) {
     return;
+  }
+
+  try {
+    const user = await getCurrentUser();
+    location.replace(userDestination(user));
+    return;
+  } catch (error) {
+    document.documentElement.classList.remove("auth-pending");
+    if (error.status !== 401) showLoginMessage(message, "Não foi possível verificar a sessão. Você pode tentar entrar novamente.");
   }
 
   initPasswordToggle(passwordInput, passwordToggle);
@@ -81,7 +92,7 @@ function initFieldValidation(emailInput, passwordInput, message) {
    ========================================================= */
 
 function initLoginForm(form, emailInput, passwordInput, message) {
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     hideLoginMessage(message);
@@ -100,16 +111,22 @@ function initLoginForm(form, emailInput, passwordInput, message) {
       return;
     }
 
-    /*
-     * O Front-End valida somente o preenchimento.
-     *
-     * A autenticação das credenciais será realizada
-     * pela API quando o backend estiver disponível.
-     */
-    showLoginMessage(
-      message,
-      "O acesso da instituição será disponibilizado após a integração com o sistema de autenticação.",
-    );
+    const button = form.querySelector('[type="submit"]');
+    if (button?.disabled) return;
+    if (button) button.disabled = true;
+    try {
+      const authentication = login(emailInput.value, passwordInput.value);
+      passwordInput.value = "";
+      await authentication;
+      const user = await getCurrentUser();
+      location.replace(userDestination(user));
+    } catch (error) {
+      passwordInput.value = "";
+      showLoginMessage(message, error.status === 401 ? "E-mail ou senha inválidos." :
+        error.status === 403 ? "A sessão de segurança expirou. Atualize a página e tente novamente." :
+        "Não foi possível entrar. Verifique sua conexão e tente novamente.");
+    } finally { if (button) button.disabled = false; }
+
   });
 }
 

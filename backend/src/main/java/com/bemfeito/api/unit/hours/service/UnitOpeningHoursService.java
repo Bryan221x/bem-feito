@@ -1,4 +1,5 @@
 package com.bemfeito.api.unit.hours.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.validation.RequestValidation;
 import com.bemfeito.api.unit.hours.dto.OpeningHoursRequest;
@@ -13,6 +14,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class UnitOpeningHoursService {
     private final UnitRepository units;
@@ -23,6 +25,7 @@ public class UnitOpeningHoursService {
         this.units=units; this.hours=hours; this.validation=validation;
     }
 
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#unitId)")
     public OpeningHoursResponse put(Long unitId, int day, OpeningHoursRequest request) {
         validation.check(request);
         require(day>=1 && day<=7,"dayOfWeek deve estar entre 1 (segunda) e 7 (domingo)");
@@ -41,6 +44,7 @@ public class UnitOpeningHoursService {
     }
 
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#unitId)")
     public List<OpeningHoursResponse> list(Long unitId) {
         if(!units.existsById(unitId)) throw notFound("Unidade");
         return hours.findByUnitIdInOrderByDayOfWeekAsc(List.of(unitId)).stream().map(OpeningHoursResponse::from).toList();

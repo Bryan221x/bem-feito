@@ -1,4 +1,5 @@
 package com.bemfeito.api.institution.history.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.validation.RequestValidation;
 import com.bemfeito.api.institution.history.dto.HistoryImagePatch;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class InstitutionHistoryImageService {
     private final InstitutionHistoryImageRepository repository;
@@ -22,6 +24,7 @@ public class InstitutionHistoryImageService {
         this.validation=validation;
         this.owners=owners;
     }
+    @PreAuthorize("@institutionAuthorization.canManageInstitution(#institutionId)")
     public HistoryImageResponse create(Long institutionId, HistoryImageRequest request) {
         InstitutionHistoryImage entity=new InstitutionHistoryImage();
         entity.setInstitution(owners.findById(institutionId).orElseThrow(()->notFound("Institution")));
@@ -33,12 +36,14 @@ public class InstitutionHistoryImageService {
         if (!owners.existsById(institutionId)) throw notFound("Institution");
         return repository.findByIdAndInstitutionId(id,institutionId).orElseThrow(()->notFound("InstitutionHistoryImage"));
     }
+    @PreAuthorize("@institutionAuthorization.child('image',#institutionId,#id)")
     public HistoryImageResponse replace(Long institutionId, Long id, HistoryImageRequest request) {
         InstitutionHistoryImage entity=required(institutionId,id);
         apply(entity,request);
         repository.flush();
         return HistoryImageResponse.from(entity);
     }
+    @PreAuthorize("@institutionAuthorization.child('image',#institutionId,#id)")
     public HistoryImageResponse patch(Long institutionId, Long id, HistoryImagePatch patch) {
         InstitutionHistoryImage entity=required(institutionId,id);
         var merged=new HistoryImageRequest(
@@ -49,12 +54,15 @@ public class InstitutionHistoryImageService {
         return replace(institutionId,id,merged);
     }
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.child('image',#institutionId,#id)")
     public HistoryImageResponse find(Long institutionId, Long id) { return HistoryImageResponse.from(required(institutionId,id)); }
+    @PreAuthorize("@institutionAuthorization.child('image',#institutionId,#id)")
     public void delete(Long institutionId, Long id) {
         InstitutionHistoryImage entity=required(institutionId,id);
         repository.delete(entity);
     }
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.canManageInstitution(#institutionId)")
     public java.util.List<HistoryImageResponse> list(Long institutionId) {
         if(!owners.existsById(institutionId)) throw notFound("institution");
         return repository.findByInstitutionIdOrderByDisplayOrderAscIdAsc(institutionId).stream().map(HistoryImageResponse::from).toList();

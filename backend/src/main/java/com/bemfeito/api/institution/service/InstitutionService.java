@@ -1,4 +1,5 @@
 package com.bemfeito.api.institution.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.validation.RequestValidation;
 import com.bemfeito.api.institution.category.repository.InstitutionCategoryRepository;
@@ -13,6 +14,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class InstitutionService {
     private final InstitutionRepository repository;
@@ -25,6 +27,7 @@ public class InstitutionService {
         this.references=references;
         this.queries=queries;
     }
+    @PreAuthorize("@institutionAuthorization.isAdmin()")
     public InstitutionManagementResponse create(InstitutionRequest request) {
         Institution entity=new Institution();
         apply(entity,request);
@@ -34,12 +37,14 @@ public class InstitutionService {
     private Institution required(Long id) {
         return repository.findById(id).orElseThrow(()->notFound("Institution"));
     }
+    @PreAuthorize("@institutionAuthorization.institutionReplace(#id,#request)")
     public InstitutionManagementResponse replace(Long id, InstitutionRequest request) {
         Institution entity=required(id);
         apply(entity,request);
         repository.flush();
         return queries.management(entity.getId());
     }
+    @PreAuthorize("@institutionAuthorization.institutionPatch(#id,#patch)")
     public InstitutionManagementResponse patch(Long id, InstitutionPatch patch) {
         Institution entity=required(id);
         var merged=new InstitutionRequest(

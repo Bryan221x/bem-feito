@@ -22,7 +22,8 @@ public class ApiExceptionHandler {
     private static final Logger LOG=LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     private ResponseEntity<ApiError> error(int status,String message,Map<String,String> fields) {
-        return ResponseEntity.status(status).body(new ApiError(Instant.now(),status,message,fields));
+        return ResponseEntity.status(status).contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .body(new ApiError(Instant.now(),status,message,fields));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -64,6 +65,14 @@ public class ApiExceptionHandler {
         return error(404,"Recurso não encontrado",Map.of());
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    ResponseEntity<ApiError> denied(org.springframework.security.access.AccessDeniedException exception) {
+        return error(403,"Acesso negado",Map.of());
+    }
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    ResponseEntity<ApiError> unauthenticated(org.springframework.security.core.AuthenticationException exception) {
+        return error(401,"Autenticação necessária",Map.of());
+    }
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiError> unexpected(Exception exception) {
         if (exception instanceof org.springframework.web.ErrorResponse frameworkError) {

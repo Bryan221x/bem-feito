@@ -1,4 +1,5 @@
 package com.bemfeito.api.institution.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.contact.dto.ContactResponse;
 import com.bemfeito.api.common.domain.InstitutionStatus;
@@ -22,6 +23,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional(readOnly=true)
 public class InstitutionQueryService {
     private final InstitutionRepository institutions;
@@ -32,10 +34,12 @@ public class InstitutionQueryService {
             InstitutionHistoryImageRepository images, UnitQueryService units) {
         this.institutions=institutions;this.contacts=contacts;this.images=images;this.units=units;
     }
+    @PreAuthorize("permitAll()")
     public PageResponse<InstitutionSummary> list(Long cityId,int page,int size) {
         require(cityId==null || cityId>0,"cityId deve ser positivo");
         return PageResponse.from(institutions.findPublic(cityId,pagination(page,size)));
     }
+    @PreAuthorize("@institutionAuthorization.isAdmin()")
     public PageResponse<InstitutionManagementSummary> managementList(int page,int size) {
         return PageResponse.from(institutions.findManagement(pagination(page,size)));
     }
@@ -49,6 +53,7 @@ public class InstitutionQueryService {
         if(entity.getStatus()!=InstitutionStatus.ACTIVE) throw notFound("Instituição");
         return entity;
     }
+    @PreAuthorize("permitAll()")
     public InstitutionPublicResponse publicDetail(Long id) {
         Institution i=visible(id);
         return new InstitutionPublicResponse(i.getId(),i.getDisplayName(),i.getCategory().getId(),i.getCategory().getName(),
@@ -57,7 +62,9 @@ public class InstitutionQueryService {
             images.findByInstitutionIdOrderByDisplayOrderAscIdAsc(id).stream().map(HistoryImageResponse::from).toList(),
             units.publicForInstitution(id));
     }
+    @PreAuthorize("permitAll()")
     public List<UnitPublicResponse> publicUnits(Long id) { visible(id); return units.publicForInstitution(id); }
+    @PreAuthorize("@institutionAuthorization.canViewInstitution(#id)")
     public InstitutionManagementResponse management(Long id) {
         Institution i=required(id);
         return new InstitutionManagementResponse(i.getId(),i.getDisplayName(),i.getCategory().getId(),i.getCategory().getName(),

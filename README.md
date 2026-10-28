@@ -25,5 +25,12 @@ reproduzir a carga oficial do IBGE, consultar os endpoints e executar os testes.
 
 A Parte 2 inclui instituições, unidades, contatos, necessidades, horários e
 referências de imagens. Consulte [contratos, testes e segurança temporária](docs/backend/institutional-core.md).
-Os endpoints de escrita e de gestão ainda não possuem autorização; não devem
-ser disponibilizados publicamente antes da Parte 3 (Spring Security).
+Os endpoints de escrita e de gestão receberam autorização na Parte 3, descrita
+na documentação de segurança abaixo.
+
+## Usuários e segurança
+
+A Parte 3 usa Spring Security com sessão HTTP, CSRF e autorização por vínculo
+institucional. Consulte [configuração, bootstrap e contratos](docs/backend/security.md).
+O bootstrap do primeiro administrador é opcional e desabilitado por padrão.
+As notas de endpoints sem autorização da Parte 2 são históricas e foram superadas.

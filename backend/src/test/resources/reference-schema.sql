@@ -377,3 +377,76 @@ CREATE TABLE institution_history_images (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE = InnoDB;
+CREATE TABLE users (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NULL,
+
+    platform_role VARCHAR(30) NOT NULL DEFAULT 'USER',
+    status VARCHAR(30) NOT NULL DEFAULT 'INVITED',
+
+    email_verified_at DATETIME NULL,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_users_email
+        UNIQUE (email),
+
+    CONSTRAINT chk_users_platform_role
+        CHECK (platform_role IN ('USER', 'PLATFORM_ADMIN')),
+
+    CONSTRAINT chk_users_status
+        CHECK (status IN (
+            'INVITED',
+            'ACTIVE',
+            'INACTIVE',
+            'SUSPENDED'
+        ))
+) ENGINE = InnoDB;
+
+CREATE TABLE institution_memberships (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL,
+    institution_id BIGINT UNSIGNED NOT NULL,
+
+    role VARCHAR(30) NOT NULL DEFAULT 'EDITOR',
+    status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_membership_user_institution
+        UNIQUE (user_id, institution_id),
+
+    CONSTRAINT chk_membership_role
+        CHECK (role IN (
+            'OWNER',
+            'MANAGER',
+            'EDITOR'
+        )),
+
+    CONSTRAINT chk_membership_status
+        CHECK (status IN (
+            'ACTIVE',
+            'PENDING',
+            'REVOKED'
+        )),
+
+    CONSTRAINT fk_membership_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_membership_institution
+        FOREIGN KEY (institution_id)
+        REFERENCES institutions(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;

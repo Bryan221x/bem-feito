@@ -1,6 +1,7 @@
+import { getMyInstitutions } from "../services/auth-service.js";
 const selectionStates = new WeakMap();
 
-export function initInstitutionSelectionPage() {
+export async function initInstitutionSelectionPage() {
   const page = document.querySelector("[data-institution-selection-page]");
 
   if (!page) return;
@@ -12,7 +13,11 @@ export function initInstitutionSelectionPage() {
 
   selectionStates.set(page, state);
   initSelection(page, state);
-  renderInstitutionSelection(page, []);
+  showInstitutionSelectionLoading(page);
+  try {
+    const memberships = await getMyInstitutions();
+    renderInstitutionSelection(page, memberships.map((item) => ({ ...item, id: item.institutionId })));
+  } catch { showInstitutionSelectionError(page); }
 }
 
 /*

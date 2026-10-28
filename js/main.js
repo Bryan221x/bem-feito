@@ -1,3 +1,4 @@
+import { guardPage, initLogout, initSessionRecheck } from "./services/auth-guard.js";
 import { initInstitutionLoginPage } from "./pages/institution-login.js";
 import { initRegistrationRequestPage } from "./pages/registration-request.js";
 import { initInstitutionSelectionPage } from "./pages/institution-selection.js";
@@ -16,7 +17,10 @@ import { initInstitutionAccessRequestPage } from "./pages/institution-access-req
 import { initAdminInstitutionsPage } from "./pages/admin-institutions.js";
 import { initAdminRequestsPage } from "./pages/admin-requests.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!(await guardPage())) return;
+  initSessionRecheck();
+  initLogout();
   initMobileMenu();
 
   initHomePage();

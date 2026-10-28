@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Sql("/institutional-fixtures.sql")
+@org.springframework.security.test.context.support.WithMockUser(roles="PLATFORM_ADMIN")
 class InstitutionalApiTests {
     @Autowired MockMvc mvc;
     @Autowired JdbcTemplate jdbc;
@@ -42,7 +43,7 @@ class InstitutionalApiTests {
     private String instPath() { return "/api/institutions/"+institution("Alpha Teste"); }
     private String unitPath() { return "/api/units/"+unit(); }
     private ResultActions json(MockHttpServletRequestBuilder request,String body) throws Exception {
-        return mvc.perform(request.contentType("application/json").content(body));
+        return mvc.perform(request.with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType("application/json").content(body));
     }
     private Long id(String response) { return ((Number)JsonPath.read(response,"$.id")).longValue(); }
     private String institutionRequest() {
@@ -226,7 +227,7 @@ class InstitutionalApiTests {
             json(patch(path),"{\"isPublic\":true,\"label\":null}").andExpect(status().isOk())
                 .andExpect(jsonPath("$.value",is("created@example.org"))).andExpect(jsonPath("$.label",nullValue()));
             json(put(path),contact(false,"replaced@example.org")).andExpect(status().isOk());
-            mvc.perform(delete(path)).andExpect(status().isNoContent());
+            mvc.perform(delete(path).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())).andExpect(status().isNoContent());
             mvc.perform(get(path.replace("/api/","/api/management/"))).andExpect(status().isNotFound());
         }
         Long foreign=jdbc.queryForObject("SELECT id FROM institution_contacts WHERE value='public@example.org'",Long.class);
@@ -256,12 +257,12 @@ class InstitutionalApiTests {
         String path=unitPath()+"/needs/"+id(result);
         json(patch(path),"{\"quantity\":null}").andExpect(status().isOk())
             .andExpect(jsonPath("$.quantity",nullValue())).andExpect(jsonPath("$.name",is("Nova necessidade teste")));
-        mvc.perform(delete(path)).andExpect(status().isConflict());
+        mvc.perform(delete(path).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())).andExpect(status().isConflict());
         json(put(path),needRequest()).andExpect(status().isOk());
         json(patch(path),"{\"status\":\"FULFILLED\"}").andExpect(status().isOk());
         mvc.perform(get(unitPath())).andExpect(jsonPath("$.needs[*].id",not(hasItem(id(result).intValue()))));
         json(patch(path),"{\"status\":\"INACTIVE\"}").andExpect(status().isOk());
-        mvc.perform(delete(path)).andExpect(status().isNoContent());
+        mvc.perform(delete(path).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())).andExpect(status().isNoContent());
     }
 
     @Test void needsValidateQuantityEnumsAndCategory() throws Exception {
@@ -322,7 +323,7 @@ class InstitutionalApiTests {
             .andExpect(status().isCreated());
         mvc.perform(get(instPath())).andExpect(jsonPath("$.historyImages[*].order",contains(1,2)))
             .andExpect(jsonPath("$.historyImages[0].alt",is("Foto de teste")));
-        mvc.perform(delete(path)).andExpect(status().isNoContent());
+        mvc.perform(delete(path).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())).andExpect(status().isNoContent());
         mvc.perform(get(instPath())).andExpect(jsonPath("$.historyImages",hasSize(1)));
     }
 
@@ -342,7 +343,7 @@ class InstitutionalApiTests {
         json(patch(instPath()),"{\"status\":0}").andExpect(status().isBadRequest());
         json(post("/api/institutions"),institutionRequest().replace("\"status\":\"ACTIVE\"","\"status\":\"ACTIVE\",\"unknown\":true"))
             .andExpect(status().isBadRequest());
-        mvc.perform(post("/api/institutions").contentType("text/plain").content("invalid"))
+        mvc.perform(post("/api/institutions").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType("text/plain").content("invalid"))
             .andExpect(status().isUnsupportedMediaType()).andExpect(jsonPath("$.status",is(415)));
     }
 

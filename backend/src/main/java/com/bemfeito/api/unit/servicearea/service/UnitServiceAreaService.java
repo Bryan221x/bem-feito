@@ -1,4 +1,5 @@
 package com.bemfeito.api.unit.servicearea.service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.bemfeito.api.common.validation.RequestValidation;
 import com.bemfeito.api.servicearea.dto.ServiceAreaResponse;
@@ -14,6 +15,7 @@ import static com.bemfeito.api.common.validation.RequestValidation.notFound;
 import static com.bemfeito.api.common.validation.RequestValidation.require;
 
 @Service
+@PreAuthorize("denyAll()")
 @Transactional
 public class UnitServiceAreaService {
     private final UnitRepository units;
@@ -26,6 +28,7 @@ public class UnitServiceAreaService {
         this.units=units; this.areas=areas; this.links=links; this.validation=validation;
     }
 
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#unitId)")
     public List<ServiceAreaResponse> replace(Long unitId, ServiceAreasRequest request) {
         validation.check(request);
         var unit=units.findById(unitId).orElseThrow(()->notFound("Unidade"));
@@ -40,6 +43,7 @@ public class UnitServiceAreaService {
     }
 
     @Transactional(readOnly=true)
+    @PreAuthorize("@institutionAuthorization.canEditUnit(#unitId)")
     public List<ServiceAreaResponse> list(Long unitId) {
         if(!units.existsById(unitId)) throw notFound("Unidade");
         return links.findForUnits(List.of(unitId)).stream().map(a->ServiceAreaResponse.from(a.getServiceArea())).toList();

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="auth-pending" data-auth-required="authenticated">
   <head>
     <meta charset="UTF-8" />
 
@@ -26,7 +26,8 @@
     <link rel="stylesheet" href="../css/components/admin-layout.css" />
 
     <link rel="stylesheet" href="../css/pages/institution-selection.css" />
-  </head>
+  <style>html.auth-pending body { visibility: hidden; }</style>
+</head>
 
   <body class="institution-selection-page">
     <a class="skip-link" href="#main-content">
@@ -105,7 +106,7 @@
 
         </nav>
 
-        <div class="admin-sidebar__footer">
+        <div class="admin-sidebar__footer"><button type="button" class="admin-sidebar__site-link" data-auth-logout>Sair</button>
           <a class="admin-sidebar__site-link" href="../index.html">
             <svg
               class="admin-sidebar__icon"

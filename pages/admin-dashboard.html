@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="auth-pending" data-auth-required="admin">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,8 @@
     <link rel="icon" type="image/png" href="../assets/images/brand/brand-mark.png" />
     <title>Dashboard Geral | Bem-Feito</title>
     <link rel="stylesheet" href="../css/reset.css" /><link rel="stylesheet" href="../css/variables.css" /><link rel="stylesheet" href="../css/global.css" /><link rel="stylesheet" href="../css/components/buttons.css" /><link rel="stylesheet" href="../css/components/admin-layout.css" /><link rel="stylesheet" href="../css/pages/admin-dashboard.css" />
-  </head>
+  <style>html.auth-pending body { visibility: hidden; }</style>
+</head>
   <body class="admin-dashboard-page">
     <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
     <div class="admin-shell">
@@ -18,7 +19,7 @@
           <a class="admin-sidebar__link" href="./admin-institutions.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg>Instituições</a>
           <a class="admin-sidebar__link" href="./admin-requests.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"></path><path d="M14 3v4h4M9 12h6M9 16h4"></path></svg>Solicitações</a>
         </nav>
-        <div class="admin-sidebar__footer"><a class="admin-sidebar__site-link" href="../index.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6M9 12h11M4 4v16"></path></svg>Voltar para o site</a></div>
+        <div class="admin-sidebar__footer"><button type="button" class="admin-sidebar__site-link" data-auth-logout>Sair</button><a class="admin-sidebar__site-link" href="../index.html"><svg class="admin-sidebar__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6M9 12h11M4 4v16"></path></svg>Voltar para o site</a></div>
       </aside>
       <button class="admin-sidebar__overlay" type="button" aria-label="Fechar menu administrativo" data-admin-sidebar-overlay></button>
       <div class="admin-shell__main">

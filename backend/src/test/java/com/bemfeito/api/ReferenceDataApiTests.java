@@ -100,9 +100,10 @@ class ReferenceDataApiTests {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles="PLATFORM_ADMIN")
     void referenceEndpointsDoNotAllowCreation() throws Exception {
         for (String endpoint : new String[]{"cities", "institution-categories", "service-areas", "need-categories"}) {
-            mvc.perform(post("/api/" + endpoint)).andExpect(status().isMethodNotAllowed());
+            mvc.perform(post("/api/" + endpoint).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())).andExpect(status().isMethodNotAllowed());
         }
     }
 

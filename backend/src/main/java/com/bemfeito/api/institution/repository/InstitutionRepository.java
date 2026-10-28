@@ -11,6 +11,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface InstitutionRepository extends JpaRepository<Institution,Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select i from Institution i where i.id=:id")
+    Optional<Institution> findForMembershipUpdate(Long id);
+
     @Override @EntityGraph(attributePaths="category") Optional<Institution> findById(Long id);
     @Query("""
         select new com.bemfeito.api.institution.dto.InstitutionSummary(i.id,i.displayName,i.category.id,i.category.name,substring(i.description,1,500))
