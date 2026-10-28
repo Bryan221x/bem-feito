@@ -1,7 +1,12 @@
+import { getRequestDashboard } from "../services/request-service.js";
 export function initAdminDashboardPage() {
   const page = document.querySelector("[data-admin-dashboard-page]");
   if (!page) return;
   renderAdminDashboard(page, { metrics: null, requests: [], activities: [], institutionsByCity: [] });
+  getRequestDashboard().then((data) => {
+    renderMetrics(page, { pendingRequests: data.pendingRequests });
+    renderRequests(page, data.requests);
+  }).catch(() => setFeedback(page, "Não foi possível carregar as solicitações. Tente recarregar.", "error"));
 }
 
 /* Contrato de entrada para dados agregados da futura API administrativa. */
@@ -21,7 +26,7 @@ function renderMetrics(page, metrics) {
     const element = page.querySelector(`[data-admin-metric="${key}"]`);
     if (!element) return;
     const value = metrics?.[key];
-    const available = Number.isFinite(Number(value));
+    const available = value != null && Number.isFinite(Number(value));
     element.textContent = available ? new Intl.NumberFormat("pt-BR").format(Number(value)) : "—";
     element.setAttribute("aria-label", available ? `${value}` : "Dado não disponível");
   });
@@ -51,7 +56,7 @@ function createRequestRow(request) {
   const actionCell = document.createElement("td");
   const link = document.createElement("a");
   link.className = "admin-dashboard-table__action";
-  link.href = `./admin-requests.html?requestId=${encodeURIComponent(request.id)}`;
+  link.href = `./admin-requests.html?requestId=${encodeURIComponent(request.id)}&type=${encodeURIComponent(request.type || "REGISTRATION")}`;
   link.textContent = "Ver detalhes";
   actionCell.append(link);
   row.append(name, date, statusCell, actionCell);

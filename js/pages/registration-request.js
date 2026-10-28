@@ -1,4 +1,5 @@
-const requestStates = new WeakMap();
+import { getCategories, getStates, getCities, submitRegistration, withSubmission, showBackendFields } from "../services/request-service.js";
+let draftSequence = 0;
 
 export function initRegistrationRequestPage() {
   const page = document.querySelector("[data-registration-request-page]");
@@ -6,13 +7,12 @@ export function initRegistrationRequestPage() {
   if (!page || !form) return;
 
   const state = { publicContacts: [] };
-  requestStates.set(page, state);
   bindMask(form.querySelector("[data-cnpj]"), formatCnpj);
   bindMask(form.querySelector("[data-phone]"), formatPhone);
   bindMask(form.querySelector("[data-postal]"), formatPostalCode);
-  form.querySelector("[data-state]")?.addEventListener("input", (event) => {
-    event.target.value = event.target.value.replace(/[^a-z]/gi, "").toUpperCase();
-  });
+  loadReferences(page, form);
+  form.querySelector("[data-reference-retry]")?.addEventListener("click", () => loadReferences(page, form));
+  form.elements.namedItem("state")?.addEventListener("change", () => loadCities(page, form));
   form.querySelector("[data-description]")?.addEventListener("input", () => updateCounter(form));
   form.addEventListener("input", (event) => clearFieldError(form, event.target.name));
   form.querySelector("[data-add-public-contact]")?.addEventListener("click", () => addPublicContact(page, state));
@@ -43,40 +43,24 @@ function submitRequest(event, page, state) {
 
   const data = new FormData(form);
   const request = {
-    institution: {
-      displayName: clean(data.get("displayName")),
-      legalName: clean(data.get("legalName")),
-      document: clean(data.get("document")),
-      category: clean(data.get("category")),
-      objective: clean(data.get("objective")),
-      description: clean(data.get("description")),
-      history: clean(data.get("history")) || null,
-      website: clean(data.get("website")) || null,
-    },
-    responsible: {
-      name: clean(data.get("responsibleName")),
-      role: clean(data.get("responsibleRole")) || null,
-      accessEmail: clean(data.get("responsibleEmail")),
-      phone: clean(data.get("responsiblePhone")),
-    },
-    publicContacts: state.publicContacts.map(({ id, ...contact }) => contact),
-    mainUnit: {
-      name: clean(data.get("unitName")),
-      address: {
-        postalCode: clean(data.get("postalCode")),
-        street: clean(data.get("street")),
-        number: clean(data.get("number")),
-        complement: clean(data.get("complement")) || null,
-        neighborhood: clean(data.get("neighborhood")),
-        city: clean(data.get("city")),
-        state: clean(data.get("state")),
-      },
-    },
+    categoryId: Number(data.get("category")), displayName: clean(data.get("displayName")), legalName: clean(data.get("legalName")),
+    cnpj: clean(data.get("document")), objective: clean(data.get("objective")), description: clean(data.get("description")),
+    history: clean(data.get("history")) || null, website: clean(data.get("website")) || null,
+    responsible: { name: clean(data.get("responsibleName")), email: clean(data.get("responsibleEmail")), phone: clean(data.get("responsiblePhone")), role: clean(data.get("responsibleRole")) },
+    publicContacts: state.publicContacts.map(({ type, value, label, isPrimary }) => ({ type, value, label, isPrimary })),
+    mainUnit: { name: clean(data.get("unitName")), document: null, description: null, cityId: Number(data.get("city")), postalCode: clean(data.get("postalCode")),
+      street: clean(data.get("street")), number: clean(data.get("number")), complement: clean(data.get("complement")) || null, neighborhood: clean(data.get("neighborhood")), contacts: [] },
   };
-
-  /* A futura integração fará o POST deste contrato sem misturar credenciais e contatos públicos. */
-  page.dispatchEvent(new CustomEvent("bemfeito:registration-requested", { bubbles: true, detail: request }));
-  setFormMessage(page, "O envio da solicitação será disponibilizado após a integração com o sistema.");
+  return withSubmission(form, async () => {
+    try {
+      const result = await submitRegistration(request);
+      form.reset(); state.publicContacts = []; renderPublicContacts(page, state); updateCounter(form); resetCities(form);
+      setFormMessage(page, `Solicitação #${result.id} enviada com sucesso. Ela será analisada pela equipe Bem-Feito.`);
+    } catch (error) {
+      showBackendFields(form, error.fields, { cnpj: "document", categoryId: "category", "responsible.name": "responsibleName", "responsible.email": "responsibleEmail", "responsible.phone": "responsiblePhone", "responsible.role": "responsibleRole", "mainUnit.cityId": "city", "mainUnit.name": "unitName", ...Object.fromEntries(["postalCode", "street", "number", "complement", "neighborhood"].map((k) => [`mainUnit.${k}`, k])) });
+      setFormMessage(page, error.message || "Não foi possível enviar. Tente novamente.", true);
+    }
+  });
 }
 
 function addPublicContact(page, state) {
@@ -89,10 +73,13 @@ function addPublicContact(page, state) {
     value?.focus();
     return;
   }
+  const normalized = type.value === "EMAIL" ? value.value.trim().toLowerCase() : value.value.replace(/[^+0-9]/g, "");
+  if (state.publicContacts.some((c) => c.type === type.value && c.value === normalized)) { if (error) error.textContent = "Contato já adicionado."; return; }
+  if (type.value === "EMAIL" ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) : !/^\+?[0-9]{8,15}$/.test(normalized)) { if (error) error.textContent = "Informe um contato válido."; return; }
   state.publicContacts.push({
     id: createDraftId(),
     type: type.value,
-    value: value.value.trim(),
+    value: normalized,
     label: label.value.trim() || null,
     isPrimary: state.publicContacts.length === 0,
     isPublic: true,
@@ -133,7 +120,7 @@ function renderPublicContacts(page, state) {
 }
 
 function validateForm(form) {
-  const required = ["displayName", "legalName", "document", "category", "objective", "description", "responsibleName", "responsibleEmail", "responsiblePhone", "unitName", "postalCode", "street", "number", "neighborhood", "city", "state"];
+  const required = ["displayName", "legalName", "document", "category", "objective", "description", "responsibleName", "responsibleRole", "responsibleEmail", "responsiblePhone", "unitName", "postalCode", "street", "number", "neighborhood", "city", "state"];
   return required.flatMap((field) => {
     const input = form.elements.namedItem(field);
     return input?.value.trim() && input.checkValidity() ? [] : [{ field, message: input?.type === "email" ? "Informe um e-mail válido." : "Campo obrigatório." }];
@@ -150,4 +137,29 @@ function updateCounter(form) { const input = form.querySelector("[data-descripti
 function setFormMessage(page, message, isError = false) { const element = page.querySelector("[data-registration-form-message]"); if (!element) return; element.textContent = message; element.dataset.state = isError ? "error" : "neutral"; element.hidden = false; }
 function getTypeLabel(type) { return { EMAIL: "E-mail", PHONE: "Telefone", WHATSAPP: "WhatsApp" }[type] || "Contato"; }
 function clean(value) { return String(value || "").trim(); }
-function createDraftId() { return `draft-public-contact-${typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`; }
+function createDraftId() { return `draft-public-contact-${++draftSequence}`; }
+
+function option(value, label) { const o = document.createElement("option"); o.value = value; o.textContent = label; return o; }
+function resetCities(form) { const select = form.elements.namedItem("city"); select.replaceChildren(option("", "Selecione primeiro o estado")); select.disabled = true; }
+async function loadReferences(page, form) {
+  const feedback = page.querySelector("[data-reference-message]"); const retry = page.querySelector("[data-reference-retry]");
+  const category = form.elements.namedItem("category"), state = form.elements.namedItem("state");
+  category.disabled = state.disabled = true; resetCities(form); feedback.textContent = "Carregando categorias e estados…"; retry.hidden = true;
+  try {
+    const [categories, states] = await Promise.all([getCategories(), getStates()]);
+    category.replaceChildren(option("", categories.length ? "Selecione a categoria" : "Nenhuma categoria disponível"), ...categories.map((c) => option(c.id, c.name)));
+    state.replaceChildren(option("", states.length ? "Selecione o estado" : "Nenhum estado disponível"), ...states.map((s) => option(s.uf, `${s.name} (${s.uf})`)));
+    category.disabled = !categories.length; state.disabled = !states.length;
+    feedback.textContent = categories.length && states.length ? "" : "Opções indisponíveis. Tente novamente."; retry.hidden = !!(categories.length && states.length);
+  } catch { feedback.textContent = "Não foi possível carregar categorias e estados."; retry.hidden = false; }
+}
+let citySequence = 0;
+async function loadCities(page, form) {
+  const sequence = ++citySequence; const uf = form.elements.namedItem("state").value; resetCities(form); if (!uf) return;
+  const city = form.elements.namedItem("city"), feedback = page.querySelector("[data-reference-message]"); feedback.textContent = "Carregando municípios…";
+  try {
+    const cities = await getCities(uf); if (sequence !== citySequence) return;
+    city.replaceChildren(option("", cities.length ? "Selecione a cidade" : "Nenhuma cidade disponível"), ...cities.map((c) => option(c.id, c.name)));
+    city.disabled = !cities.length; feedback.textContent = cities.length ? "" : "Nenhuma cidade disponível para esta UF.";
+  } catch { if (sequence === citySequence) feedback.textContent = "Não foi possível carregar municípios. Selecione o estado novamente."; }
+}

@@ -698,3 +698,12 @@ Nenhum usuário/instituição fictício foi persistido no MySQL. Nenhum commit f
 | `pages/my-institution.html` | Alterado |
 | `pages/unit-form.html` | Alterado |
 | `tests/frontend/auth.test.mjs` | Novo |
+
+## Continuidade na Parte 4
+
+As referências acima a solicitações/convites sem integração descrevem o escopo
+histórico da Parte 3. A Parte 4 acrescenta somente os POSTs públicos necessários
+(cadastro, acesso, inspect/accept) e a busca pública limitada; CSRF permanece
+ativo e `/api/admin/**` continua exclusivo de PLATFORM_ADMIN. Não altera login,
+bootstrap, sessões nem as permissões institucionais existentes. Consulte
+[contratos, locks, convites e configuração](requests-and-invitations.md).

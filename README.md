@@ -34,3 +34,9 @@ A Parte 3 usa Spring Security com sessão HTTP, CSRF e autorização por víncul
 institucional. Consulte [configuração, bootstrap e contratos](docs/backend/security.md).
 O bootstrap do primeiro administrador é opcional e desabilitado por padrão.
 As notas de endpoints sem autorização da Parte 2 são históricas e foram superadas.
+
+## Solicitações, aprovação e ativação
+
+A Parte 4 integra cadastro/acesso, revisão administrativa, convites e ativação real.
+Consulte [contratos, migração, configuração SMTP/manual e testes](docs/backend/requests-and-invitations.md).
+Banco existente precisa da migração de unicidade descrita nessa documentação.

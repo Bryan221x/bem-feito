@@ -38,7 +38,8 @@ class PrepareCitiesTests(unittest.TestCase):
         test_schema = (importer.BASE.parent / "backend/src/test/resources/reference-schema.sql").read_text(encoding="utf-8")
         for table in ["states", "cities", "institution_categories", "service_areas", "need_categories",
                       "institutions", "units", "institution_contacts", "unit_contacts", "unit_opening_hours",
-                      "unit_service_areas", "needs", "institution_history_images", "users", "institution_memberships"]:
+                      "unit_service_areas", "needs", "institution_history_images", "users", "institution_memberships", "registration_requests", "registration_request_contacts",
+                      "registration_request_units", "registration_request_unit_contacts", "access_requests", "account_invitation_tokens"]:
             statement = re.search(r"CREATE TABLE " + table + r" \(.*?\) ENGINE = InnoDB;", schema, re.S).group(0)
             self.assertIn(statement, test_schema)
 

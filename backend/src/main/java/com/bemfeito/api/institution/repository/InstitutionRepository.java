@@ -15,6 +15,12 @@ public interface InstitutionRepository extends JpaRepository<Institution,Long> {
     @Query("select i from Institution i where i.id=:id")
     Optional<Institution> findForMembershipUpdate(Long id);
 
+    boolean existsByCnpj(String cnpj);
+    @Query("""
+        select i from Institution i join fetch i.category where i.status=com.bemfeito.api.common.domain.InstitutionStatus.ACTIVE
+        and (lower(i.displayName) like :name escape '!' or i.cnpj=:cnpj) order by i.displayName,i.id
+        """)
+    java.util.List<Institution> searchForAccess(String name,String cnpj,Pageable pageable);
     @Override @EntityGraph(attributePaths="category") Optional<Institution> findById(Long id);
     @Query("""
         select new com.bemfeito.api.institution.dto.InstitutionSummary(i.id,i.displayName,i.category.id,i.category.name,substring(i.description,1,500))

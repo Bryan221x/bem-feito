@@ -49,12 +49,17 @@ class MySqlReferenceDataTests {
     @org.springframework.security.test.context.support.WithMockUser(roles="PLATFORM_ADMIN")
     void institutionalQueriesUseRealSchemaWithoutWritingOperationalData() throws Exception {
         var tables = List.of("institutions", "units", "institution_contacts", "unit_contacts",
-            "unit_opening_hours", "unit_service_areas", "needs", "institution_history_images", "users", "institution_memberships");
+            "unit_opening_hours", "unit_service_areas", "needs", "institution_history_images", "users", "institution_memberships", "registration_requests", "registration_request_contacts",
+            "registration_request_units", "registration_request_unit_contacts", "access_requests", "account_invitation_tokens");
+        String adminBefore=jdbc.queryForObject("SELECT SHA2(GROUP_CONCAT(CONCAT_WS('|',id,name,email,password_hash,platform_role,status,email_verified_at,created_at,updated_at) ORDER BY id SEPARATOR '|'),256) FROM users WHERE platform_role='PLATFORM_ADMIN'",String.class);
         var before = tables.stream().map(table -> jdbc.queryForObject("SELECT COUNT(*) FROM " + table, Long.class)).toList();
-        for (String endpoint : List.of("/api/institutions", "/api/cities/available", "/api/management/institutions")) {
+        for (String endpoint : List.of("/api/institutions", "/api/cities/available", "/api/management/institutions", "/api/institutions/access-search?q=Bem",
+                "/api/admin/registration-requests", "/api/admin/access-requests", "/api/admin/requests/summary")) {
             mvc.perform(get(endpoint)).andExpect(status().isOk());
         }
         var after = tables.stream().map(table -> jdbc.queryForObject("SELECT COUNT(*) FROM " + table, Long.class)).toList();
         assertThat(after).isEqualTo(before);
+        assertThat(jdbc.queryForObject("SELECT SHA2(GROUP_CONCAT(CONCAT_WS('|',id,name,email,password_hash,platform_role,status,email_verified_at,created_at,updated_at) ORDER BY id SEPARATOR '|'),256) FROM users WHERE platform_role='PLATFORM_ADMIN'",String.class)).isEqualTo(adminBefore);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema=DATABASE() AND index_name IN ('uq_registration_requests_open_cnpj','uq_access_requests_pending')",Long.class)).isEqualTo(3);
     }
 }

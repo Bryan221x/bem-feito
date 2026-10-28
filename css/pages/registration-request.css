@@ -630,3 +630,6 @@
     padding: var(--space-4);
   }
 }
+
+[data-registration-request-page] [hidden],
+[data-institution-access-request-page] [hidden] { display: none; }

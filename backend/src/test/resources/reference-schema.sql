@@ -450,3 +450,237 @@ CREATE TABLE institution_memberships (
         ON DELETE RESTRICT
         ON UPDATE CASCADE
 ) ENGINE = InnoDB;
+
+CREATE TABLE registration_requests (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    category_id BIGINT UNSIGNED NOT NULL,
+
+    display_name VARCHAR(150) NOT NULL,
+    legal_name VARCHAR(200) NOT NULL,
+    cnpj CHAR(14) NOT NULL,
+
+    objective TEXT NULL,
+    description TEXT NULL,
+    history TEXT NULL,
+
+    website VARCHAR(255) NULL,
+
+    responsible_name VARCHAR(150) NOT NULL,
+    responsible_email VARCHAR(255) NOT NULL,
+    responsible_phone VARCHAR(30) NOT NULL,
+    responsible_role VARCHAR(100) NOT NULL,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+
+    reviewed_by_user_id BIGINT UNSIGNED NULL,
+    reviewed_at DATETIME NULL,
+    review_notes TEXT NULL,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_registration_requests_cnpj_format
+        CHECK (cnpj REGEXP '^[0-9]{14}$'),
+
+    CONSTRAINT chk_registration_requests_status
+        CHECK (status IN (
+            'PENDING',
+            'APPROVED',
+            'REJECTED',
+            'NEEDS_CHANGES',
+            'CANCELLED'
+        )),
+
+    CONSTRAINT fk_registration_requests_category
+        FOREIGN KEY (category_id)
+        REFERENCES institution_categories(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_registration_requests_reviewer
+        FOREIGN KEY (reviewed_by_user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE registration_request_contacts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    registration_request_id BIGINT UNSIGNED NOT NULL,
+
+    type VARCHAR(30) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    label VARCHAR(100) NULL,
+
+    is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT uq_registration_request_contacts_value
+        UNIQUE (registration_request_id, type, value),
+
+    CONSTRAINT chk_registration_request_contacts_type
+        CHECK (type IN (
+            'EMAIL',
+            'PHONE',
+            'WHATSAPP'
+        )),
+
+    CONSTRAINT fk_registration_request_contacts_request
+        FOREIGN KEY (registration_request_id)
+        REFERENCES registration_requests(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE registration_request_units (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    registration_request_id BIGINT UNSIGNED NOT NULL,
+    city_id BIGINT UNSIGNED NOT NULL,
+
+    name VARCHAR(150) NOT NULL,
+
+    document CHAR(14) NULL,
+    description TEXT NULL,
+
+    postal_code CHAR(8) NOT NULL,
+    street VARCHAR(180) NOT NULL,
+    number VARCHAR(30) NOT NULL,
+    complement VARCHAR(120) NULL,
+    neighborhood VARCHAR(120) NOT NULL,
+
+    CONSTRAINT chk_registration_request_units_document_format
+        CHECK (
+            document IS NULL
+            OR document REGEXP '^[0-9]{14}$'
+        ),
+
+    CONSTRAINT chk_registration_request_units_postal_code_format
+        CHECK (postal_code REGEXP '^[0-9]{8}$'),
+
+    CONSTRAINT fk_registration_request_units_request
+        FOREIGN KEY (registration_request_id)
+        REFERENCES registration_requests(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_registration_request_units_city
+        FOREIGN KEY (city_id)
+        REFERENCES cities(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE registration_request_unit_contacts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    registration_request_unit_id BIGINT UNSIGNED NOT NULL,
+
+    type VARCHAR(30) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    label VARCHAR(100) NULL,
+
+    is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT uq_registration_request_unit_contacts_value
+        UNIQUE (registration_request_unit_id, type, value),
+
+    CONSTRAINT chk_registration_request_unit_contacts_type
+        CHECK (type IN (
+            'EMAIL',
+            'PHONE',
+            'WHATSAPP'
+        )),
+
+    CONSTRAINT fk_registration_request_unit_contacts_unit
+        FOREIGN KEY (registration_request_unit_id)
+        REFERENCES registration_request_units(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE access_requests (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    institution_id BIGINT UNSIGNED NOT NULL,
+    requester_user_id BIGINT UNSIGNED NULL,
+
+    requester_name VARCHAR(150) NOT NULL,
+    requester_email VARCHAR(255) NOT NULL,
+    requester_phone VARCHAR(30) NOT NULL,
+    requester_role VARCHAR(100) NOT NULL,
+
+    justification TEXT NULL,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+
+    reviewed_by_user_id BIGINT UNSIGNED NULL,
+    reviewed_at DATETIME NULL,
+    review_notes TEXT NULL,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_access_requests_status
+        CHECK (status IN (
+            'PENDING',
+            'APPROVED',
+            'REJECTED',
+            'NEEDS_CHANGES',
+            'CANCELLED'
+        )),
+
+    CONSTRAINT fk_access_requests_institution
+        FOREIGN KEY (institution_id)
+        REFERENCES institutions(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_access_requests_requester_user
+        FOREIGN KEY (requester_user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_access_requests_reviewer
+        FOREIGN KEY (reviewed_by_user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE account_invitation_tokens (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL,
+
+    token_hash VARCHAR(255) NOT NULL,
+
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_account_invitation_tokens_hash
+        UNIQUE (token_hash),
+
+    CONSTRAINT fk_account_invitation_tokens_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+-- Parte 4. Executar uma vez no banco existente; não altera usuários.
+-- Falha com duplicatas preexistentes: revisar esses pedidos antes de aplicar.
+ALTER TABLE registration_requests
+    ADD COLUMN open_cnpj CHAR(14) GENERATED ALWAYS AS
+        (CASE WHEN status IN ('PENDING','APPROVED') THEN cnpj ELSE NULL END);
+ALTER TABLE registration_requests ADD CONSTRAINT uq_registration_requests_open_cnpj UNIQUE (open_cnpj);
+ALTER TABLE access_requests
+    ADD COLUMN pending_email VARCHAR(255) GENERATED ALWAYS AS
+        (CASE WHEN status = 'PENDING' THEN requester_email ELSE NULL END);
+ALTER TABLE access_requests ADD CONSTRAINT uq_access_requests_pending UNIQUE (institution_id,pending_email);

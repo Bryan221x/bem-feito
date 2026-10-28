@@ -1,42 +1,53 @@
+import { getCurrentUser } from "../services/auth-service.js";
+import { searchInstitutions, submitAccess, withSubmission, showBackendFields } from "../services/request-service.js";
+
 export function initInstitutionAccessRequestPage() {
   const page = document.querySelector("[data-institution-access-request-page]");
-  const form = page?.querySelector("[data-institution-access-form]");
-  if (!page || !form) return;
-
-  bindMask(form.querySelector("[data-phone]"), formatPhone);
-  form.addEventListener("input", (event) => clearError(form, event.target.name));
+  const form = page?.querySelector("[data-institution-access-form]"); if (!page || !form) return;
+  let selected = null, sequence = 0, timer, identityReady = false;
+  const query = form.elements.namedItem("institutionQuery"), results = page.querySelector("[data-search-results]");
+  const feedback = page.querySelector("[data-search-feedback]"), selection = page.querySelector("[data-selected-institution]");
+  const registration = page.querySelector("[data-search-register]");
+  const submit = form.querySelector('button[type="submit"]'); submit.disabled = true;
+  getCurrentUser().then((user) => {
+    form.elements.namedItem("responsibleName").value = user.name; form.elements.namedItem("email").value = user.email;
+    form.elements.namedItem("responsibleName").readOnly = true; form.elements.namedItem("email").readOnly = true;
+    identityReady = true; submit.disabled = false;
+  }).catch((error) => {
+    if (error.status === 401) { identityReady = true; submit.disabled = false; }
+    else setMessage(page, "Não foi possível verificar sua sessão. Recarregue a página antes de enviar.", true);
+  });
+  form.querySelector("[data-phone]")?.addEventListener("input", (e) => {
+    const d = e.target.value.replace(/\D/g, "").slice(0, 11); e.target.value = d.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2");
+  });
+  query.addEventListener("input", () => {
+    clearTimeout(timer); const current = ++sequence; selected = null; selection.hidden = true; results.replaceChildren(); registration.hidden = true;
+    if (query.value.trim().length < 2) { feedback.textContent = "Digite pelo menos 2 caracteres para buscar."; return; }
+    feedback.textContent = "Buscando instituições…";
+    timer = setTimeout(async () => {
+      try {
+        const institutions = await searchInstitutions(query.value.trim()); if (current !== sequence) return;
+        feedback.textContent = institutions.length ? "Selecione uma instituição:" : "Nenhuma instituição encontrada."; registration.hidden = !!institutions.length;
+        results.replaceChildren(...institutions.map((institution) => {
+          const item = document.createElement("li"), button = document.createElement("button"); button.type = "button"; button.className = "button button--outline";
+          button.textContent = `${institution.displayName} — ${institution.category}${institution.locations.length ? ` — ${institution.locations.map((l) => `${l.city}/${l.state}`).join(", ")}` : ""}`;
+          button.addEventListener("click", () => { selected = institution; selection.textContent = `Selecionada: ${institution.displayName}`; selection.hidden = false; results.replaceChildren(); feedback.textContent = "Instituição selecionada."; });
+          item.append(button); return item;
+        }));
+      } catch (error) { if (current === sequence) { feedback.textContent = error.message || "Busca indisponível. Tente novamente."; registration.hidden = false; } }
+    }, 350);
+  });
+  form.addEventListener("input", (e) => { e.target.removeAttribute("aria-invalid"); });
   form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const errors = validate(form);
-    if (errors.length) {
-      errors.forEach(({ field, message }) => showError(form, field, message));
-      form.elements.namedItem(errors[0].field)?.focus();
-      setMessage(page, "Revise os campos destacados.", true);
-      return;
-    }
-
+    event.preventDefault(); if (!identityReady) return;
+    if (!selected) { setMessage(page, "Pesquise e selecione uma instituição real.", true); query.focus(); return; }
+    if (!form.reportValidity()) return;
     const data = new FormData(form);
-    const request = {
-      institution: { query: data.get("institutionQuery").trim() },
-      responsible: { name: data.get("responsibleName").trim(), email: data.get("email").trim(), phone: data.get("phone").trim(), role: data.get("role").trim() || null },
-      justification: data.get("justification").trim() || null,
-    };
-    page.dispatchEvent(new CustomEvent("bemfeito:institution-access-requested", { bubbles: true, detail: request }));
-    setMessage(page, "O envio da solicitação de acesso será disponibilizado após a integração com o sistema.");
+    const body = { institutionId: selected.id, requesterName: data.get("responsibleName").trim(), requesterEmail: data.get("email").trim(), requesterPhone: data.get("phone").trim(), requesterRole: data.get("role").trim(), justification: data.get("justification").trim() || null };
+    return withSubmission(form, async () => {
+      try { const result = await submitAccess(body); setMessage(page, `Solicitação #${result.id} enviada. Aguarde a análise da equipe Bem-Feito.`); selected = null; selection.hidden = true; query.value = ""; results.replaceChildren(); feedback.textContent = "Digite pelo menos 2 caracteres para buscar."; }
+      catch (error) { showBackendFields(form, error.fields, { institutionId: "institutionQuery", requesterName: "responsibleName", requesterEmail: "email", requesterPhone: "phone", requesterRole: "role" }); setMessage(page, error.message || "Não foi possível enviar.", true); }
+    });
   });
 }
-
-function validate(form) {
-  const errors = [];
-  [["institutionQuery", "Informe o nome ou CNPJ da instituição."], ["responsibleName", "Informe o nome do responsável."], ["email", "Informe um e-mail válido."], ["phone", "Informe o telefone ou WhatsApp."]].forEach(([field, message]) => {
-    const input = form.elements.namedItem(field);
-    if (!input?.value.trim() || !input.checkValidity()) errors.push({ field, message });
-  });
-  return errors;
-}
-
-function bindMask(input, formatter) { input?.addEventListener("input", () => { input.value = formatter(input.value); }); }
-function formatPhone(value) { const d = value.replace(/\D/g, "").slice(0, 11); return d.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2"); }
-function showError(form, field, message) { const input = form.elements.namedItem(field); const error = form.querySelector(`[data-error-for="${field}"]`); input?.setAttribute("aria-invalid", "true"); if (error) error.textContent = message; }
-function clearError(form, field) { if (!field) return; form.elements.namedItem(field)?.removeAttribute("aria-invalid"); const error = form.querySelector(`[data-error-for="${field}"]`); if (error) error.textContent = ""; }
-function setMessage(page, message, isError = false) { const element = page.querySelector("[data-access-message]"); if (!element) return; element.textContent = message; element.dataset.state = isError ? "error" : "neutral"; element.hidden = false; }
+function setMessage(page, text, error = false) { const message = page.querySelector("[data-access-message]"); message.textContent = text; message.dataset.state = error ? "error" : "neutral"; message.hidden = false; }

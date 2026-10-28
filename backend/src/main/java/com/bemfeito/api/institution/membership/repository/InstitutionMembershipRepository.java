@@ -3,6 +3,7 @@ import java.util.*;
 import org.springframework.data.jpa.repository.*;
 import com.bemfeito.api.institution.membership.entity.*;
 public interface InstitutionMembershipRepository extends JpaRepository<InstitutionMembership,Long> {
+    Optional<InstitutionMembership> findByUserIdAndInstitutionId(Long userId,Long institutionId);
     Optional<InstitutionMembership> findByUserIdAndInstitutionIdAndStatus(Long userId,Long institutionId,MembershipStatus status);
     @EntityGraph(attributePaths="institution") List<InstitutionMembership> findByUserIdAndStatusOrderByInstitutionDisplayNameAsc(Long userId,MembershipStatus status);
     @EntityGraph(attributePaths="user") List<InstitutionMembership> findByInstitutionIdOrderByUserNameAscIdAsc(Long institutionId);

@@ -936,3 +936,14 @@ O foco permanecerá em:
 - contato;
 - informações institucionais;
 - administração segura dos dados.
+
+## Garantias adicionais da Parte 4
+
+A migração `database/migrations/004_request_uniqueness.sql` acrescenta duas colunas
+calculadas: registration_requests.open_cnpj (CNPJ somente em PENDING/APPROVED,
+com UNIQUE) e access_requests.pending_email (e-mail somente em PENDING, UNIQUE
+junto de institution_id). São geradas pelo banco, não dados adicionais de entrada.
+Impedem duplicidade concorrente preservando a possibilidade de nova submissão
+corrigida após rejeição, ajustes ou cancelamento. O schema completo já inclui a
+migração; em banco existente aplicar o arquivo uma vez. Não altera contas.
+Ver [Parte 4](../backend/requests-and-invitations.md) para estados, locks e convites.

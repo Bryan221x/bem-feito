@@ -9,6 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface UnitRepository extends JpaRepository<Unit,Long> {
+    @Query("""
+        select distinct new com.bemfeito.api.requests.dto.RequestOutput$Location(c.id,c.name,s.uf)
+        from Unit u join u.city c join c.state s where u.institution.id=:institutionId
+        and u.status=com.bemfeito.api.common.domain.UnitStatus.ACTIVE order by c.name,s.uf,c.id
+        """)
+    List<com.bemfeito.api.requests.dto.RequestOutput.Location> findAccessLocations(Long institutionId,org.springframework.data.domain.Pageable pageable);
+
     @Override @EntityGraph(attributePaths={"institution","city.state"}) Optional<Unit> findById(Long id);
     @EntityGraph(attributePaths={"city.state"})
     @Query("""
