@@ -65,6 +65,7 @@ Na raiz do checkout, com variáveis exportadas de forma segura:
 ```sh
 docker compose config --quiet
 docker compose build --pull
+docker compose run --rm --no-deps frontend caddy validate --config /etc/caddy/Caddyfile
 docker compose up -d mysql
 docker compose ps
 ```
