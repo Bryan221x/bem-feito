@@ -78,7 +78,8 @@ public class ApiExceptionHandler {
         if (exception instanceof org.springframework.web.ErrorResponse frameworkError) {
             return error(frameworkError.getStatusCode().value(),"Requisição não suportada",Map.of());
         }
-        LOG.error("Erro inesperado na API",exception);
+        // Exception messages/causes may include SQL parameters or submitted secrets.
+        LOG.error("Erro inesperado na API: tipo={}",exception.getClass().getSimpleName());
         return error(500,"Erro interno ao processar a solicitação",Map.of());
     }
 }

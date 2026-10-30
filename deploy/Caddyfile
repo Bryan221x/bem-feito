@@ -1,0 +1,41 @@
+{
+    email {$ACME_EMAIL}
+    servers {
+        timeouts {
+            read_header 10s
+            read_body 30s
+            idle 2m
+        }
+    }
+}
+
+{$APP_DOMAIN} {
+    encode zstd gzip
+    header {
+        -Server
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' https: data: blob:; connect-src 'self' https://viacep.com.br; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    }
+    @upload path_regexp upload ^/api/institutions/[0-9]+/history-images/upload$
+    handle @upload {
+        request_body {
+            max_size 6MB
+        }
+        reverse_proxy api:8080
+    }
+    handle /api/* {
+        request_body {
+            max_size 1MB
+        }
+        reverse_proxy api:8080
+    }
+    handle {
+        root * /srv
+        header Cache-Control "no-cache"
+        file_server
+    }
+}

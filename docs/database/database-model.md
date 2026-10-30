@@ -27,7 +27,8 @@ O arquivo `database/reference-data.sql` contém os 26 estados brasileiros e o Di
 
 O script deve ser executado após `database/schema.sql` e pode ser repetido: utiliza as constraints UNIQUE existentes e preserva os registros já cadastrados. Novas entradas das taxonomias iniciam com `active = TRUE`.
 
-Municípios serão obtidos separadamente de fonte oficial do IBGE, em uma próxima etapa; não fazem parte deste script.
+Os municípios já foram obtidos do IBGE na Parte 1: `database/cities.sql` importa
+5.571 entradas do snapshot oficial, separado deste script. Consulte reference-data.md.
 
 ---
 

@@ -6,14 +6,18 @@ A plataforma permite localizar instituições por cidade, consultar informaçõe
 
 ## Tecnologias
 
-O desenvolvimento inicial utiliza:
+O sistema atual utiliza:
 
 - HTML5
 - CSS3
 - JavaScript
 - GSAP
+- Leaflet/OpenStreetMap e ViaCEP opcional
+- Java 25, Spring Boot 4.1.1, Spring Security, JPA/Hibernate
+- MySQL 8.4; H2 exclusivamente nos testes isolados
+- Maven Wrapper, Node test runner, Python e Playwright nos testes
 
-Outras tecnologias serão incorporadas conforme as necessidades do projeto.
+Frontend estático com módulos JavaScript e API REST com sessão HTTP e CSRF.
 
 ## Backend e dados de referência
 
@@ -48,3 +52,11 @@ A Parte 5 conecta catálogo público, gestão institucional, unidades e administ
 Consulte [serviços, endpoints, configuração, segurança e testes](docs/frontend/api-integration.md).
 O diretório de uploads é configurável por `APP_UPLOAD_DIR` e não é versionado.
 Esta Parte não requer nova migração de banco.
+
+## Preparação operacional — Parte 6.1
+
+Consulte [instalação, Compose, HTTPS, backups e recuperação](docs/operations/production.md),
+[roteiro de demonstração e rastreabilidade acadêmica](docs/operations/acceptance.md)
+e [resultados e pendências da validação](docs/operations/part-6.1-report.md).
+O preparo de produção usa Caddy, MySQL privado e volumes persistentes. Não constitui
+deploy nem aprovação dos critérios que dependem de hospedagem real.

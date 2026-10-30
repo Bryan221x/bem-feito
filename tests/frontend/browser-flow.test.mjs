@@ -55,6 +55,8 @@ test('real browser: registration, approval, activation, management and public ca
     };
     await goto(page, '/pages/registration-request.html');
     await page.waitForFunction(() => !document.querySelector('[name=category]').disabled);
+    await page.locator('[data-registration-request-form] button[type=submit]').click();
+    assert.equal(await page.locator('[data-registration-request-form]').evaluate(form => form.checkValidity()), false);
     const fields = { displayName: 'Instituição de teste temporário', legalName: 'Instituição de teste temporário LTDA', document: '11222333000181', objective: 'Apoio comunitário', description: 'Cadastro exclusivo do teste em memória.', responsibleName: 'Responsável teste', responsibleRole: 'Direção', responsibleEmail: 'browser-owner@example.org', responsiblePhone: '11999999999', unitName: 'Sede', postalCode: '01001000', street: 'Praça da Sé', number: '1', neighborhood: 'Sé' };
     for (const [name, value] of Object.entries(fields)) await page.locator(`[data-registration-request-form] [name="${name}"]`).fill(value);
     await page.locator('[name=category]').selectOption({ index: 1 }); await page.locator('[name=state]').selectOption('SP');
@@ -133,6 +135,63 @@ test('real browser: registration, approval, activation, management and public ca
     assert.equal(await visitor.locator('.institution-unit-card').count(), 1);
     await api(owner, `/api/units/${managed.units[0].id}`, 'PATCH', { status: 'INACTIVE' });
     await goto(visitor, `/pages/institution.html?id=${id}`); await visitor.locator('[data-institution-units-empty]').waitFor();
+    // Additional institution and roles go through public requests and administrative approval.
+    const send = async (ctx, path, method = 'GET', data) => {
+      const csrfResponse = await ctx.request.get('http://127.0.0.1:8081/api/auth/csrf');
+      const token = await csrfResponse.json();
+      return ctx.request.fetch('http://127.0.0.1:8081' + path, {
+        method, data, headers: { [token.headerName]: token.token }
+      });
+    };
+    const secondRequest = await send(ownerContext, '/api/registration-requests', 'POST', {
+      categoryId: managed.categoryId, displayName: 'Segunda instituição temporária', legalName: 'Segunda instituição temporária',
+      cnpj: '11444777000161', objective: null, description: null, history: null, website: null,
+      responsible: { name: 'Responsável teste', email: 'browser-owner@example.org', phone: '11999999999', role: 'Direção' },
+      publicContacts: [{ type: 'EMAIL', value: 'public@example.org', label: null, isPrimary: true }], mainUnit: { name: 'Sede', document: null, description: null, cityId: unit.address.cityId,
+        postalCode: '01001000', street: 'Praça da Sé', number: '3', complement: null, neighborhood: 'Sé', contacts: [] }
+    });
+    assert.equal(secondRequest.status(), 201, await secondRequest.text());
+    const secondRequestId = (await secondRequest.json()).id;
+    const decisions = await Promise.all([1, 2].map(() => send(context, `/api/admin/registration-requests/${secondRequestId}/approve`, 'POST', { notes: null, membershipRole: null })));
+    assert.deepEqual(decisions.map(r => r.status()).sort(), [200, 409]);
+    const secondId = (await decisions.find(r => r.status() === 200).json()).institutionId;
+    assert.equal((await api(owner, '/api/me/institutions')).length, 2);
+    await goto(owner, '/pages/institution-selection.html');
+    await owner.locator('label.institution-selection-card').nth(1).waitFor();
+    for (const role of ['MANAGER', 'EDITOR']) {
+      const roleContext = await browser.newContext(), rolePage = await roleContext.newPage();
+      const roleEmail = `browser-${role.toLowerCase()}@example.org`;
+      const requested = await send(roleContext, '/api/access-requests', 'POST', {
+        institutionId: id, requesterName: 'Teste ' + role, requesterEmail: roleEmail,
+        requesterPhone: '11999999999', requesterRole: 'Colaborador', justification: 'Teste isolado de permissão'
+      });
+      assert.equal(requested.status(), 201);
+      const reviewed = await send(context, `/api/admin/access-requests/${(await requested.json()).id}/approve`, 'POST', { notes: null, membershipRole: role });
+      assert.equal(reviewed.status(), 200);
+      await rolePage.goto((await reviewed.json()).invitation.activationUrl);
+      await rolePage.locator('[data-activation-form]').waitFor();
+      await rolePage.locator('[name=password]').fill(password); await rolePage.locator('[name=confirmPassword]').fill(password);
+      await rolePage.locator('button[type=submit]').click();
+      await rolePage.waitForFunction(() => document.querySelector('[data-account-activation-page]').dataset.state === 'success');
+      await login(rolePage, roleEmail);
+      assert.equal((await send(roleContext, `/api/institutions/${id}`, 'PATCH', { description: 'Conteúdo editado por ' + role })).status(), 200);
+      assert.equal((await send(roleContext, `/api/institutions/${id}`, 'PATCH', { legalName: 'Não permitido' })).status(), 403);
+      assert.equal((await send(roleContext, `/api/management/institutions/${secondId}`)).status(), 403);
+      assert.equal((await send(roleContext, `/api/institutions/${id}`, 'PATCH', { displayName: 'Instituição atualizada' })).status(), role === 'MANAGER' ? 200 : 403);
+      assert.equal((await send(roleContext, '/api/auth/logout', 'POST')).status(), 200);
+      assert.equal((await roleContext.request.get('http://127.0.0.1:8081/api/auth/me')).status(), 401);
+      await roleContext.close();
+    }
+    await api(page, `/api/institutions/${secondId}`, 'PATCH', { status: 'INACTIVE' });
+    await owner.locator('[data-auth-logout]').first().click();
+    await owner.waitForURL(/institution-login\.html/);
+    assert.equal((await ownerContext.request.get('http://127.0.0.1:8081/api/auth/me')).status(), 401);
+    await visitor.emulateMedia({ reducedMotion: 'reduce' });
+    await goto(visitor, '/'); await responsive(visitor, 'home reduced motion');
+    await visitor.setViewportSize({ width: 338, height: 900 });
+    await visitor.locator('[data-menu-toggle]').click(); await visitor.keyboard.press('Escape');
+    assert.equal(await visitor.locator('[data-menu-toggle]').getAttribute('aria-expanded'), 'false');
+    assert.equal(await visitor.locator('[data-menu-toggle]').evaluate(button => button === document.activeElement), true);
     await page.locator('[data-institution-details]').first().click(); await page.locator('.api-detail-dialog h3').first().waitFor(); await responsive(page, 'admin detail dialog');
     await page.getByLabel('Status global').selectOption('SUSPENDED'); await page.getByRole('button', { name: 'Salvar status' }).click();
     await page.waitForFunction(() => document.querySelector('.api-detail-dialog [role=status]').textContent.includes('salvas'));

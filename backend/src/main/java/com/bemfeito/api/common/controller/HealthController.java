@@ -13,8 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/health")
 public class HealthController {
 
+    private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+    public HealthController(org.springframework.jdbc.core.JdbcTemplate jdbc) { this.jdbc = jdbc; }
+
     @GetMapping
     public Map<String, String> health() {
+        try { jdbc.queryForObject("SELECT 1", Integer.class); }
+        catch (org.springframework.dao.DataAccessException unavailable) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE, "Serviço temporariamente indisponível");
+        }
         return Map.of(
             "status", "UP",
             "application", "Bem-Feito API"

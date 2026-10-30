@@ -53,8 +53,10 @@ public class SecurityConfig {
         var source=new UrlBasedCorsConfigurationSource();source.registerCorsConfiguration("/**",config);return source;
     }
 
-    @Bean SecurityFilterChain securityFilterChain(HttpSecurity http,SecurityJson json,UserRepository users,org.springframework.web.filter.CorsFilter corsFilter) throws Exception {
+    @Bean SecurityFilterChain securityFilterChain(HttpSecurity http,SecurityJson json,UserRepository users,org.springframework.web.filter.CorsFilter corsFilter,
+            @Value("${app.abuse-protection.enabled:false}") boolean abuseProtection) throws Exception {
         http.addFilterAt(corsFilter,org.springframework.web.filter.CorsFilter.class).csrf(csrf->{})
+            .addFilterBefore(new AbuseProtectionFilter(json,abuseProtection),org.springframework.security.web.csrf.CsrfFilter.class)
             .requestCache(cache->cache.disable())
             .authorizeHttpRequests(auth->auth
                 .requestMatchers(HttpMethod.GET,"/api/health","/api/states","/api/cities","/api/cities/available",
