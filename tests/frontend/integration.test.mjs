@@ -16,7 +16,7 @@ class Element {
   dispatchEvent() {}
 }
 let currentPage, currentSelector, calls;
-globalThis.location = { protocol: "http:", hostname: "127.0.0.1", href: "http://127.0.0.1:5500/pages/institution.html?id=12", search: "?id=12" };
+globalThis.location = { protocol: "http:", port: "5500", hostname: "127.0.0.1", href: "http://127.0.0.1:5500/pages/institution.html?id=12", search: "?id=12" };
 globalThis.window = { location };
 globalThis.document = { querySelector: (s) => s === currentSelector ? currentPage : null, createElement: (tag) => new Element(tag), createDocumentFragment: () => new Element(), dispatchEvent() {} };
 const api = await import("../../js/services/api-client.js");

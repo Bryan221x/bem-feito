@@ -7,7 +7,7 @@ const redirects = [];
 let pending = true;
 let buttons = [];
 let replacedBody = null;
-globalThis.location = { protocol: "http:", hostname: "127.0.0.1", pathname: "/pages/institution-selection.html", search: "", replace: (url) => redirects.push(url) };
+globalThis.location = { protocol: "http:", port: "5500", hostname: "127.0.0.1", pathname: "/pages/institution-selection.html", search: "", replace: (url) => redirects.push(url) };
 globalThis.document = {
   querySelector: () => null,
   querySelectorAll: () => buttons,
@@ -146,4 +146,21 @@ test("Live Server uses the same hostname for the API with both localhost and 127
       assert.equal(requested.options.credentials, "include");
     }
   } finally { location.hostname = original; }
+});
+
+test("HTTPS localhost keeps API and managed images on the secure same origin", async () => {
+  const original = { protocol: location.protocol, port: location.port, hostname: location.hostname };
+  try {
+    Object.assign(location, { protocol: "https:", port: "", hostname: "localhost" });
+    let requested;
+    globalThis.fetch = async (url, options) => {
+      requested = { url, options };
+      return response(csrf());
+    };
+    const isolatedClient = await import(`../../js/services/api-client.js?audit=${randomUUID()}`);
+    await isolatedClient.getCsrfToken();
+    assert.equal(requested.url, "/api/auth/csrf");
+    assert.equal(requested.options.credentials, "include");
+    assert.equal(isolatedClient.apiAssetUrl("/api/history-media/7/image.png"), "/api/history-media/7/image.png");
+  } finally { Object.assign(location, original); }
 });
