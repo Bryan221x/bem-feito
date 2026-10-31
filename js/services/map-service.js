@@ -4,7 +4,7 @@ const unitMaps = new WeakMap();
  * Centraliza a integração com o Leaflet.
  * A página não precisa conhecer detalhes internos da biblioteca de mapas.
  */
-export function createCityMap(container) {
+export function createCityMap(container, { onUnavailable = () => {} } = {}) {
   if (!container || typeof L === "undefined") return null;
 
   /*
@@ -20,13 +20,13 @@ export function createCityMap(container) {
     scrollWheelZoom: false,
   }).setView(brazilCenter, 4);
 
+  unitMaps.set(container, map);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  }).addTo(map);
+  }).on("tileerror", onUnavailable).addTo(map);
 
-  unitMaps.set(container, map);
   return map;
 }
 
@@ -34,43 +34,51 @@ export function createCityMap(container) {
  * Cria o mapa público de uma instituição usando uma marca por unidade física.
  * As coordenadas devem vir prontas da API; este serviço não geocodifica dados.
  */
-export function createUnitMap(container, units) {
+export function createUnitMap(container, units, { onUnavailable = () => {} } = {}) {
   if (!container || typeof L === "undefined" || !Array.isArray(units)) {
     return null;
   }
 
-  unitMaps.get(container)?.remove();
-  unitMaps.delete(container);
-  const validUnits = units.filter(hasCoordinates);
-  if (!validUnits.length) return createCityMap(container);
+  try {
+    unitMaps.get(container)?.remove();
+    unitMaps.delete(container);
+    const validUnits = units.filter(hasCoordinates);
+    if (!validUnits.length) return createCityMap(container, { onUnavailable });
 
-  const map = L.map(container, {
-    zoomControl: true,
-    scrollWheelZoom: false,
-  });
+    const map = L.map(container, {
+      zoomControl: true,
+      scrollWheelZoom: false,
+    });
 
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  }).addTo(map);
+    unitMaps.set(container, map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).on("tileerror", onUnavailable).addTo(map);
 
-  const bounds = [];
+    const bounds = [];
 
-  validUnits.forEach((unit) => {
-    const coordinates = [Number(unit.latitude), Number(unit.longitude)];
-    const marker = L.marker(coordinates).addTo(map);
+    validUnits.forEach((unit) => {
+      const coordinates = [Number(unit.latitude), Number(unit.longitude)];
+      const marker = L.marker(coordinates).addTo(map);
 
-    if (unit.name) { const text = document.createElement("span"); text.textContent = String(unit.name); marker.bindPopup(text); }
+      if (unit.name) { const text = document.createElement("span"); text.textContent = String(unit.name); marker.bindPopup(text); }
 
-    bounds.push(coordinates);
-  });
+      bounds.push(coordinates);
+    });
 
-  map.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 });
+    map.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 });
 
-  unitMaps.set(container, map);
+    unitMaps.set(container, map);
 
-  return map;
+    return map;
+  } catch {
+    try { unitMaps.get(container)?.remove(); } catch { /* Falha de inicialização do mapa. */ }
+    unitMaps.delete(container);
+    onUnavailable();
+    return null;
+  }
 }
 
 export function hasCoordinates(unit) {

@@ -53,10 +53,24 @@ Consulte [serviços, endpoints, configuração, segurança e testes](docs/fronte
 O diretório de uploads é configurável por `APP_UPLOAD_DIR` e não é versionado.
 Esta Parte não requer nova migração de banco.
 
-## Preparação operacional — Parte 6.1
+## Operação local — Partes 6.1 e 6.2
 
 Consulte [instalação, Compose, HTTPS, backups e recuperação](docs/operations/production.md),
 [roteiro de demonstração e rastreabilidade acadêmica](docs/operations/acceptance.md)
-e [resultados e pendências da validação](docs/operations/part-6.1-report.md).
-O preparo de produção usa Caddy, MySQL privado e volumes persistentes. Não constitui
-deploy nem aprovação dos critérios que dependem de hospedagem real.
+e [validação local e recuperação — Parte 6.2](docs/operations/part-6.2-report.md).
+A [Parte 6.1](docs/operations/part-6.1-report.md) registra a preparação histórica.
+HTTPS, autenticação, persistência após recriação do MySQL, backup e restauração
+isolada foram aprovados localmente conforme as evidências da Parte 6.2: 21 tabelas,
+1 PLATFORM_ADMIN ativo e 5.571 cidades no banco restaurado. O volume de imagens
+restaurado estava vazio. O administrador já existe; não repetir bootstrap.
+
+O ambiente usa Caddy, MySQL privado e volumes persistentes. A validação local não
+constitui deploy ou aprovação em hospedagem real. SMTP real, recuperação com imagens
+presentes e os detalhes de navegador ainda sem evidência estão discriminados nos
+relatórios. O fluxo completo de formulários possui evidência anterior em H2 isolado.
+
+O acabamento funcional restringe campos e payloads de unidades por permissão,
+orienta a inativação antes de remover necessidades e mantém a consulta por cidades
+disponível quando o mapa falha. Consulte [contratos do frontend](docs/frontend/api-integration.md).
+O roteiro oficial da disciplina não foi localizado; os documentos do projeto não
+substituem os critérios acadêmicos do professor.

@@ -1,4 +1,4 @@
-import { createUnitMap } from "../services/map-service.js";
+import { createUnitMap, hasCoordinates } from "../services/map-service.js";
 import { getAvailableCities, getMapUnits } from "../services/public-catalog-service.js";
 import { element, errorMessage } from "../components/api-ui.js";
 
@@ -18,13 +18,28 @@ export async function initCitiesPage() {
   try { cities = await getAvailableCities(); status.textContent = ""; render(); }
   catch (error) { status.textContent = errorMessage(error); return; }
   const map = page.querySelector("[data-city-map]"); const mapStatus = element("p", "Carregando localizações…"); map.after(mapStatus);
+  mapStatus.setAttribute("role", "status");
+  let unavailable = false;
+  const mapUnavailable = () => {
+    unavailable = true;
+    mapStatus.textContent = "O mapa está indisponível no momento. Continue usando a lista de cidades para consultar as instituições.";
+  };
+  function renderMap(units) {
+    unavailable = false;
+    const rendered = createUnitMap(map, units, { onUnavailable: mapUnavailable });
+    if (!rendered) mapUnavailable();
+    if (!unavailable) {
+      const count = units.filter(hasCoordinates).length;
+      mapStatus.textContent = count ? `${count} unidades com coordenadas no mapa.` : "Ainda não há unidades publicadas com coordenadas informadas.";
+    }
+    return !!rendered;
+  }
   try {
-    const data = await getMapUnits(); createUnitMap(map, data.content);
-    mapStatus.textContent = data.content.length ? `${data.content.length} unidades com coordenadas no mapa.` : "Ainda não há unidades publicadas com coordenadas informadas.";
+    const data = await getMapUnits(); if (!renderMap(data.content)) return;
     if (data.totalPages > 1) {
       let number = 0; const units = [...data.content]; const more = element("button", "Carregar mais localizações", "button button--outline"); more.type = "button"; mapStatus.after(more);
-      more.addEventListener("click", async () => { more.disabled = true; try { const result = await getMapUnits(null, number + 1); number++; units.push(...result.content); createUnitMap(map, units); mapStatus.textContent = `${units.length} unidades com coordenadas no mapa.`; more.hidden = number + 1 >= result.totalPages; } catch (error) { mapStatus.textContent = errorMessage(error); } finally { more.disabled = false; } });
+      more.addEventListener("click", async () => { more.disabled = true; try { const result = await getMapUnits(null, number + 1); number++; units.push(...result.content); const rendered = renderMap(units); more.hidden = !rendered || number + 1 >= result.totalPages; } catch { mapStatus.textContent = "Não foi possível carregar mais localizações. Tente novamente ou use a lista de cidades."; } finally { more.disabled = false; } });
     }
-  } catch (error) { createUnitMap(map, []); mapStatus.textContent = errorMessage(error); }
+  } catch { mapStatus.textContent = "Não foi possível carregar as localizações. Continue usando a lista de cidades e tente novamente mais tarde."; }
 }
 function normalize(value) { return value.trim().toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }

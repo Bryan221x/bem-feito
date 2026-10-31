@@ -2,10 +2,44 @@ import { getUnit, createUnit, patchUnit, getServiceAreas, getNeedCategories, sav
 import { getInstitution, saveContact, deleteContact, contactPayload, changedFields } from "../services/institution-service.js";
 import { getStates, getCities } from "../services/request-service.js";
 import { lookupPostalCode } from "../services/api-client.js";
+import { getCurrentUser, getMyInstitutions } from "../services/auth-service.js";
 import { saving, element, errorMessage, preserveContext } from "../components/api-ui.js";
 const unitFormStates = new WeakMap();
 const UNIT_FIELDS = ["name", "document", "description", "postalCode", "address", "number", "complement", "neighborhood", "cityId", "latitude", "longitude", "status"];
 const ADDRESS_FIELDS = new Set(["postalCode", "address", "number", "complement", "neighborhood", "cityId"]);
+
+// Mesma matriz de InstitutionAuthorizationService; o backend continua autorizando cada escrita.
+export function editableUnitFields({ admin = false, permissions = [] } = {}) {
+  return UNIT_FIELDS.filter((field) => admin || permissions.includes(
+    field === "description" ? "EDIT_UNIT_DESCRIPTION" : field === "document" ? "EDIT_LEGAL_DATA" :
+      field === "status" ? "CHANGE_UNIT_STATUS" : "EDIT_UNIT"));
+}
+
+export function applyUnitPermissions(page, access) {
+  const editable = new Set(editableUnitFields(access));
+  for (const field of [...UNIT_FIELDS, "state"]) {
+    const control = page.querySelector(`[name="${field}"]`);
+    if (control) control.disabled = !editable.has(field === "state" ? "cityId" : field);
+  }
+  const postalButton = page.querySelector("[data-search-postal-code]");
+  if (postalButton) postalButton.disabled = !editable.has("cityId");
+}
+
+export function unitPayload(form, original, access) {
+  const body = {};
+  for (const field of editableUnitFields(access)) {
+    const raw = form.elements.namedItem(field)?.value.trim() || "";
+    const key = field === "address" ? "street" : field;
+    body[key] = ["cityId", "latitude", "longitude"].includes(key) ? raw === "" ? null : Number(raw) :
+      ["document", "postalCode"].includes(key) ? raw.replace(/\D/g, "") || null : raw || null;
+  }
+  if (original) return changedFields({ ...original, ...original.address }, body);
+  if (!access.admin && !access.permissions?.includes("CREATE_UNIT")) throw new Error("Você não tem permissão para criar unidades.");
+  // O POST exige status; MANAGER só pode criar unidade ACTIVE sem documento próprio.
+  if (!access.admin && !access.permissions?.includes("CHANGE_UNIT_STATUS")) body.status = "ACTIVE";
+  if (!access.admin && !access.permissions?.includes("EDIT_LEGAL_DATA")) body.document = null;
+  return body;
+}
 
 export async function initUnitFormPage() {
   const page = document.querySelector("[data-unit-form-page]");
@@ -20,6 +54,7 @@ export async function initUnitFormPage() {
     requestedInstitutionId: normalizeIdentifier(params.get("institutionId")),
     institutions: [], contacts: [], contactChanges: [], needs: [], needChanges: [],
     dirtyFields: new Set(), serviceAreasChanged: false,
+    access: {}, authorized: false,
   };
   unitFormStates.set(page, state);
   configureMode(page, state);
@@ -36,8 +71,16 @@ export async function initUnitFormPage() {
   updateStep(page, state);
   updateSubmission(page, state);
   showUnitFormLoading(page);
+  applyUnitPermissions(page, state.access);
   try {
     if (!state.requestedInstitutionId) throw new Error("Selecione uma instituição para continuar.");
+    const user = await getCurrentUser();
+    const membership = user.platformRole === "PLATFORM_ADMIN" ? null :
+      (await getMyInstitutions()).find((m) => String(m.institutionId) === state.requestedInstitutionId);
+    state.access = { admin: user.platformRole === "PLATFORM_ADMIN", permissions: membership?.permissions || [] };
+    if (!state.access.admin && (!membership || (!state.unitId && !state.access.permissions.includes("CREATE_UNIT")))) {
+      throw new Error("Você não tem permissão para acessar este formulário.");
+    }
     const [institution, unit, states, areas, categories] = await Promise.all([getInstitution(state.requestedInstitutionId), state.unitId ? getUnit(state.unitId) : null, getStates(), getServiceAreas(), getNeedCategories()]);
     if (unit && String(unit.institutionId) !== String(institution.id)) throw new Error("A unidade não pertence à instituição selecionada.");
     state.original = unit; state.hours = unit?.openingHours || [];
@@ -48,11 +91,13 @@ export async function initUnitFormPage() {
     areaOptions.replaceChildren(...allAreas.map((area) => { const label = element("label", null, "unit-needs__option"), input = element("input"), text = element("span", area.name, "unit-needs__content"); input.type = "checkbox"; input.name = "serviceAreas"; input.value = area.id; input.addEventListener("change", () => { state.serviceAreasChanged = true; }); label.append(input, text); return label; }));
     state.needCategories = categories;
     page.querySelector('[name="needCategoryId"]').replaceChildren(new Option("Selecione", ""), ...categories.map((item) => new Option(item.name, item.id)));
+    state.authorized = true;
     renderUnitFormContext(page, { institutions: [institution], selectedInstitutionId: institution.id, unit });
+    applyUnitPermissions(page, state.access);
     page.querySelector("[data-unit-institution-selector]").disabled = true;
     preserveContext(institution.id); renderHoursEditor(page, state);
-    setFeedback(page, unit ? "Dados carregados. Contatos, necessidades, áreas e horários podem ser salvos separadamente." : "Preencha os dados obrigatórios. Contatos e necessidades serão gravados após criar a unidade.");
-  } catch (error) { state.institutionId = null; updateSubmission(page, state); setFeedback(page, errorMessage(error)); }
+    setFeedback(page, (unit ? "Dados carregados. Contatos, necessidades, áreas e horários podem ser salvos separadamente." : "Preencha os dados obrigatórios. Contatos e necessidades serão gravados após criar a unidade.") + " Campos sem permissão de edição ficam desabilitados.");
+  } catch (error) { state.authorized = false; state.access = {}; state.institutionId = null; applyUnitPermissions(page, state.access); updateSubmission(page, state); setFeedback(page, errorMessage(error)); }
 }
 
 
@@ -253,10 +298,22 @@ function saveNeed(page, state) {
     state.needs = id ? state.needs.map((n) => String(n.id) === id ? result : n) : [...state.needs, result]; renderNeeds(page, state.needs); closeNeedEditor(page);
   });
 }
-function removeNeed(page, state, id) {
+export function removeNeed(page, state, id) {
   const remove = () => { state.needs = state.needs.filter((n) => String(n.id) !== String(id)); renderNeeds(page, state.needs); };
   if (!state.unitId || String(id).startsWith("draft-")) { remove(); return; }
-  void saving(page, (message) => setFeedback(page, message), async () => { await deleteNeed(state.unitId, id); remove(); });
+  const need = state.needs.find((item) => String(item.id) === String(id));
+  if (need?.status !== "INACTIVE") {
+    setFeedback(page, "Para remover, edite a necessidade, selecione Inativa e salve. Depois clique em Remover.");
+    return;
+  }
+  return saving(page, (message) => setFeedback(page, message), async () => {
+    try { await deleteNeed(state.unitId, id); }
+    catch (error) {
+      if (error.status === 409) throw new Error("A necessidade não pôde ser removida. Recarregue a página e confirme que ela está Inativa antes de tentar novamente.");
+      throw error;
+    }
+    remove();
+  });
 }
 
 function renderNeeds(page, needs) { const list = page.querySelector("[data-unit-need-list]"); const empty = page.querySelector("[data-unit-needs-empty]"); if (!list || !empty) return; list.replaceChildren(...needs.map(createNeedItem)); empty.hidden = needs.length > 0; }
@@ -264,16 +321,10 @@ function createNeedItem(need) { const item = document.createElement("article"); 
 
 function bindSubmit(page, state) {
   page.querySelector("[data-unit-form]").addEventListener("submit", (event) => {
-    event.preventDefault(); if (!state.institutionId) return;
-    const form = event.currentTarget, body = {};
-    for (const field of UNIT_FIELDS) {
-      const raw = form.elements.namedItem(field)?.value.trim() || "";
-      const key = field === "address" ? "street" : field;
-      body[key] = ["cityId", "latitude", "longitude"].includes(key) ? raw === "" ? null : Number(raw) : ["document", "postalCode"].includes(key) ? raw.replace(/\D/g, "") || null : raw || null;
-    }
-    for (const key of ["name", "cityId", "postalCode", "street", "number", "neighborhood"]) if (!body[key]) { setFeedback(page, "Informe nome, cidade, CEP e endereço completo da unidade."); state.currentStep = key === "name" ? 1 : 2; updateStep(page, state); return; }
-    const next = state.original ? changedFields({ ...state.original, ...state.original.address }, body) : body;
-    void saving(page, (message) => setFeedback(page, message), async () => {
+    event.preventDefault(); if (!state.institutionId || !state.authorized) return;
+    const next = unitPayload(event.currentTarget, state.original, state.access);
+    for (const key of ["name", "cityId", "postalCode", "street", "number", "neighborhood"]) if ((!state.original || Object.hasOwn(next, key)) && !next[key]) { setFeedback(page, "Informe nome, cidade, CEP e endereço completo da unidade."); state.currentStep = key === "name" ? 1 : 2; updateStep(page, state); return; }
+    return saving(page, (message) => setFeedback(page, message), async () => {
       if (!state.unitId) {
         const created = await createUnit(state.institutionId, next); state.unitId = String(created.id); state.mode = "edit"; state.original = created;
         const url = new URL(location.href); url.searchParams.set("unitId", state.unitId); history.replaceState(null, "", url); configureMode(page, state);
@@ -296,7 +347,7 @@ function fillUnit(page, state, unit) {
   state.areasSaved = true; state.contactChanges = []; state.needChanges = []; state.dirtyFields.clear(); state.serviceAreasChanged = false; renderContacts(page, state.contacts); renderNeeds(page, state.needs); updateObservationCounter(page);
 }
 
-function updateSubmission(page, state) { const button = page.querySelector("[data-submit-unit]"); if (button) button.disabled = !state.institutionId; }
+function updateSubmission(page, state) { const button = page.querySelector("[data-submit-unit]"); if (button) button.disabled = !state.institutionId || !state.authorized; }
 function updateObservationCounter(page) { const input = page.querySelector("[data-needs-observations]"); const counter = page.querySelector("[data-observations-counter]"); if (input && counter) counter.textContent = `${input.value.length}/300`; }
 function createCollectionAction(action, id, label, datasetName) { const button = document.createElement("button"); button.type = "button"; button.className = `unit-contact-item__action${action === "remove" ? " unit-contact-item__action--danger" : ""}`; button.dataset[datasetName] = action; button.dataset[datasetName === "needAction" ? "needId" : "contactId"] = String(id); button.setAttribute("aria-label", label); button.textContent = action === "edit" ? "Editar" : "Remover"; return button; }
 function stripDraftId(item) { const { id, ...data } = item; return String(id).startsWith("draft-") ? data : item; }

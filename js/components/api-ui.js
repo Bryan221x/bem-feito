@@ -12,7 +12,8 @@ export function createPagination(after, load) {
 }
 export function errorMessage(error) {
   const messages = { 401: "Sua sessão expirou. Entre novamente.", 403: "Você não tem permissão ou sua sessão de segurança expirou.", 404: "O registro não está disponível.", 409: "Conflito nos dados. Confira o registro antes de tentar novamente." };
-  return [messages[error.status] || error.message || "Não foi possível conectar ao serviço. Tente novamente.", ...Object.values(error.fields || {})].join(" ");
+  return [messages[error.status] || error.message || "Não foi possível conectar ao serviço. Tente novamente.",
+    error.status === 409 ? error.message : null, ...Object.values(error.fields || {})].filter(Boolean).join(" ");
 }
 export async function saving(root, feedback, operation) {
   if (root.dataset.saving === "true") return;

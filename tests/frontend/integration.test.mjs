@@ -29,9 +29,10 @@ const maps = await import("../../js/services/map-service.js");
 const cities = await import("../../js/pages/cities.js");
 const institutionPage = await import("../../js/pages/institution.js");
 const ui = await import("../../js/components/api-ui.js");
+const unitForm = await import("../../js/pages/unit-form.js");
 const response = (body, status = 200) => new Response(JSON.stringify(body), { status });
 function route(fn) { globalThis.fetch = async (url, options) => { calls.push({ url, options }); return url.endsWith("/csrf") ? response({ token: "isolated-test-csrf", headerName: "X-CSRF-TOKEN" }) : fn(url, options); }; }
-beforeEach(() => { calls = []; api.clearCsrfToken(); currentPage = null; currentSelector = ""; route(() => response({})); });
+beforeEach(() => { calls = []; api.clearCsrfToken(); currentPage = null; currentSelector = ""; delete globalThis.L; route(() => response({})); });
 function nodes(root, names) { for (const name of names) root.selectors[`[data-${name}]`] = new Element(); return root; }
 function textTree(node) { return [node.textContent, ...node.children.map(textTree)].join(" "); }
 test("public catalog uses available cities, real cityId and bounded pagination", async () => {
@@ -116,4 +117,167 @@ test("failed saves preserve form data and always unlock controls", async () => {
   const page = new Element(), input = new Element(); input.value = "unsaved"; page.selectors["button, input, select, textarea"] = [input]; const messages = [];
   await ui.saving(page, (message) => messages.push(message), async () => { throw new api.ApiError(409, { message: "Conflict" }); });
   assert.equal(input.value, "unsaved"); assert.equal(input.disabled, false); assert.equal(page.dataset.saving, undefined); assert.match(messages.at(-1), /Conflito/);
+});
+
+const unitPermissions = {
+  EDITOR: ["EDIT_UNIT_DESCRIPTION"],
+  MANAGER: ["EDIT_UNIT_DESCRIPTION", "EDIT_UNIT", "CREATE_UNIT"],
+  OWNER: ["EDIT_UNIT_DESCRIPTION", "EDIT_UNIT", "CREATE_UNIT", "EDIT_LEGAL_DATA", "CHANGE_UNIT_STATUS"],
+};
+function unitFields(values = {}) {
+  const page = new Element(), fields = {};
+  for (const name of ["name", "document", "description", "postalCode", "address", "number", "complement", "neighborhood", "cityId", "latitude", "longitude", "status", "state"]) {
+    fields[name] = new Element(); fields[name].value = String(values[name] ?? ""); page.selectors[`[name="${name}"]`] = fields[name];
+  }
+  page.selectors["[data-search-postal-code]"] = new Element();
+  return { page, fields, form: { elements: { namedItem: (name) => fields[name] } } };
+}
+for (const role of ["EDITOR", "MANAGER", "OWNER", "ADMIN", "UNKNOWN"]) {
+  test(`unit controls and PATCH respect ${role} permissions even if disabled values are changed`, async () => {
+    const access = { admin: role === "ADMIN", permissions: unitPermissions[role] || [] };
+    const { page, fields, form } = unitFields({ name: "Alterado", document: "11222333000181", description: "Nova descrição", status: "INACTIVE", cityId: "72", address: "Rua nova" });
+    unitForm.applyUnitPermissions(page, access);
+    const owner = ["OWNER", "ADMIN"].includes(role), editor = role === "EDITOR", unknown = role === "UNKNOWN";
+    assert.equal(fields.document.disabled, !owner); assert.equal(fields.status.disabled, !owner);
+    assert.equal(fields.name.disabled, editor || unknown); assert.equal(fields.state.disabled, editor || unknown);
+    assert.equal(page.selectors["[data-search-postal-code]"].disabled, editor || unknown);
+    assert.equal(fields.description.disabled, unknown);
+    // Alterar/reabilitar controles não deve ampliar o payload autorizado.
+    fields.name.disabled = false; fields.document.disabled = false;
+    const body = unitForm.unitPayload(form, { name: "Anterior", description: "Anterior", address: {} }, access);
+    if (unknown) assert.deepEqual(body, {});
+    else if (editor) assert.deepEqual(body, { description: "Nova descrição" });
+    else { assert.equal(body.name, "Alterado"); assert.equal(Object.hasOwn(body, "document"), owner); assert.equal(Object.hasOwn(body, "status"), owner); }
+    await units.patchUnit(8, body);
+    assert.deepEqual(JSON.parse(calls.at(-1).options.body), body);
+  });
+}
+test("manager creation forces ACTIVE and null document; editor and missing permissions cannot create", () => {
+  const { form } = unitFields({ name: "Unidade", status: "INACTIVE", document: "11222333000181" });
+  const body = unitForm.unitPayload(form, null, { permissions: unitPermissions.MANAGER });
+  assert.equal(body.status, "ACTIVE"); assert.equal(body.document, null);
+  assert.throws(() => unitForm.unitPayload(form, null, { permissions: unitPermissions.EDITOR }), /permissão/);
+  assert.throws(() => unitForm.unitPayload(form, null, {}), /permissão/);
+  assert.equal(unitForm.unitPayload(form, null, { permissions: unitPermissions.OWNER }).status, "INACTIVE");
+});
+test("unit PATCH omits unchanged fields and preserves explicit clearing of optional description", () => {
+  const { form } = unitFields({ description: "Texto" });
+  const access = { permissions: unitPermissions.EDITOR };
+  assert.deepEqual(unitForm.unitPayload(form, { description: "Texto" }, access), {});
+  form.elements.namedItem("description").value = "";
+  assert.deepEqual(unitForm.unitPayload(form, { description: "Texto" }, access), { description: null });
+});
+function needPage() { return nodes(new Element(), ["unit-form-feedback", "unit-need-list", "unit-needs-empty"]); }
+test("active and fulfilled needs cannot send DELETE and explain how to inactivate", async () => {
+  for (const status of ["ACTIVE", "FULFILLED"]) {
+    const page = needPage(), state = { unitId: "8", needs: [{ id: 4, status }] };
+    await unitForm.removeNeed(page, state, 4);
+    assert.equal(calls.length, 0); assert.equal(state.needs.length, 1);
+    assert.match(page.selectors["[data-unit-form-feedback]"].textContent, /selecione Inativa e salve/);
+  }
+});
+test("inactive need is removed only after successful DELETE; draft removal stays local", async () => {
+  const page = needPage(), state = { unitId: "8", needs: [{ id: 4, status: "INACTIVE" }] };
+  await unitForm.removeNeed(page, state, 4);
+  assert.equal(calls.at(-1).options.method, "DELETE"); assert.match(calls.at(-1).url, /units\/8\/needs\/4$/);
+  assert.deepEqual(state.needs, []);
+  calls = []; state.needs = [{ id: "draft-need-1", status: "ACTIVE" }];
+  await unitForm.removeNeed(page, state, "draft-need-1"); assert.deepEqual(state.needs, []); assert.equal(calls.length, 0);
+});
+test("concurrent 409 preserves the need and instructs reload without retrying DELETE", async () => {
+  route(() => response({ message: "Inative a necessidade antes de removê-la" }, 409));
+  const page = needPage(), need = { id: 4, status: "INACTIVE" }, state = { unitId: "8", needs: [need] };
+  await unitForm.removeNeed(page, state, 4);
+  assert.deepEqual(state.needs, [need]); assert.equal(calls.filter(c => c.options.method === "DELETE").length, 1);
+  assert.match(page.selectors["[data-unit-form-feedback]"].textContent, /Recarregue.*Inativa/);
+  assert.match(ui.errorMessage(new api.ApiError(409, { message: "Inative a necessidade antes de removê-la" })), /Inative/);
+});
+function mapLibrary({ fail = false } = {}) {
+  const markers = [], listeners = {};
+  globalThis.L = {
+    map() { if (fail) throw new Error("Map failed"); return { setView() { return this; }, fitBounds() {}, remove() {} }; },
+    tileLayer() { return { on(event, callback) { listeners[event] = callback; return this; }, addTo() { return this; } }; },
+    marker(coordinates) { markers.push(coordinates); return { addTo() { return this; }, bindPopup() {} }; },
+  };
+  return { markers, listeners };
+}
+async function cityPage(data = { content: [], totalPages: 0 }, status = 200) {
+  const page = nodes(new Element(), ["city-list", "city-empty", "city-empty-message", "city-map"]);
+  page.selectors["#city-search-input"] = new Element(); page.selectors[".city-search"] = new Element();
+  currentPage = page; currentSelector = ".city-selection";
+  route(url => url.includes("cities/available") ? response([{ id: 72, name: "São Paulo", state: { uf: "SP" } }]) : response(data, status));
+  await cities.initCitiesPage();
+  assert.equal(page.selectors["[data-city-list]"].children[0].href, "./institutions.html?cityId=72");
+  return page;
+}
+test("missing Leaflet and map initialization failure preserve catalog and report map unavailable", async () => {
+  for (const fail of [false, true]) {
+    if (fail) mapLibrary({ fail: true });
+    const page = await cityPage({ content: [{ latitude: -23, longitude: -46 }], totalPages: 1 });
+    assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /mapa está indisponível/);
+    page.selectors["#city-search-input"].value = "sao"; await page.selectors["#city-search-input"].fire("input");
+    assert.equal(page.selectors["[data-city-empty]"].hidden, true);
+  }
+});
+test("available map with no coordinates reports empty data without invented markers", async () => {
+  const { markers } = mapLibrary(); const page = await cityPage({ content: [{ latitude: null, longitude: null }], totalPages: 1 });
+  assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /não há unidades/); assert.deepEqual(markers, []);
+});
+test("map uses valid coordinates and changes feedback when tiles fail", async () => {
+  const { markers, listeners } = mapLibrary();
+  const page = await cityPage({ content: [{ name: "Unidade", latitude: -23, longitude: -46 }, { latitude: null, longitude: null }], totalPages: 1 });
+  assert.deepEqual(markers, [[-23, -46]]); assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /^1 unidades/);
+  listeners.tileerror(); assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /mapa está indisponível/);
+});
+test("map API failure is not reported as absence of coordinates", async () => {
+  mapLibrary(); const page = await cityPage({}, 503);
+  assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /Não foi possível carregar as localizações/);
+});
+
+function editableUnitPage() {
+  const { page, form, fields } = unitFields();
+  const formNode = new Element(); formNode.elements = form.elements;
+  page.selectors["[data-unit-form]"] = formNode;
+  page.querySelector = (selector) => page.selectors[selector] ||= new Element();
+  page.querySelector("[data-unit-institution-selector]").add = function (option) { this.children.push(option); };
+  currentPage = page; currentSelector = "[data-unit-form-page]";
+  return { page, form: formNode, fields };
+}
+test("unit initialization uses current institution permissions and actual submit filters editor changes", async () => {
+  const previousSearch = location.search;
+  globalThis.Option = function (text, value) { const option = new Element("option"); option.textContent = text; option.value = value; return option; };
+  document.querySelectorAll = () => [];
+  location.search = "?institutionId=7&unitId=8";
+  try {
+    const { page, form, fields } = editableUnitPage();
+    const unit = { id: 8, institutionId: 7, name: "Unidade", description: "Antes", status: "ACTIVE", address: { cityId: 72, state: "SP", street: "Rua", postalCode: "01001000", number: "1", neighborhood: "Centro" }, contacts: [], needs: [], serviceAreas: [], openingHours: [] };
+    route((url, options) => {
+      if (url.endsWith("/auth/me")) return response({ platformRole: "USER" });
+      if (url.endsWith("/me/institutions")) return response([{ institutionId: 99, permissions: unitPermissions.OWNER }, { institutionId: 7, permissions: unitPermissions.EDITOR }]);
+      if (url.endsWith("/management/institutions/7")) return response({ id: 7, displayName: "Instituição" });
+      if (url.endsWith("/management/units/8") || options.method === "PATCH") return response(unit);
+      return response([]);
+    });
+    await unitForm.initUnitFormPage();
+    assert.equal(page.querySelector("[data-submit-unit]").disabled, false);
+    assert.equal(fields.name.disabled, true); assert.equal(fields.description.disabled, false);
+    fields.name.value = "Não permitido"; fields.status.value = "INACTIVE"; fields.description.value = "Depois";
+    await form.fire("submit");
+    const writes = calls.filter(c => c.options.method === "PATCH");
+    assert.equal(writes.length, 1); assert.deepEqual(JSON.parse(writes[0].options.body), { description: "Depois" });
+    assert.equal(fields.name.disabled, true); assert.equal(fields.description.disabled, false);
+  } finally { location.search = previousSearch; delete globalThis.Option; }
+});
+test("unit initialization fails closed when permissions cannot be loaded or membership is missing", async () => {
+  const previousSearch = location.search; location.search = "?institutionId=7&unitId=8";
+  globalThis.Option = function (text, value) { return { text, value }; };
+  try {
+    for (const failure of [true, false]) {
+      const { page, fields } = editableUnitPage();
+      route(url => url.endsWith("/auth/me") ? response({ platformRole: "USER" }) : response(failure ? {} : [], failure ? 503 : 200));
+      await unitForm.initUnitFormPage();
+      assert.equal(page.querySelector("[data-submit-unit]").disabled, true);
+      assert.ok(Object.values(fields).every(field => field.disabled));
+    }
+  } finally { location.search = previousSearch; delete globalThis.Option; }
 });

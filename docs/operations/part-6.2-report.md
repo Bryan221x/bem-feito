@@ -174,3 +174,33 @@ MySQL principal Windows não foi acessado nem modificado. Nenhum segredo foi esc
 no repositório. Não houve deploy, commit, push, limpeza de volumes ou alterações
 destrutivas nesta revisão. Persistência/backup/restauração já foram realizados
 anteriormente, conforme confirmação do operador. Nenhuma nova etapa foi iniciada.
+
+## Acabamento funcional após a auditoria do commit 38d3a3d
+
+Alterações limitadas aos pontos A, B e C e à documentação:
+
+- Unidades: permissões carregadas da conta e do vínculo da instituição; campos
+  restritos desabilitados e excluídos do PATCH. MANAGER cria somente ACTIVE sem
+  documento próprio; EDITOR altera apenas descrição nos dados da unidade. Omissão
+  e limpeza explícita por null preservadas. Falha de carregamento das permissões
+  mantém o envio desabilitado. A autorização do backend não foi modificada.
+- Necessidades: exclusão persistida somente após INACTIVE; orientação para editar,
+  inativar e salvar. Conflito 409 mantém o item e orienta recarga, sem retry automático.
+  Rascunhos continuam sendo removidos localmente. Regra de NeedService preservada.
+- Cidades/mapa: mensagens distintas para ausência de coordenadas, falha da API,
+  Leaflet indisponível, falha de inicialização e carregamento de tiles. A lista de
+  cidades permanece utilizável; nenhum marcador fictício é criado.
+- README e matriz de aceitação atualizados com a Parte 6.2, distinguindo aprovação
+  local de pendências de hospedagem, SMTP real e evidências ainda ausentes.
+
+Validação deste acabamento: 61 testes frontend aprovados, zero falhas, nos arquivos
+auth, integration, requests e references. A integração contém 16 regressões novas,
+incluindo inicialização/envio do formulário com DOM e HTTP simulados, seleção de
+permissões da instituição correta, falha fechada, exclusão e indisponibilidade de mapa.
+`node --check` aprovado nos 36 arquivos JS/MJS; `git diff --check` aprovado.
+
+Não foram reexecutados navegador real, backend, Docker, bootstrap ou restauração.
+Esses testes frontend não substituem o ensaio visual no navegador da banca. Nenhum
+schema, migration, autenticação, banco, volume ou gestão de responsáveis OWNER foi
+alterado. Sem commit, push ou deploy. Evidências operacionais anteriores e limitações
+descritas acima permanecem válidas dentro de seus respectivos escopos.

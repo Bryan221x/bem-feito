@@ -64,7 +64,23 @@ contatos/necessidades são rascunhos; após criar, cada resposta substitui seu
 rascunho pelo ID persistido. Uma falha parcial mantém os IDs já salvos para evitar
 duplicação na tentativa seguinte. Não há transação distribuída entre esses HTTPs;
 operações concluídas permanecem gravadas. A remoção de necessidade respeita o 409
-do domínio quando o status ainda não permite exclusão.
+do domínio quando o status ainda não permite exclusão. A interface orienta editar,
+selecionar INACTIVE e salvar antes de remover um registro persistido; rascunhos são
+removidos somente em memória. Em conflito 409, o item é preservado e o usuário deve
+recarregar e conferir o status, sem repetição automática do DELETE.
+
+O formulário consulta a conta e as permissões da instituição antes de habilitar
+edição. OWNER/ADMIN podem alterar todos os campos da unidade; MANAGER não altera
+documento/status e cria somente ACTIVE sem documento; EDITOR altera apenas a
+descrição nos dados da unidade. Contatos, necessidades, horários e áreas mantêm
+suas operações próprias. Campos proibidos ficam desabilitados e são excluídos do
+PATCH mesmo se seu valor no DOM mudar. Omissão preserva dados e null limpa campos
+opcionais. A matriz e a validação do backend permanecem inalteradas.
+
+Na página de cidades, ausência de coordenadas, falha da API de localizações e
+indisponibilidade do mapa têm mensagens distintas. Falha do Leaflet, da inicialização
+ou dos tiles não impede navegar pela lista de cidades. Só coordenadas válidas
+produzem marcadores; o enquadramento do Brasil sem dados não representa instituição.
 
 O dashboard combina o summary das solicitações com contagens do banco, sem baixar
 listas para contar. Instituições administrativas têm busca por nome/CNPJ, filtro
