@@ -112,17 +112,21 @@ limpa a localização no backend. Coordenadas fornecidas explicitamente à API s
 confirmação do cliente; não há verificação geográfica externa ou flag adicional.
 Limites e par latitude/longitude são validados no backend, com a autorização existente.
 
-Cada ponto público representa uma unidade, informa instituição/unidade e oferece link
-para os detalhes. No detalhe público, cada unidade possui endereço, Como chegar e
-mapa expansível próprio, inicializado somente ao abrir e destruído ao fechar.
-Sem coordenadas, permanece o endereço e o aviso de localização não confirmada.
+Cada unidade com coordenadas confirmadas é um marcador no mapa público compartilhado.
+Os cartões oferecem “Ver no mapa” e “Como chegar”; unidades sem coordenadas mantêm o
+endereço e não recebem marcador fictício. Contatos da instituição e contatos próprios
+das unidades são exibidos em suas respectivas seções, sem repetição junto a cada
+necessidade.
 
-Não há provedor de geocodificação configurado: não foi implementada busca automática
-nem autocomplete. O posicionamento manual não exige digitar coordenadas. Leaflet usa
-os tiles existentes, atribuição OSM e cache normal do navegador. Os testes automáticos
-substituem somente o transporte dos tiles para não gerar varreduras/pan automatizado
-nos servidores comunitários; marcadores e dados da API são reais do H2.
-Políticas consultadas em 31/10/2026:
+A busca por endereço agora é acionada explicitamente no formulário, sem autocomplete,
+e oferece candidatos para conferência antes de mostrar o marcador. A seleção manual
+continua disponível e “Confirmar ponto” é obrigatório. O endpoint autenticado envia
+o endereço somente ao provedor HTTPS configurado. Limites, cache, privacidade,
+atribuição e operação em uma instância estão documentados em
+[`geolocation.md`](geolocation.md). Leaflet usa os tiles existentes, atribuição OSM e
+cache normal do navegador. Os testes automáticos substituem o transporte de tiles
+para não gerar varreduras/pan automatizado nos servidores comunitários.
+Políticas oficiais consultadas em 01/11/2026:
 [tiles OSM](https://operations.osmfoundation.org/policies/tiles/) e
 [Nominatim](https://operations.osmfoundation.org/policies/nominatim/).
 
