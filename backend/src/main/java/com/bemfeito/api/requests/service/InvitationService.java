@@ -66,8 +66,17 @@ public class InvitationService {
         var token=new AccountInvitationToken();token.setUser(user);token.setTokenHash(hash(raw));token.setExpiresAt(now.plus(ttl));
         tokens.saveAndFlush(token);
         String url=frontend+"/pages/account-activation.html#token="+raw;
-        if(mailEnabled) events.publishEvent(new InvitationMail(user.getId(),user.getEmail(),user.getName(),institutionName,url,token.getExpiresAt()));
-        return new Invitation(user.getId(),mailEnabled?"EMAIL":"MANUAL",mailEnabled?null:url,token.getExpiresAt());
+        var receipt=new Invitation(user.getId(),mailEnabled?"PENDING":"MANUAL",url,token.getExpiresAt());
+        if(mailEnabled) events.publishEvent(new InvitationMail(user.getId(),user.getEmail(),user.getName(),institutionName,url,token.getExpiresAt(),receipt));
+        return receipt;
+    }
+
+    @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+    public Invitation notifyApproval(User user,String institution) {
+        var receipt=new Invitation(user.getId(),mailEnabled?"PENDING":"NOT_CONFIGURED",null,null,"APPROVAL");
+        if(mailEnabled) events.publishEvent(new InvitationMail(user.getId(),user.getEmail(),user.getName(),institution,
+            frontend+"/pages/institution-login.html",null,receipt));
+        return receipt;
     }
 
     @PreAuthorize("hasRole('PLATFORM_ADMIN')")

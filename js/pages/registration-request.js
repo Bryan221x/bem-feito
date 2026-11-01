@@ -1,3 +1,5 @@
+import { formatContact, formatPhone } from "../services/contact-format.js";
+import { errorMessage } from "../components/api-ui.js";
 import { getCategories, getStates, getCities, submitRegistration, withSubmission, showBackendFields } from "../services/request-service.js";
 let draftSequence = 0;
 
@@ -58,7 +60,7 @@ function submitRequest(event, page, state) {
       setFormMessage(page, `Solicitação #${result.id} enviada com sucesso. Ela será analisada pela equipe Bem-Feito.`);
     } catch (error) {
       showBackendFields(form, error.fields, { cnpj: "document", categoryId: "category", "responsible.name": "responsibleName", "responsible.email": "responsibleEmail", "responsible.phone": "responsiblePhone", "responsible.role": "responsibleRole", "mainUnit.cityId": "city", "mainUnit.name": "unitName", ...Object.fromEntries(["postalCode", "street", "number", "complement", "neighborhood"].map((k) => [`mainUnit.${k}`, k])) });
-      setFormMessage(page, error.message || "Não foi possível enviar. Tente novamente.", true);
+      setFormMessage(page, errorMessage(error), true);
     }
   });
 }
@@ -105,7 +107,7 @@ function renderPublicContacts(page, state) {
   list.replaceChildren(...state.publicContacts.map((contact) => {
     const item = document.createElement("li");
     const text = document.createElement("span");
-    text.textContent = `${getTypeLabel(contact.type)}${contact.label ? ` — ${contact.label}` : ""}: ${contact.value}`;
+    text.textContent = `${getTypeLabel(contact.type)}${contact.label ? ` — ${contact.label}` : ""}: ${formatContact(contact)}`;
     const button = document.createElement("button");
     button.type = "button";
     button.className = "registration-contact-list__remove";
@@ -129,12 +131,11 @@ function validateForm(form) {
 
 function bindMask(input, formatter) { input?.addEventListener("input", () => { input.value = formatter(input.value); }); }
 function formatCnpj(value) { const d = value.replace(/\D/g, "").slice(0, 14); return d.replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2"); }
-function formatPhone(value) { const d = value.replace(/\D/g, "").slice(0, 11); return d.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2"); }
 function formatPostalCode(value) { const d = value.replace(/\D/g, "").slice(0, 8); return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; }
 function showFieldError(form, field, message) { form.elements.namedItem(field)?.setAttribute("aria-invalid", "true"); const error = form.querySelector(`[data-error-for="${field}"]`); if (error) error.textContent = message; }
 function clearFieldError(form, field) { if (!field) return; form.elements.namedItem(field)?.removeAttribute("aria-invalid"); const error = form.querySelector(`[data-error-for="${field}"]`); if (error) error.textContent = ""; }
 function updateCounter(form) { const input = form.querySelector("[data-description]"); const counter = form.querySelector("[data-description-count]"); if (input && counter) counter.textContent = `${input.value.length}/1000`; }
-function setFormMessage(page, message, isError = false) { const element = page.querySelector("[data-registration-form-message]"); if (!element) return; element.textContent = message; element.dataset.state = isError ? "error" : "neutral"; element.hidden = false; }
+function setFormMessage(page, message, isError = false) { const element = page.querySelector("[data-registration-form-message]"); if (!element) return; element.textContent = message; element.dataset.state = isError ? "error" : "success"; element.hidden = false; }
 function getTypeLabel(type) { return { EMAIL: "E-mail", PHONE: "Telefone", WHATSAPP: "WhatsApp" }[type] || "Contato"; }
 function clean(value) { return String(value || "").trim(); }
 function createDraftId() { return `draft-public-contact-${++draftSequence}`; }

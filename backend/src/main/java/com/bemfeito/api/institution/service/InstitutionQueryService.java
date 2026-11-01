@@ -37,7 +37,17 @@ public class InstitutionQueryService {
     @PreAuthorize("permitAll()")
     public PageResponse<InstitutionSummary> list(Long cityId,int page,int size) {
         require(cityId==null || cityId>0,"cityId deve ser positivo");
-        return PageResponse.from(institutions.findPublic(cityId,pagination(page,size)));
+        var result=institutions.findPublic(cityId,pagination(page,size));
+        var ids=result.getContent().stream().map(InstitutionSummary::id).toList();
+        if(ids.isEmpty()) return PageResponse.from(result);
+        var photos=images.findByInstitutionIdInOrderByDisplayOrderAscIdAsc(ids).stream()
+            .collect(java.util.stream.Collectors.toMap(i->i.getInstitution().getId(),HistoryImageResponse::from,(first,next)->first));
+        var phones=contacts.findForOwners(ids,true).stream()
+            .filter(c->c.getType()==com.bemfeito.api.common.domain.ContactType.PHONE || c.getType()==com.bemfeito.api.common.domain.ContactType.WHATSAPP)
+            .sorted(java.util.Comparator.comparing(c->!Boolean.TRUE.equals(c.getIsPrimary())))
+            .collect(java.util.stream.Collectors.toMap(c->c.getInstitution().getId(),ContactResponse::from,(first,next)->first));
+        return PageResponse.from(result.map(i->new InstitutionSummary(i.id(),i.displayName(),i.categoryId(),i.category(),
+            i.description(),i.location(),photos.get(i.id()),phones.get(i.id()))));
     }
     @PreAuthorize("@institutionAuthorization.isAdmin()")
     public PageResponse<InstitutionManagementSummary> managementList(int page,int size) {

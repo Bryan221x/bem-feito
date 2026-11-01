@@ -1,3 +1,5 @@
+import { apiAssetUrl } from "../services/api-client.js";
+import { contactHref, formatContact } from "../services/contact-format.js";
 /*
  * Estrutura esperada para uma instituição recebida pela API.
  * O Front-End não define os dados: apenas renderiza o que vier do sistema.
@@ -28,6 +30,14 @@ export function createInstitutionCard(institution, cityId = null) {
   const card = document.createElement("article");
   card.className = "institution-card";
   card.dataset.institutionId = String(institution.id);
+  const media = document.createElement("div"); media.className = "institution-card__media";
+  const placeholder = document.createElement("span"); placeholder.textContent = "Bem-Feito · Conheça esta instituição"; media.append(placeholder);
+  const imageUrl = apiAssetUrl(institution.image?.url);
+  if (imageUrl) {
+    const image = document.createElement("img"); image.src = imageUrl; image.alt = institution.image.alt || displayName; image.loading = "lazy";
+    image.addEventListener("error", () => { image.remove(); placeholder.hidden = false; }); placeholder.hidden = true; media.append(image);
+  }
+  card.append(media);
 
   const content = document.createElement("div");
   content.className = "institution-card__content";
@@ -55,6 +65,13 @@ export function createInstitutionCard(institution, cityId = null) {
   }
 
   if (institution.location) { const location = document.createElement("p"); location.textContent = institution.location; content.append(location); }
+  const phone = institution.publicContact;
+  if (phone?.isPublic === true && ["PHONE", "WHATSAPP"].includes(phone.type) && contactHref(phone)) {
+    const contact = document.createElement("a"); contact.className = "institution-card__contact"; contact.href = contactHref(phone);
+    contact.textContent = `${phone.type === "WHATSAPP" ? "WhatsApp" : "Telefone"}: ${formatContact(phone)}`;
+    if (phone.type === "WHATSAPP") { contact.target = "_blank"; contact.rel = "noopener noreferrer"; }
+    content.append(contact);
+  }
 
   const params = new URLSearchParams();
 
@@ -68,7 +85,7 @@ export function createInstitutionCard(institution, cityId = null) {
   link.className = "button button--outline institution-card__link";
 
   link.href = `./institution.html?${params.toString()}`;
-  link.textContent = "Ver instituição";
+  link.textContent = "Conhecer instituição";
 
   content.appendChild(link);
   card.appendChild(content);

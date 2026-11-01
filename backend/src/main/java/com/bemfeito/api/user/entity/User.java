@@ -12,6 +12,9 @@ public class User extends TimestampedEntity {
     @Enumerated(EnumType.STRING) @Column(name="platform_role",nullable=false,length=30) private PlatformRole platformRole;
     @Enumerated(EnumType.STRING) @Column(nullable=false,length=30) private UserStatus status;
     @Column(name="email_verified_at") private LocalDateTime emailVerifiedAt;
+    @Column(name="credentials_version",nullable=false) private long credentialsVersion;
+    public long getCredentialsVersion() { return credentialsVersion; }
+    public void invalidateSessions() { credentialsVersion++; }
     public User() {}
     public static String normalizeEmail(String email) { return email==null ? "" : email.trim().toLowerCase(Locale.ROOT); }
     @PrePersist @PreUpdate void normalize() { email=normalizeEmail(email); }

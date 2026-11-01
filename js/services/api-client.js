@@ -80,6 +80,7 @@ export async function apiRequest(
     body: payload,
     headers: requestHeaders,
     credentials: "include",
+    cache: "no-store",
   });
   let result = null;
   if (response.status !== 204) {

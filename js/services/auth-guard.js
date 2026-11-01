@@ -1,3 +1,4 @@
+import { resolveInstitutionContext, applyInstitutionContext } from "./institution-context.js";
 import { getCurrentUser, getMyInstitutions, logout } from "./auth-service.js";
 let eventsBound = false;
 
@@ -14,14 +15,13 @@ export async function guardPage() {
       location.replace("./institution-selection.html"); return false;
     }
     const pageName = location.pathname.split("/").pop();
-    if (user.platformRole !== "PLATFORM_ADMIN" && ["my-institution.html", "unit-form.html"].includes(pageName)) {
-      const institutionId = new URLSearchParams(location.search).get("institutionId");
-      const memberships = await getMyInstitutions();
-      const selected = memberships.find((item) => String(item.institutionId) === institutionId);
-      if (!selected || (pageName === "unit-form.html" && !new URLSearchParams(location.search).has("unitId")
-          && !selected.permissions.includes("CREATE_UNIT"))) {
+    if (["my-institution.html", "unit-form.html"].includes(pageName)) {
+      const context = await resolveInstitutionContext({ user });
+      if (!context.id || (pageName === "unit-form.html" && !new URLSearchParams(location.search).has("unitId")
+          && user.platformRole !== "PLATFORM_ADMIN" && !context.selected.permissions.includes("CREATE_UNIT"))) {
         location.replace("./institution-selection.html"); return false;
       }
+      applyInstitutionContext(context.id);
     }
     document.documentElement.classList.remove("auth-pending");
     if (!eventsBound) {

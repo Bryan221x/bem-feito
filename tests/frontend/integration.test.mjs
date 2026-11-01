@@ -32,7 +32,7 @@ const ui = await import("../../js/components/api-ui.js");
 const unitForm = await import("../../js/pages/unit-form.js");
 const response = (body, status = 200) => new Response(JSON.stringify(body), { status });
 function route(fn) { globalThis.fetch = async (url, options) => { calls.push({ url, options }); return url.endsWith("/csrf") ? response({ token: "isolated-test-csrf", headerName: "X-CSRF-TOKEN" }) : fn(url, options); }; }
-beforeEach(() => { calls = []; api.clearCsrfToken(); currentPage = null; currentSelector = ""; delete globalThis.L; route(() => response({})); });
+beforeEach(() => { calls = []; window.confirm = () => true; api.clearCsrfToken(); currentPage = null; currentSelector = ""; delete globalThis.L; route(() => response({})); });
 function nodes(root, names) { for (const name of names) root.selectors[`[data-${name}]`] = new Element(); return root; }
 function textTree(node) { return [node.textContent, ...node.children.map(textTree)].join(" "); }
 test("public catalog uses available cities, real cityId and bounded pagination", async () => {
@@ -89,9 +89,9 @@ test("opening hours distinguish open, closed, notes and missing days", () => {
   assert.equal(rows.length, 7); assert.match(rows[0].textContent, /09:00 às 12:00 — Agendar/); assert.match(rows[1].textContent, /Fechado/); assert.match(rows[2].textContent, /Não informado/);
 });
 test("multiple units keep their needs and private contacts separate", () => {
-  const page = new Element(), details = nodes(new Element(), ["institution-units", "institution-units-empty", "institution-name", "institution-contact-section", "institution-general-contacts"]); page.selectors["[data-institution-details]"] = details;
+  const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-name", "institution-contact-section", "institution-general-contacts"]); page.selectors["[data-institution-details]"] = details;
   detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", contacts: [{ type: "EMAIL", value: "private@example.invalid", isPublic: false }], units: [{ id: 1, name: "A", needs: [{ name: "Only A", status: "ACTIVE", category: "Categoria", quantity: 4, unitLabel: "kg" }, { name: "Hidden", status: "FULFILLED" }] }, { id: 2, name: "B", needs: [{ name: "Only B", status: "ACTIVE" }] }] });
-  const cards = details.selectors["[data-institution-units]"].children;
+  const cards = details.selectors["[data-donation-needs]"].children;
   assert.equal(cards.length, 2); assert.match(textTree(cards[0]), /Only A/); assert.doesNotMatch(textTree(cards[0]), /Only B|Hidden/); assert.match(textTree(cards[0]), /4 kg/); assert.match(textTree(cards[1]), /Only B/); assert.equal(details.selectors["[data-institution-general-contacts]"].children.length, 0);
 });
 test("cities render real IDs and search real names", async () => {
@@ -192,6 +192,13 @@ test("concurrent 409 preserves the need and instructs reload without retrying DE
   assert.match(page.selectors["[data-unit-form-feedback]"].textContent, /Recarregue.*Inativa/);
   assert.match(ui.errorMessage(new api.ApiError(409, { message: "Inative a necessidade antes de removê-la" })), /Inative/);
 });
+
+test("canceling inactive need removal preserves data without sending DELETE", async () => {
+  window.confirm = () => false;
+  const need={id:4,name:"Material",status:"INACTIVE"}, state={unitId:"8",needs:[need]};
+  await unitForm.removeNeed(needPage(),state,4);
+  assert.equal(calls.length,0);assert.deepEqual(state.needs,[need]);
+});
 function mapLibrary({ fail = false } = {}) {
   const markers = [], listeners = {};
   globalThis.L = {
@@ -221,7 +228,7 @@ test("missing Leaflet and map initialization failure preserve catalog and report
 });
 test("available map with no coordinates reports empty data without invented markers", async () => {
   const { markers } = mapLibrary(); const page = await cityPage({ content: [{ latitude: null, longitude: null }], totalPages: 1 });
-  assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /não há unidades/); assert.deepEqual(markers, []);
+  assert.match(page.selectors["[data-city-map]"].afterNode.textContent, /nenhuma unidade possui coordenadas confirmadas/); assert.deepEqual(markers, []);
 });
 test("map uses valid coordinates and changes feedback when tiles fail", async () => {
   const { markers, listeners } = mapLibrary();
@@ -280,4 +287,54 @@ test("unit initialization fails closed when permissions cannot be loaded or memb
       assert.ok(Object.values(fields).every(field => field.disabled));
     }
   } finally { location.search = previousSearch; delete globalThis.Option; }
+});
+
+test("donation empty state does not invent needs; unit contacts take priority", () => {
+  const host=new Element(), root=nodes(new Element(),["donation-needs"]);
+  detail.renderDonationNeeds(root,{ units:[] }); assert.match(textTree(root.selectors["[data-donation-needs]"]),/ainda não informou/);
+  detail.renderDonationNeeds(root,{ contacts:[{type:"EMAIL",value:"general@example.invalid",isPublic:true}], units:[
+    {name:"Unidade A",needs:[{name:"<script>alert(1)</script>",status:"ACTIVE",priority:"HIGH"},{name:"Oculta",status:"INACTIVE"}],contacts:[{type:"EMAIL",value:"unit@example.invalid",isPublic:true},{type:"EMAIL",value:"private@example.invalid",isPublic:false}]},
+    {name:"Inativa",status:"INACTIVE",needs:[{name:"Não publicar",status:"ACTIVE"}]}] });
+  const text=textTree(root.selectors["[data-donation-needs]"]);assert.match(text,/unit@example.invalid/);assert.match(text,/<script>/);assert.doesNotMatch(text,/general@example|private@example|Oculta|Não publicar/);
+});
+
+test("public and management needs reorder after insert and priority edit without mutating records", () => {
+  const needs = [
+    {id:1,name:"Zeta",priority:"LOW",status:"ACTIVE"},
+    {id:2,name:"Beta",priority:"HIGH",status:"ACTIVE",quantity:3,unitLabel:"kg",category:"Categoria"},
+    {id:3,name:"Alfa",priority:"HIGH",status:"ACTIVE",description:"Descrição"},
+    {id:4,name:"Média",priority:"MEDIUM",status:"ACTIVE"}
+  ];
+  const management=nodes(new Element(),["unit-need-list","unit-needs-empty"]);
+  const publicPage=nodes(new Element(),["donation-needs"]);
+  const names = () => management.selectors["[data-unit-need-list]"].children.map(card=>card.children[0].children[0].textContent);
+  unitForm.renderNeeds(management,needs);
+  assert.deepEqual(names(),["Alfa","Beta","Média","Zeta"]);
+  const inserted={id:5,name:"Aardvark",priority:"HIGH",status:"ACTIVE"};
+  const updated=[...needs.map(need=>need.id===1?{...need,priority:"HIGH"}:need),inserted];
+  unitForm.renderNeeds(management,updated);
+  assert.deepEqual(names(),["Aardvark","Alfa","Beta","Zeta","Média"]);
+  detail.renderDonationNeeds(publicPage,{units:[{name:"A",needs:updated},{name:"B",needs:[{id:6,name:"Só B",priority:"HIGH",status:"ACTIVE"}]}]});
+  const groups=publicPage.selectors["[data-donation-needs]"].children;
+  assert.deepEqual(groups[0].children[1].children.map(card=>card.children[0].children[0].textContent),names());
+  assert.equal(groups[1].children[1].children.length,1);
+  assert.match(textTree(groups[0]),/3 kg/);
+  assert.equal(needs[0].priority,"LOW");assert.deepEqual(needs.map(n=>n.id),[1,2,3,4]);
+  // Equal names use stable IDs; items without optional fields have only a header.
+  detail.renderDonationNeeds(publicPage,{units:[{name:"A",needs:[{id:9,name:"Igual",priority:"LOW",status:"ACTIVE",description:"Segundo"},{id:8,name:"Igual",priority:"LOW",status:"ACTIVE"}]}]});
+  const cards=publicPage.selectors["[data-donation-needs]"].children[0].children[1].children;
+  assert.equal(cards[0].children.length,1);assert.match(textTree(cards[1]),/Segundo/);
+});
+
+test("no published cities is distinct from published cities lacking coordinates", async () => {
+  mapLibrary(); const page=nodes(new Element(),["city-list","city-empty","city-empty-message","city-map"]);
+  page.selectors["#city-search-input"]=new Element();page.selectors[".city-search"]=new Element();currentPage=page;currentSelector=".city-selection";
+  route(url=>response(url.includes("cities/available")?[]:{content:[],totalPages:0}));await cities.initCitiesPage();
+  assert.match(page.selectors["[data-city-map]"].afterNode.textContent,/não há instituições publicadas/);
+});
+
+test("coordinate PATCH keeps the pair when one axis or the address changes",()=>{
+  const {form}=unitFields({latitude:"-19",longitude:"-45",address:"Rua nova"});
+  const result=unitForm.unitPayload(form,{latitude:-19,longitude:-44,address:{street:"Rua antiga"}},{admin:true});
+  assert.equal(result.latitude,-19);assert.equal(result.longitude,-45);
 });

@@ -30,7 +30,7 @@ export async function initCitiesPage() {
     if (!rendered) mapUnavailable();
     if (!unavailable) {
       const count = units.filter(hasCoordinates).length;
-      mapStatus.textContent = count ? `${count} unidades com coordenadas no mapa.` : "Ainda não há unidades publicadas com coordenadas informadas.";
+      mapStatus.textContent = count ? `${count} unidades com coordenadas no mapa.` : cities.length ? "Há instituições publicadas no catálogo, mas nenhuma unidade possui coordenadas confirmadas para este mapa." : "Ainda não há instituições publicadas com unidades disponíveis.";
     }
     return !!rendered;
   }

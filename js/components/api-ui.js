@@ -1,3 +1,4 @@
+import { showFieldErrors, validationText } from "./form-feedback.js";
 export function element(tag, text, className) {
   const node = document.createElement(tag); if (text != null) node.textContent = text; if (className) node.className = className; return node;
 }
@@ -11,17 +12,19 @@ export function createPagination(after, load) {
     failed(retry) { label.replaceChildren(); const button = element("button", "Tentar novamente", "button button--outline"); button.type = "button"; button.addEventListener("click", retry); label.append(button); } };
 }
 export function errorMessage(error) {
-  const messages = { 401: "Sua sessão expirou. Entre novamente.", 403: "Você não tem permissão ou sua sessão de segurança expirou.", 404: "O registro não está disponível.", 409: "Conflito nos dados. Confira o registro antes de tentar novamente." };
+  if (error instanceof TypeError || error.status === 0 || error.status >= 500) return "Não foi possível conectar ao serviço. Tente novamente em instantes. Seus dados foram mantidos.";
+  const messages = { 429: "Muitas tentativas. Aguarde antes de tentar novamente.", 401: "Sua sessão expirou. Entre novamente.", 403: "Você não tem permissão ou sua sessão de segurança expirou.", 404: "O registro não está disponível.", 409: "Conflito nos dados. Confira o registro antes de tentar novamente." };
   return [messages[error.status] || error.message || "Não foi possível conectar ao serviço. Tente novamente.",
-    error.status === 409 ? error.message : null, ...Object.values(error.fields || {})].filter(Boolean).join(" ");
+    error.status === 409 ? error.message : null, ...Object.values(error.fields || {}).map(validationText)].filter(Boolean).join(" ");
 }
 export async function saving(root, feedback, operation) {
   if (root.dataset.saving === "true") return;
   root.dataset.saving = "true"; root.setAttribute("aria-busy", "true");
   const controls = [...root.querySelectorAll("button, input, select, textarea")].map((node) => [node, node.disabled]);
   controls.forEach(([node]) => { node.disabled = true; }); feedback("Salvando…");
-  try { await operation(); feedback("Alterações salvas."); return true; }
-  catch (error) { feedback(errorMessage(error)); return false; }
+  root.dataset.feedback = "pending";
+  try { await operation(); root.dataset.feedback = "success"; feedback("Alterações salvas."); return true; }
+  catch (error) { root.dataset.feedback = "error"; controls.forEach(([node, disabled]) => { node.disabled = disabled; }); showFieldErrors(root, error.fields, { street: "address", title: "needName", categoryId: "needCategoryId" }); feedback(errorMessage(error)); return false; }
   finally { controls.forEach(([node, disabled]) => { node.disabled = disabled; }); delete root.dataset.saving; root.removeAttribute("aria-busy"); }
 }
 export function preserveContext(id) {

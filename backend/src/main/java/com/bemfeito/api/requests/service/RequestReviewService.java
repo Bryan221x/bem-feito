@@ -87,6 +87,7 @@ public class RequestReviewService {
             }
             user=resolve(request.getResponsibleEmail(),request.getResponsibleName());link(user,institution,MembershipRole.OWNER);
             if(user.getStatus()==UserStatus.INVITED) invitation=invitations.issue(user,institution.getDisplayName());
+            else invitation=invitations.notifyApproval(user,institution.getDisplayName());
         }
         request.setStatus(status);request.setReviewedByUser(reviewer);request.setReviewedAt(LocalDateTime.now());request.setReviewNotes(decision.notes());
         registrations.flush();return new Reviewed(id,status,institution==null?null:institution.getId(),user==null?null:user.getId(),invitation);
@@ -104,6 +105,7 @@ public class RequestReviewService {
             if(request.getRequesterUser()!=null && !request.getRequesterUser().getId().equals(user.getId())) throw conflict("Identidade do solicitante inconsistente");
             link(user,institution,decision.membershipRole());
             if(user.getStatus()==UserStatus.INVITED) invitation=invitations.issue(user,institution.getDisplayName());
+            else invitation=invitations.notifyApproval(user,institution.getDisplayName());
         }
         request.setStatus(status);request.setReviewedByUser(reviewer);request.setReviewedAt(LocalDateTime.now());request.setReviewNotes(decision.notes());
         accesses.flush();return new Reviewed(id,status,institution.getId(),user==null?null:user.getId(),invitation);

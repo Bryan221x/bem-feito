@@ -74,3 +74,28 @@ orienta a inativação antes de remover necessidades e mantém a consulta por ci
 disponível quando o mapa falha. Consulte [contratos do frontend](docs/frontend/api-integration.md).
 O roteiro oficial da disciplina não foi localizado; os documentos do projeto não
 substituem os critérios acadêmicos do professor.
+
+
+## Refinamento final de UX/UI
+
+O [relatório de refinamento](docs/frontend/ux-refinement-report.md) registra os ajustes,
+verificações e limites desta entrega. Em Minha Instituição, a seção **Imagens da
+instituição** oferece upload e gerenciamento da galeria. A primeira foto ordenada
+aparece nos cards e detalhes públicos; os cards mostram somente telefone/WhatsApp
+público e resumo compacto. Decisões administrativas fecham o modal após confirmação
+da API, atualizam a lista e preservam o convite manual na página.
+
+
+## Contexto, contas, mapas e materiais para doação
+
+A continuação preserva o refinamento anterior e acrescenta contexto institucional
+validado por conta, assistente de configuração, convites SMTP com estado real,
+recuperação de senha e seleção manual da localização da unidade. Os contatos usam
+formatação compartilhada; a consulta destaca necessidades ativas agrupadas por unidade.
+Consulte [contratos, configuração SMTP e limites](docs/operations/accounts-mail-maps.md)
+e [evidências desta continuação](docs/frontend/accounts-maps-report.md).
+
+**Antes de executar este backend contra um banco existente:** a migração aditiva
+`database/migrations/005_password_recovery.sql` é necessária e ainda não foi aplicada
+ao MySQL operacional. Sua aplicação depende de revisão, backup e autorização explícita.
+Os testes desta etapa usam exclusivamente H2 e captura SMTP local.

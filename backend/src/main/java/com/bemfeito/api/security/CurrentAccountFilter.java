@@ -16,7 +16,7 @@ public class CurrentAccountFilter extends OncePerRequestFilter {
         var authentication=SecurityContextHolder.getContext().getAuthentication();
         if(authentication!=null && authentication.getPrincipal() instanceof UserPrincipal principal) {
             var user=users.findById(principal.getId()).orElse(null);
-            if(user==null || user.getStatus()!=UserStatus.ACTIVE || !user.hasUsablePasswordHash()) {
+            if(user==null || user.getStatus()!=UserStatus.ACTIVE || !user.hasUsablePasswordHash() || user.getCredentialsVersion()!=principal.getCredentialsVersion()) {
                 SecurityContextHolder.clearContext();
                 var session=request.getSession(false);if(session!=null) session.invalidate();
             } else {

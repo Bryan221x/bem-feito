@@ -1,4 +1,5 @@
 import { guardPage, initLogout, initSessionRecheck } from "./services/auth-guard.js";
+import { initFormFeedback } from "./components/form-feedback.js";
 import { initInstitutionLoginPage } from "./pages/institution-login.js";
 import { initRegistrationRequestPage } from "./pages/registration-request.js";
 import { initInstitutionSelectionPage } from "./pages/institution-selection.js";
@@ -19,7 +20,11 @@ import { initAdminRequestsPage } from "./pages/admin-requests.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   if (!(await guardPage())) return;
+  initFormFeedback();
   initSessionRecheck();
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && document.documentElement.dataset.authRequired === "admin") location.reload();
+  });
   initLogout();
   initMobileMenu();
 

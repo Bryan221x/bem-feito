@@ -1,3 +1,5 @@
+import { formatPhone } from "../services/contact-format.js";
+import { errorMessage } from "../components/api-ui.js";
 import { getCurrentUser } from "../services/auth-service.js";
 import { searchInstitutions, submitAccess, withSubmission, showBackendFields } from "../services/request-service.js";
 
@@ -18,7 +20,7 @@ export function initInstitutionAccessRequestPage() {
     else setMessage(page, "Não foi possível verificar sua sessão. Recarregue a página antes de enviar.", true);
   });
   form.querySelector("[data-phone]")?.addEventListener("input", (e) => {
-    const d = e.target.value.replace(/\D/g, "").slice(0, 11); e.target.value = d.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2");
+    e.target.value = formatPhone(e.target.value);
   });
   query.addEventListener("input", () => {
     clearTimeout(timer); const current = ++sequence; selected = null; selection.hidden = true; results.replaceChildren(); registration.hidden = true;
@@ -46,8 +48,8 @@ export function initInstitutionAccessRequestPage() {
     const body = { institutionId: selected.id, requesterName: data.get("responsibleName").trim(), requesterEmail: data.get("email").trim(), requesterPhone: data.get("phone").trim(), requesterRole: data.get("role").trim(), justification: data.get("justification").trim() || null };
     return withSubmission(form, async () => {
       try { const result = await submitAccess(body); setMessage(page, `Solicitação #${result.id} enviada. Aguarde a análise da equipe Bem-Feito.`); selected = null; selection.hidden = true; query.value = ""; results.replaceChildren(); feedback.textContent = "Digite pelo menos 2 caracteres para buscar."; }
-      catch (error) { showBackendFields(form, error.fields, { institutionId: "institutionQuery", requesterName: "responsibleName", requesterEmail: "email", requesterPhone: "phone", requesterRole: "role" }); setMessage(page, error.message || "Não foi possível enviar.", true); }
+      catch (error) { showBackendFields(form, error.fields, { institutionId: "institutionQuery", requesterName: "responsibleName", requesterEmail: "email", requesterPhone: "phone", requesterRole: "role" }); setMessage(page, errorMessage(error), true); }
     });
   });
 }
-function setMessage(page, text, error = false) { const message = page.querySelector("[data-access-message]"); message.textContent = text; message.dataset.state = error ? "error" : "neutral"; message.hidden = false; }
+function setMessage(page, text, error = false) { const message = page.querySelector("[data-access-message]"); message.textContent = text; message.dataset.state = error ? "error" : "success"; message.hidden = false; }

@@ -1,5 +1,8 @@
+import { contactHref, formatContact, contactIcon } from "../services/contact-format.js";
+import { sortNeeds } from "../services/need-order.js";
+export { contactHref } from "../services/contact-format.js";
 import { apiAssetUrl } from "../services/api-client.js";
-import { createUnitMap, hasCoordinates } from "../services/map-service.js";
+import { createUnitMap, hasCoordinates, removeMap } from "../services/map-service.js";
 
 const historyDialogStates = new WeakMap();
 
@@ -14,10 +17,19 @@ export function renderInstitutionDetails(page, institution) {
   setOptionalText(details.querySelector("[data-institution-category]"), institution.category);
   setOptionalText(details.querySelector("[data-institution-objective]"), institution.objective);
   setOptionalText(details.querySelector("[data-institution-description]"), institution.description);
+  const summary = details.querySelector("[data-institution-summary]");
+  const description = String(institution.description || "");
+  setOptionalText(summary, description.length > 260 ? `${description.slice(0, 260)}…` : description);
+  const objectiveSection = details.querySelector("[data-objective-section]"), descriptionSection = details.querySelector("[data-description-section]");
+  if (objectiveSection) objectiveSection.hidden = !institution.objective;
+  if (descriptionSection) descriptionSection.hidden = description.length <= 260;
+  const cover = details.querySelector("[data-institution-cover]"), firstImage = normalizePublicHistoryImages(institution.historyImages)[0];
+  if (cover) { cover.hidden = !firstImage; if (firstImage) { cover.src = firstImage.url; cover.alt = firstImage.alt; cover.onerror = () => { cover.hidden = true; }; } }
   renderHistory(details, institution);
   renderWebsite(details, institution.website);
   renderGeneralContacts(details, institution.contacts);
   details.hidden = false;
+  renderDonationNeeds(details, institution);
   const markers = renderUnits(details, institution.units);
   renderMapArchitecture(details, markers);
 
@@ -36,17 +48,19 @@ function renderHistory(details, institution) {
 
   const paragraphs = createHistoryParagraphs(institution.history);
   const hasHistory = paragraphs.length > 0;
-  const images = hasHistory ? normalizePublicHistoryImages(institution.historyImages) : [];
-  openButton.hidden = !hasHistory;
+  const images = normalizePublicHistoryImages(institution.historyImages);
+  openButton.hidden = !hasHistory && !images.length;
+  openButton.textContent = images.length ? "Ver fotos e história" : "Conheça nossa história";
   textContainer.replaceChildren(...paragraphs);
-  name.textContent = hasHistory ? String(institution.displayName || institution.name || "").trim() : "";
+  name.textContent = String(institution.displayName || institution.name || "").trim();
+  const story = dialog.querySelector(".institution-history-dialog__story"); if (story) story.hidden = !hasHistory;
 
   const state = getHistoryDialogState(details, dialog, openButton);
   state.images = images;
   state.index = 0;
   renderHistoryGallery(details, state);
 
-  if (!paragraphs.length && dialog.open) closeHistoryDialog(state);
+  if (!paragraphs.length && !images.length && dialog.open) closeHistoryDialog(state);
 }
 
 function createHistoryParagraphs(history) {
@@ -264,13 +278,28 @@ function createUnit(unit) {
   const title = document.createElement("h3"); title.textContent = unit.name;
   const address = document.createElement("p"); address.className = "institution-unit-card__address"; address.textContent = formatAddress(unit.address);
   header.append(title, address); card.append(header);
+  if (hasCoordinates(unit)) {
+    const directions = document.createElement("a"); directions.textContent = "Como chegar";
+    directions.href = `https://www.openstreetmap.org/directions?to=${Number(unit.latitude)}%2C${Number(unit.longitude)}`;
+    directions.target = "_blank"; directions.rel = "noopener noreferrer";
+    const disclosure = document.createElement("details"), summary = document.createElement("summary"), map = document.createElement("div"), feedback = document.createElement("p");
+    summary.textContent = "Ver localização desta unidade"; map.className = "unit-location-map"; feedback.setAttribute("role","status");
+    disclosure.append(summary,map,feedback); let active = false;
+    disclosure.addEventListener("toggle", () => {
+      if (!disclosure.open) { if(active) removeMap(map); active=false; return; }
+      if (active) return;
+      feedback.textContent = "";
+      const unavailable = () => { feedback.textContent = "Mapa indisponível. O endereço e o link Como chegar continuam disponíveis."; };
+      active = !!createUnitMap(map,[unit],{ onUnavailable:unavailable }); if(!active) unavailable();
+    });
+    card.append(directions,disclosure);
+  } else { const note=document.createElement("p"); note.textContent="Localização no mapa ainda não confirmada."; card.append(note); }
 
   const contacts = getPublicContacts(unit.contacts);
   if (contacts.length) card.append(createSubsection("Contatos", contacts.map(createContact), "institution-contact"));
   const areas = Array.isArray(unit.serviceAreas) ? unit.serviceAreas.filter(Boolean) : [];
   if (areas.length) card.append(createSubsection("Áreas de atuação", areas.map((area) => createTag(getServiceAreaLabel(area))), "institution-tags"));
-  const needs = Array.isArray(unit.needs) ? unit.needs.filter((need) => need?.name && String(need.status || "ACTIVE").toUpperCase() === "ACTIVE") : [];
-  if (needs.length) card.append(createSubsection("Necessidades atuais", needs.map(createNeed), "institution-unit-needs"));
+
   card.append(createSubsection("Horários", renderOpeningHours(unit.openingHours), "institution-hours"));
   return card;
 }
@@ -287,12 +316,26 @@ function createContact(contact) {
   const item = document.createElement("div"); item.className = "institution-contact__item";
   const label = document.createElement("span"); label.className = "institution-contact__label"; label.textContent = contact.label || getContactTypeLabel(contact.type);
   const href = contactHref(contact);
-  const value = document.createElement(href ? "a" : "span"); if (href) value.href = href; value.className = "institution-contact__value"; value.textContent = contact.value;
-  item.append(label, value); return item;
+  const value = document.createElement(href ? "a" : "span"); if (href) value.href = href; if (href?.startsWith("https:")) { value.target = "_blank"; value.rel = "noopener noreferrer"; } value.className = "institution-contact__value"; value.textContent = formatContact(contact);
+  const icon=document.createElement("span"); icon.innerHTML=contactIcon(contact.type);
+  const type=document.createElement("small"); type.textContent=getContactTypeLabel(contact.type);
+  item.append(icon,label,type,value); return item;
 }
 
 function createTag(text) { const tag = document.createElement("span"); tag.className = "institution-needs__item"; tag.textContent = text; return tag; }
-function createNeed(need) { const item = document.createElement("article"); item.className = "institution-unit-need"; const name = document.createElement("strong"); name.textContent = need.name; const priority = document.createElement("span"); priority.textContent = `Prioridade ${getPriorityLabel(need.priority)}`; item.append(name, priority); const metadata = document.createElement("p"); metadata.textContent = [need.category, need.quantity != null ? `${need.quantity} ${need.unitLabel || ""}` : need.unitLabel].filter(Boolean).join(" • "); item.append(metadata); if (need.description) { const description = document.createElement("p"); description.textContent = need.description; item.append(description); } return item; }
+function createNeed(need) {
+  const item = document.createElement("article"); item.className = "institution-unit-need";
+  const header = document.createElement("header"); header.className = "institution-unit-need__header";
+  const name = document.createElement("strong"); name.textContent = need.name;
+  const priority = document.createElement("span"); priority.className = "need-priority";
+  priority.textContent = `Prioridade ${getPriorityLabel(need.priority)}`;
+  priority.dataset.priority = String(need.priority || "MEDIUM").toLowerCase();
+  header.append(name, priority); item.append(header);
+  const meta = [need.category, need.quantity != null ? `${need.quantity} ${need.unitLabel || ""}`.trim() : need.unitLabel].filter(Boolean);
+  if (meta.length) { const metadata = document.createElement("p"); metadata.className = "institution-unit-need__meta"; metadata.textContent = meta.join(" • "); item.append(metadata); }
+  if (need.description) { const description = document.createElement("p"); description.className = "institution-unit-need__description"; description.textContent = need.description; item.append(description); }
+  return item;
+}
 
 function renderMapArchitecture(details, markers) {
   const section = details.querySelector("[data-institution-map-section]");
@@ -315,12 +358,25 @@ function getPriorityLabel(priority) { return { LOW: "baixa", MEDIUM: "média", H
 function setOptionalText(element, value) { if (!element) return; element.textContent = value ? String(value) : ""; element.hidden = !value; }
 function setText(root, selector, value) { const element = root.querySelector(selector); if (element) element.textContent = value; }
 
-export function contactHref(contact) {
-  if (contact.type === "EMAIL" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.value)) return `mailto:${encodeURIComponent(contact.value)}`;
-  if (!["PHONE", "WHATSAPP"].includes(contact.type) || !/^\+?[0-9]{8,15}$/.test(contact.value)) return null;
-  return contact.type === "WHATSAPP" ? `https://wa.me/${contact.value.replace(/\D/g, "")}` : `tel:${contact.value}`;
-}
 export function renderOpeningHours(hours) {
   const days = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
   return days.map((day, index) => { const h = hours?.find((item) => Number(item.dayOfWeek) === index + 1); const p = document.createElement("p"); p.textContent = `${day}: ${h ? h.closed ? "Fechado" : `${h.opensAt.slice(0,5)} às ${h.closesAt.slice(0,5)}` : "Não informado"}${h?.note ? ` — ${h.note}` : ""}`; return p; });
+}
+
+export function renderDonationNeeds(details, institution) {
+  const host=details.querySelector("[data-donation-needs]"); if(!host) return;
+  const groups=[];
+  for(const unit of institution.units || []) {
+    if(unit.status && unit.status !== "ACTIVE") continue;
+    const needs=sortNeeds((unit.needs || []).filter(need=>need.status === "ACTIVE" && (need.name || need.title)));
+    if(!needs.length) continue;
+    const section=document.createElement("section"), title=document.createElement("h3"), list=document.createElement("div");
+    title.textContent=unit.name;list.className="institution-unit-needs";list.append(...needs.map(need=>createNeed({ ...need,name:need.name || need.title })));
+    const help=document.createElement("p");help.textContent="Quer ajudar? Entre em contato com a instituição para combinar sua doação.";
+    const own=getPublicContacts(unit.contacts), contacts=own.length ? own : getPublicContacts(institution.contacts);
+    const links=document.createElement("div");links.className="institution-contact";links.append(...contacts.map(createContact));
+    section.append(title,list,help,links);groups.push(section);
+  }
+  if(!groups.length) { const empty=document.createElement("p");empty.textContent="Esta instituição ainda não informou necessidades atuais.";groups.push(empty); }
+  host.replaceChildren(...groups);
 }

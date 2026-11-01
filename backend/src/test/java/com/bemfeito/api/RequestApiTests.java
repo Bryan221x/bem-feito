@@ -124,7 +124,7 @@ class RequestApiTests {
     }
     @Test void existingActiveUserKeepsPasswordAndNeedsNoInvitation() throws Exception {
         var u=account("responsible@example.invalid",UserStatus.ACTIVE,PlatformRole.USER);String hash=u.getPasswordHash();String result=approve(createRegistration(registration()));
-        assertThat(((Number)JsonPath.read(result,"$.userId")).longValue()).isEqualTo(u.getId());assertThat(JsonPath.<Object>read(result,"$.invitation")).isNull();
+        assertThat(((Number)JsonPath.read(result,"$.userId")).longValue()).isEqualTo(u.getId());assertThat(JsonPath.<String>read(result,"$.invitation.purpose")).isEqualTo("APPROVAL");assertThat(JsonPath.<Object>read(result,"$.invitation.activationUrl")).isNull();
         assertThat(users.findById(u.getId()).orElseThrow().getPasswordHash()).isEqualTo(hash);assertThat(count("account_invitation_tokens")).isZero();
     }
     @Test void invitedUserIsReusedAndOldInvitationInvalidated() throws Exception {
@@ -165,7 +165,7 @@ class RequestApiTests {
     void accessApprovalUsesExplicitSystemRoleAndPreservesExistingAccount(String role) throws Exception {
         var u=account("access@example.invalid",UserStatus.ACTIVE,PlatformRole.USER);Long id=createAccess(access());
         adminPost("/api/admin/access-requests/"+id+"/approve",Map.of("notes","Análise")).andExpect(status().isBadRequest());
-        adminPost("/api/admin/access-requests/"+id+"/approve",Map.of("membershipRole",role)).andExpect(status().isOk()).andExpect(jsonPath("$.invitation").isEmpty());
+        adminPost("/api/admin/access-requests/"+id+"/approve",Map.of("membershipRole",role)).andExpect(status().isOk()).andExpect(jsonPath("$.invitation.purpose").value("APPROVAL"));
         assertThat(jdbc.queryForObject("SELECT role FROM institution_memberships WHERE user_id=?",String.class,u.getId())).isEqualTo(role);
         mvc.perform(jsonPost("/api/access-requests",access())).andExpect(status().isConflict());
     }

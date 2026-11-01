@@ -51,6 +51,13 @@ public class UnitService {
     @PreAuthorize("@institutionAuthorization.unitPatch(#id,#patch)")
     public UnitManagementResponse patch(Long id, UnitPatch patch) {
         Unit entity=required(id);
+        require(patch.has("latitude")==patch.has("longitude"),"Latitude e longitude devem ser confirmadas juntas");
+        boolean addressChanged=(patch.has("cityId") && !java.util.Objects.equals(patch.getCityId(),entity.getCity().getId()))
+            || (patch.has("street") && !java.util.Objects.equals(patch.getStreet(),entity.getStreet()))
+            || (patch.has("number") && !java.util.Objects.equals(patch.getNumber(),entity.getNumber()))
+            || (patch.has("postalCode") && !java.util.Objects.equals(patch.getPostalCode(),entity.getPostalCode()))
+            || (patch.has("neighborhood") && !java.util.Objects.equals(patch.getNeighborhood(),entity.getNeighborhood()))
+            || (patch.has("complement") && !java.util.Objects.equals(patch.getComplement(),entity.getComplement()));
         var merged=new UnitRequest(
             patch.has("cityId") ? patch.getCityId() : entity.getCity().getId(),
             patch.has("name") ? patch.getName() : entity.getName(),
@@ -61,8 +68,8 @@ public class UnitService {
             patch.has("number") ? patch.getNumber() : entity.getNumber(),
             patch.has("complement") ? patch.getComplement() : entity.getComplement(),
             patch.has("neighborhood") ? patch.getNeighborhood() : entity.getNeighborhood(),
-            patch.has("latitude") ? patch.getLatitude() : entity.getLatitude(),
-            patch.has("longitude") ? patch.getLongitude() : entity.getLongitude(),
+            patch.has("latitude") ? patch.getLatitude() : addressChanged ? null : entity.getLatitude(),
+            patch.has("longitude") ? patch.getLongitude() : addressChanged ? null : entity.getLongitude(),
             patch.has("status") ? patch.getStatus() : entity.getStatus());
         return replace(id,merged);
     }

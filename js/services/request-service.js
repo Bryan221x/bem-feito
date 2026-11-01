@@ -1,4 +1,5 @@
 import { apiRequest } from "./api-client.js";
+import { validationText } from "../components/form-feedback.js";
 
 const paths = { REGISTRATION: "registration-requests", ACCESS: "access-requests" };
 function path(type) { if (!paths[type]) throw new Error("Tipo de solicitação inválido."); return paths[type]; }
@@ -35,12 +36,15 @@ export async function withSubmission(owner, operation) {
   finally { busy.delete(owner); buttons.forEach((b) => { b.disabled = false; }); owner.removeAttribute("aria-busy"); }
 }
 export function showBackendFields(form, fields, aliases = {}) {
+  let first = null;
   Object.entries(fields || {}).forEach(([key, value]) => {
     const name = aliases[key] || key;
     const input = form.elements.namedItem(name);
     input?.setAttribute("aria-invalid", "true");
+    if (input) first ||= input;
     // Compare attributes without interpolating untrusted field names into selectors.
     const error = [...form.querySelectorAll("[data-error-for]")].find((e) => e.dataset.errorFor === name);
-    if (error) error.textContent = value;
+    if (error) error.textContent = validationText(value);
   });
+  first?.focus();
 }

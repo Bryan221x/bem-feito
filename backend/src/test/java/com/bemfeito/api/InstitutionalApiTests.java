@@ -35,6 +35,13 @@ class InstitutionalApiTests {
     @Autowired JdbcTemplate jdbc;
     @Autowired EntityManager em;
 
+    @Test void changingAddressWithoutConfirmedCoordinatesRemovesStaleMapPoint() throws Exception {
+        json(patch(unitPath()),"{\"latitude\":-19.791,\"longitude\":-45.680}").andExpect(status().isOk());
+        json(patch(unitPath()),"{\"street\":\"Endereço atualizado H2\"}").andExpect(status().isOk())
+            .andExpect(jsonPath("$.latitude").doesNotExist()).andExpect(jsonPath("$.longitude").doesNotExist());
+        json(patch(unitPath()),"{\"street\":\"Outro endereço H2\",\"latitude\":-19.792,\"longitude\":-45.681}").andExpect(status().isOk())
+            .andExpect(jsonPath("$.latitude").value(-19.792));
+    }
     private Long institution(String name) { return jdbc.queryForObject("SELECT id FROM institutions WHERE display_name=?",Long.class,name); }
     private Long unit() { return jdbc.queryForObject("SELECT id FROM units WHERE name='Unidade Luz'",Long.class); }
     private Long city(String name) { return jdbc.queryForObject("SELECT id FROM cities WHERE name=?",Long.class,name); }
@@ -67,6 +74,21 @@ class InstitutionalApiTests {
         return """
             {"categoryId":%d,"title":"Nova necessidade teste","quantity":2.5,"unitLabel":"kg","priority":"HIGH","status":"ACTIVE"}
             """.formatted(needCategory());
+    }
+
+    @Test void needOrderReflectsPersistedPriorityChangesAndKeepsPartialFields() throws Exception {
+        Long owner=id(json(post(instPath()+"/units"),unitRequest()).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
+        String path="/api/units/"+owner+"/needs";
+        Long low=id(json(post(path),needRequest().replace("Nova necessidade teste","Zeta").replace("HIGH","LOW")).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
+        json(post(path),needRequest().replace("Nova necessidade teste","Beta")).andExpect(status().isCreated());
+        json(post(path),needRequest().replace("Nova necessidade teste","Alfa")).andExpect(status().isCreated());
+        json(post(path),needRequest().replace("Nova necessidade teste","Media").replace("HIGH","MEDIUM")).andExpect(status().isCreated());
+        mvc.perform(get("/api/management/units/"+owner+"/needs")).andExpect(jsonPath("$[*].name",contains("Alfa","Beta","Media","Zeta")));
+        json(patch(path+"/"+low),"{\"priority\":\"HIGH\"}").andExpect(status().isOk())
+            .andExpect(jsonPath("$.quantity").value(2.5)).andExpect(jsonPath("$.unitLabel").value("kg"));
+        mvc.perform(get("/api/management/units/"+owner+"/needs")).andExpect(jsonPath("$[*].name",contains("Alfa","Beta","Zeta","Media")));
+        json(patch(path+"/"+low),"{\"status\":\"FULFILLED\"}").andExpect(status().isOk());
+        mvc.perform(get("/api/units/"+owner)).andExpect(status().isOk()).andExpect(jsonPath("$.needs[*].name",contains("Alfa","Beta","Media")));
     }
 
     @Test void publicListIsLightOrderedAndPaginated() throws Exception {

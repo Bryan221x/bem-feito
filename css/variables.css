@@ -15,7 +15,10 @@
   --color-text-muted: #626862;
 
   --color-border: #e2e7e2;
-  --color-danger: #c75b55;
+  --color-danger: #b42318;
+  --color-danger-light: #fff1f0;
+  --color-warning: #875313;
+  --color-warning-light: #fff4df;
 
   /* Typography */
   --font-family-base: "Segoe UI", Arial, sans-serif;

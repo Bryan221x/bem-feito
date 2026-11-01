@@ -8,14 +8,16 @@ import com.bemfeito.api.user.entity.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 public final class UserPrincipal implements UserDetails,CredentialsContainer {
     private final Long id;
+    private final long credentialsVersion;
     private final String email;
     private final boolean enabled;
     private final List<GrantedAuthority> authorities;
     private String password;
     public UserPrincipal(User user) {
-        id=user.getId();email=user.getEmail();password=user.getPasswordHash();enabled=user.getStatus()==UserStatus.ACTIVE;
+        credentialsVersion=user.getCredentialsVersion();id=user.getId();email=user.getEmail();password=user.getPasswordHash();enabled=user.getStatus()==UserStatus.ACTIVE;
         authorities=List.of(new SimpleGrantedAuthority("ROLE_"+user.getPlatformRole().name()));
     }
+    public long getCredentialsVersion() { return credentialsVersion; }
     public Long getId() { return id; }
     public String getUsername() { return email; }
     @JsonIgnore public String getPassword() { return password; }

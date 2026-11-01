@@ -28,7 +28,7 @@
         <div class="registration-request__layout">
           <section class="registration-request__card registration-request__form-card" aria-labelledby="registration-form-title">
             <div class="registration-request__card-heading"><span class="registration-request__heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"></path><path d="M9 21v-6h6v6"></path></svg></span><div><h2 id="registration-form-title">Solicitação inicial</h2><p>Campos marcados são obrigatórios.</p></div></div>
-            <form data-registration-request-form novalidate>
+            <p>O acesso depende de aprovação. Contas novas recebem um link temporário de ativação por e-mail quando o envio estiver disponível, ou por convite manual da equipe. Contas já ativas mantêm a senha atual.</p><form data-registration-request-form novalidate>
 <p role="status" aria-live="polite" data-reference-message></p><button type="button" class="button button--outline" data-reference-retry hidden>Tentar carregar opções novamente</button>
               <fieldset class="registration-request__section"><legend>1. Instituição</legend><div class="registration-request__fields">
                 <div class="registration-field"><label for="registration-display-name">Nome de exibição / Nome fantasia</label><input id="registration-display-name" name="displayName" type="text" autocomplete="organization" maxlength="150" required aria-describedby="error-displayName" /><span class="registration-field__error" id="error-displayName" data-error-for="displayName" aria-live="polite"></span></div>
@@ -62,8 +62,8 @@
                 <div class="registration-field"><label for="main-unit-number">Número</label><input id="main-unit-number" name="number" type="text" required aria-describedby="error-number" /><span class="registration-field__error" id="error-number" data-error-for="number" aria-live="polite"></span></div>
                 <div class="registration-field"><label for="main-unit-complement">Complemento <span>(opcional)</span></label><input id="main-unit-complement" name="complement" type="text" /></div>
                 <div class="registration-field"><label for="main-unit-neighborhood">Bairro</label><input id="main-unit-neighborhood" name="neighborhood" type="text" required aria-describedby="error-neighborhood" /><span class="registration-field__error" id="error-neighborhood" data-error-for="neighborhood" aria-live="polite"></span></div>
-                <div class="registration-field"><label for="main-unit-city">Cidade</label><select id="main-unit-city" name="city" autocomplete="address-level2" required aria-describedby="error-city" ><option value="">Carregando…</option></select><span class="registration-field__error" id="error-city" data-error-for="city" aria-live="polite"></span></div>
                 <div class="registration-field"><label for="main-unit-state">Estado (UF)</label><select id="main-unit-state" name="state" autocomplete="address-level1" required aria-describedby="error-state" data-state ><option value="">Carregando…</option></select><span class="registration-field__error" id="error-state" data-error-for="state" aria-live="polite"></span></div>
+                <div class="registration-field"><label for="main-unit-city">Cidade</label><select id="main-unit-city" name="city" autocomplete="address-level2" required aria-describedby="error-city" ><option value="">Carregando…</option></select><span class="registration-field__error" id="error-city" data-error-for="city" aria-live="polite"></span></div>
               </div></fieldset>
 
               <div class="registration-request__form-message" role="status" aria-live="polite" data-registration-form-message hidden></div>

@@ -234,9 +234,9 @@
 }
 
 .my-institution-status[data-status="inactive"] {
-  color: var(--color-danger);
-  border-color: color-mix(in srgb, var(--color-danger) 24%, transparent);
-  background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background-color: var(--color-background);
 }
 
 .my-institution-profile__metadata {
@@ -1091,3 +1091,9 @@
     width: 100%;
   }
 }
+
+#images { scroll-margin-top:2rem; }
+#images .my-institution-history-images { border:0; padding:0; }
+.my-institution-data--reading dd { max-height:14rem; overflow:auto; white-space:pre-wrap; }
+.my-institution-profile__name { overflow-wrap:anywhere; }
+.my-institution-history-image img { max-width:100%; object-fit:cover; }

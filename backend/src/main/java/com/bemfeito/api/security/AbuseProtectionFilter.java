@@ -38,12 +38,14 @@ public final class AbuseProtectionFilter extends OncePerRequestFilter {
     }
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws ServletException, IOException {
-        if (!enabled) { chain.doFilter(request, response); return; }
         String path = request.getServletPath();
         if (path.isEmpty()) path = request.getRequestURI();
+        boolean recovery = path.startsWith("/api/password-recovery/");
+        if (!enabled && !recovery) { chain.doFilter(request, response); return; }
         String group = null; int limit = 0; long window = 60000;
         if ("POST".equals(request.getMethod())) {
-            if (path.equals("/api/auth/login")) { group = "login"; limit = 10; }
+            if (recovery) { group = "recovery"; limit = 5; }
+            else if (path.equals("/api/auth/login")) { group = "login"; limit = 10; }
             else if (path.equals("/api/registration-requests") || path.equals("/api/access-requests")) {
                 group = "requests"; limit = 10; window = 600000;
             } else if (path.startsWith("/api/account-invitations/")) { group = "invitation"; limit = 20; }

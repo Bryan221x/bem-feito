@@ -87,11 +87,16 @@ test("valid administrators pass the guard and get the admin login destination", 
   assert.equal(guard.userDestination({ platformRole: "PLATFORM_ADMIN" }), "./admin-dashboard.html");
   assert.equal(guard.userDestination({ platformRole: "USER" }), "./institution-selection.html");
 });
-test("institution guards use memberships from the API and refuse a forged selection", async () => {
+test("institution guards replace a forged selection with an authorized context", async () => {
   location.pathname = "/pages/my-institution.html"; location.search = "?institutionId=2";
   globalThis.fetch = async (url) => response(url.endsWith("/me") ? { platformRole: "USER" } : [{ institutionId: 1, permissions: ["VIEW"] }]);
-  assert.equal(await guard.guardPage(), false);
-  assert.deepEqual(redirects, ["./institution-selection.html"]);
+  const oldWindow = globalThis.window;
+  globalThis.window = { history: { replaceState: (_a, _b, url) => { location.search = new URL(url, "http://127.0.0.1:5500").search; } } };
+  location.href = "http://127.0.0.1:5500/pages/my-institution.html?institutionId=2";
+  assert.equal(await guard.guardPage(), true);
+  assert.equal(location.search, "?institutionId=1");
+  assert.deepEqual(redirects, []);
+  globalThis.window = oldWindow;
 });
 test("editor cannot access unit creation even when belonging to the institution", async () => {
   location.pathname = "/pages/unit-form.html"; location.search = "?institutionId=1";

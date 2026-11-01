@@ -1,8 +1,12 @@
+import { formatContact } from "../services/contact-format.js";
+import { sortNeeds } from "../services/need-order.js";
+import { initUnitLocationPicker } from "../components/unit-location-picker.js";
 import { getUnit, createUnit, patchUnit, getServiceAreas, getNeedCategories, saveServiceAreas, saveOpeningHours, saveNeed as persistNeed, deleteNeed } from "../services/unit-service.js";
 import { getInstitution, saveContact, deleteContact, contactPayload, changedFields } from "../services/institution-service.js";
 import { getStates, getCities } from "../services/request-service.js";
 import { lookupPostalCode } from "../services/api-client.js";
 import { getCurrentUser, getMyInstitutions } from "../services/auth-service.js";
+import { fieldError, focusInvalid, validateFields } from "../components/form-feedback.js";
 import { saving, element, errorMessage, preserveContext } from "../components/api-ui.js";
 const unitFormStates = new WeakMap();
 const UNIT_FIELDS = ["name", "document", "description", "postalCode", "address", "number", "complement", "neighborhood", "cityId", "latitude", "longitude", "status"];
@@ -33,7 +37,11 @@ export function unitPayload(form, original, access) {
     body[key] = ["cityId", "latitude", "longitude"].includes(key) ? raw === "" ? null : Number(raw) :
       ["document", "postalCode"].includes(key) ? raw.replace(/\D/g, "") || null : raw || null;
   }
-  if (original) return changedFields({ ...original, ...original.address }, body);
+  if (original) {
+    const changes=changedFields({ ...original, ...original.address }, body);
+    if (Object.hasOwn(body,"latitude") && (Object.hasOwn(changes,"latitude") || Object.hasOwn(changes,"longitude") || ["cityId","postalCode","street","number","complement","neighborhood"].some(key=>Object.hasOwn(changes,key)))) { changes.latitude=body.latitude;changes.longitude=body.longitude; }
+    return changes;
+  }
   if (!access.admin && !access.permissions?.includes("CREATE_UNIT")) throw new Error("Você não tem permissão para criar unidades.");
   // O POST exige status; MANAGER só pode criar unidade ACTIVE sem documento próprio.
   if (!access.admin && !access.permissions?.includes("CHANGE_UNIT_STATUS")) body.status = "ACTIVE";
@@ -65,6 +73,10 @@ export async function initUnitFormPage() {
   bindContactEditor(page, state);
   bindNeedEditor(page, state);
   bindSubmit(page, state);
+  page.addEventListener("bemfeito:invalid-field", (event) => {
+    const step = event.target.closest("[data-unit-step]");
+    if (step) { state.currentStep = Number(step.dataset.unitStep); updateStep(page, state); }
+  });
   updateObservationCounter(page);
   renderContacts(page, state.contacts);
   renderNeeds(page, state.needs);
@@ -96,6 +108,9 @@ export async function initUnitFormPage() {
     applyUnitPermissions(page, state.access);
     page.querySelector("[data-unit-institution-selector]").disabled = true;
     preserveContext(institution.id); renderHoursEditor(page, state);
+    page.dataset.coordinatesConfirmed = "true";
+    state.clearLocation = initUnitLocationPicker(page);
+    if (["#hours", "#needs"].includes(location.hash)) { state.currentStep = 3; updateStep(page, state); }
     setFeedback(page, (unit ? "Dados carregados. Contatos, necessidades, áreas e horários podem ser salvos separadamente." : "Preencha os dados obrigatórios. Contatos e necessidades serão gravados após criar a unidade.") + " Campos sem permissão de edição ficam desabilitados.");
   } catch (error) { state.authorized = false; state.access = {}; state.institutionId = null; applyUnitPermissions(page, state.access); updateSubmission(page, state); setFeedback(page, errorMessage(error)); }
 }
@@ -196,6 +211,10 @@ function bindFields(page, state) {
   const form = page.querySelector("[data-unit-form]");
   UNIT_FIELDS.forEach((field) => form?.elements.namedItem(field)?.addEventListener("input", () => {
     state.dirtyFields.add(field); clearFieldError(page, field);
+    if (ADDRESS_FIELDS.has(field)) {
+      for (const name of ["latitude","longitude"]) { const input=page.querySelector(`[name="${name}"]`); if(input && !input.disabled) input.value=""; }
+      page.dataset.coordinatesConfirmed="false";state.clearLocation?.();
+    }
     if (field === "serviceAreasObservations") updateObservationCounter(page);
   }));
   page.querySelectorAll('[name="serviceAreas"]').forEach((checkbox) => checkbox.addEventListener("change", () => { state.serviceAreasChanged = true; }));
@@ -219,6 +238,8 @@ function bindPostalControls(page, state) {
       const city = cities.find((item) => normalizeCity(item.name) === normalizeCity(data.localidade));
       page.querySelector('[name="cityId"]').value = city ? String(city.id) : ""; state.dirtyFields.add("cityId");
       for (const [field, value] of [["address", data.logradouro], ["neighborhood", data.bairro]]) if (value) { page.querySelector(`[name="${field}"]`).value = value; state.dirtyFields.add(field); }
+      for (const name of ["latitude","longitude"]) page.querySelector(`[name="${name}"]`).value="";
+      page.dataset.coordinatesConfirmed="false";state.clearLocation?.();
       setFeedback(page, city ? "Endereço localizado. Confira e corrija os dados antes de salvar." : "Cidade não localizada na base. Selecione manualmente.");
     } catch (error) { setFeedback(page, errorMessage(error)); } finally { button.disabled = false; }
   });
@@ -260,7 +281,7 @@ function bindContactEditor(page, state) {
 
 function openContactEditor(page, contact = null) {
   const editor = page.querySelector("[data-unit-contact-editor]"); const form = page.querySelector("[data-unit-contact-form]"); if (!editor || !form) return;
-  form.reset(); form.elements.contactId.value = contact?.id || ""; form.elements.contactType.value = contact?.type || "PHONE"; form.elements.contactLabel.value = contact?.label || ""; form.elements.contactValue.value = contact?.value || ""; form.elements.contactIsPrimary.checked = Boolean(contact?.isPrimary); form.elements.contactIsPublic.checked = Boolean(contact?.isPublic);
+  form.reset(); form.elements.contactId.value = contact?.id || ""; form.elements.contactType.value = contact?.type || "PHONE"; form.elements.contactLabel.value = contact?.label || ""; form.elements.contactValue.value = contact ? formatContact(contact) : ""; form.elements.contactIsPrimary.checked = Boolean(contact?.isPrimary); form.elements.contactIsPublic.checked = Boolean(contact?.isPublic);
   setText(page, "[data-unit-contact-editor-title]", contact ? "Editar contato" : "Adicionar contato"); editor.hidden = false; form.elements.contactType.focus();
 }
 function closeContactEditor(page) { const editor = page.querySelector("[data-unit-contact-editor]"); if (editor) editor.hidden = true; page.querySelector("[data-unit-contact-form]")?.reset(); }
@@ -270,7 +291,7 @@ function removeContact(page, state, id) {
   void saving(page, (message) => setFeedback(page, message), async () => { await deleteContact("units", state.unitId, id); remove(); });
 }
 function renderContacts(page, contacts) { const list = page.querySelector("[data-unit-contact-list]"); const empty = page.querySelector("[data-unit-contacts-empty]"); if (!list || !empty) return; list.replaceChildren(...contacts.map(createContactItem)); empty.hidden = contacts.length > 0; }
-function createContactItem(contact) { const item = document.createElement("article"); item.className = "unit-contact-item"; const content = document.createElement("div"); content.className = "unit-contact-item__content"; const title = document.createElement("strong"); title.textContent = contact.label || getContactTypeLabel(contact.type); const value = document.createElement("span"); value.textContent = contact.value; const meta = document.createElement("small"); meta.textContent = [contact.isPrimary ? "Principal" : null, contact.isPublic ? "Público" : "Privado"].filter(Boolean).join(" • "); content.append(title, value, meta); const actions = document.createElement("div"); actions.className = "unit-contact-item__actions"; actions.append(createCollectionAction("edit", contact.id, "Editar contato", "unitContactAction"), createCollectionAction("remove", contact.id, "Remover contato", "unitContactAction")); item.append(content, actions); return item; }
+function createContactItem(contact) { const item = document.createElement("article"); item.className = "unit-contact-item"; const content = document.createElement("div"); content.className = "unit-contact-item__content"; const title = document.createElement("strong"); title.textContent = contact.label || getContactTypeLabel(contact.type); const value = document.createElement("span"); value.textContent = formatContact(contact); const meta = document.createElement("small"); meta.textContent = [contact.isPrimary ? "Principal" : null, contact.isPublic ? "Público" : "Privado"].filter(Boolean).join(" • "); content.append(title, value, meta); const actions = document.createElement("div"); actions.className = "unit-contact-item__actions"; actions.append(createCollectionAction("edit", contact.id, "Editar contato", "unitContactAction"), createCollectionAction("remove", contact.id, "Remover contato", "unitContactAction")); item.append(content, actions); return item; }
 
 function bindNeedEditor(page, state) {
   page.querySelector("[data-add-unit-need]")?.addEventListener("click", () => openNeedEditor(page));
@@ -288,6 +309,7 @@ function openNeedEditor(page, need = null) { const editor = page.querySelector("
 function closeNeedEditor(page) { const editor = page.querySelector("[data-unit-need-editor]"); if (!editor) return; editor.hidden = true; editor.querySelectorAll("input, textarea").forEach((control) => { control.value = ""; }); }
 function saveNeed(page, state) {
   const editor = page.querySelector("[data-unit-need-editor]");
+  if (!validateFields(editor)) return;
   const value = (name) => editor.querySelector(`[name="${name}"]`).value.trim();
   if (!value("needName") || !value("needCategoryId")) { setFeedback(page, "Informe título e categoria da necessidade."); return; }
   const id = value("needId");
@@ -306,6 +328,7 @@ export function removeNeed(page, state, id) {
     setFeedback(page, "Para remover, edite a necessidade, selecione Inativa e salve. Depois clique em Remover.");
     return;
   }
+  if (!window.confirm(`Remover a necessidade "${need.name || need.title || "sem nome"}"? Esta ação não pode ser desfeita.`)) return;
   return saving(page, (message) => setFeedback(page, message), async () => {
     try { await deleteNeed(state.unitId, id); }
     catch (error) {
@@ -316,12 +339,14 @@ export function removeNeed(page, state, id) {
   });
 }
 
-function renderNeeds(page, needs) { const list = page.querySelector("[data-unit-need-list]"); const empty = page.querySelector("[data-unit-needs-empty]"); if (!list || !empty) return; list.replaceChildren(...needs.map(createNeedItem)); empty.hidden = needs.length > 0; }
-function createNeedItem(need) { const item = document.createElement("article"); item.className = "unit-need-item"; const content = document.createElement("div"); const name = document.createElement("strong"); name.textContent = need.title || need.name; const meta = document.createElement("span"); meta.textContent = `${getPriorityLabel(need.priority)} • ${need.status === "FULFILLED" ? "Atendida" : need.status === "INACTIVE" ? "Inativa" : "Ativa"}`; content.append(name, meta); if (need.description) { const description = document.createElement("p"); description.textContent = need.description; content.append(description); } const actions = document.createElement("div"); actions.className = "unit-contact-item__actions"; actions.append(createCollectionAction("edit", need.id, "Editar necessidade", "needAction"), createCollectionAction("remove", need.id, "Remover necessidade", "needAction")); item.append(content, actions); return item; }
+export function renderNeeds(page, needs) { const list = page.querySelector("[data-unit-need-list]"); const empty = page.querySelector("[data-unit-needs-empty]"); if (!list || !empty) return; list.replaceChildren(...sortNeeds(needs).map(createNeedItem)); empty.hidden = needs.length > 0; }
+function createNeedItem(need) { const item = document.createElement("article"); item.className = "unit-need-item"; const content = document.createElement("div"); const name = document.createElement("strong"); name.textContent = need.title || need.name; const meta = document.createElement("span"); meta.textContent = `${getPriorityLabel(need.priority)} • ${need.status === "FULFILLED" ? "Atendida" : need.status === "INACTIVE" ? "Inativa" : "Ativa"}`; content.append(name, meta); const details = [need.category, need.quantity != null ? `${need.quantity} ${need.unitLabel || ""}`.trim() : need.unitLabel].filter(Boolean); if (details.length) { const detail = document.createElement("p"); detail.textContent = details.join(" • "); content.append(detail); } if (need.description) { const description = document.createElement("p"); description.textContent = need.description; content.append(description); } const actions = document.createElement("div"); actions.className = "unit-contact-item__actions"; actions.append(createCollectionAction("edit", need.id, "Editar necessidade", "needAction"), createCollectionAction("remove", need.id, "Remover necessidade", "needAction")); item.append(content, actions); return item; }
 
 function bindSubmit(page, state) {
   page.querySelector("[data-unit-form]").addEventListener("submit", (event) => {
-    event.preventDefault(); if (!state.institutionId || !state.authorized) return;
+    event.preventDefault();
+    if (page.querySelector('[name="latitude"]')?.value && page.dataset.coordinatesConfirmed === "false") { setFeedback(page,"Confirme o ponto da unidade antes de salvar."); return; }
+    if (!state.institutionId || !state.authorized) return;
     const next = unitPayload(event.currentTarget, state.original, state.access);
     for (const key of ["name", "cityId", "postalCode", "street", "number", "neighborhood"]) if ((!state.original || Object.hasOwn(next, key)) && !next[key]) { setFeedback(page, "Informe nome, cidade, CEP e endereço completo da unidade."); state.currentStep = key === "name" ? 1 : 2; updateStep(page, state); return; }
     return saving(page, (message) => setFeedback(page, message), async () => {
@@ -351,7 +376,7 @@ function updateSubmission(page, state) { const button = page.querySelector("[dat
 function updateObservationCounter(page) { const input = page.querySelector("[data-needs-observations]"); const counter = page.querySelector("[data-observations-counter]"); if (input && counter) counter.textContent = `${input.value.length}/300`; }
 function createCollectionAction(action, id, label, datasetName) { const button = document.createElement("button"); button.type = "button"; button.className = `unit-contact-item__action${action === "remove" ? " unit-contact-item__action--danger" : ""}`; button.dataset[datasetName] = action; button.dataset[datasetName === "needAction" ? "needId" : "contactId"] = String(id); button.setAttribute("aria-label", label); button.textContent = action === "edit" ? "Editar" : "Remover"; return button; }
 function stripDraftId(item) { const { id, ...data } = item; return String(id).startsWith("draft-") ? data : item; }
-function showFieldError(page, field, message) { page.querySelector(`[name="${field}"]`)?.setAttribute("aria-invalid", "true"); const error = page.querySelector(`[data-field-error="${field}"]`); if (error) error.textContent = message; }
+function showFieldError(page, field, message) { const control = page.querySelector(`[name="${field}"]`); fieldError(control, message); focusInvalid(control); }
 function clearFieldError(page, field) { page.querySelector(`[name="${field}"]`)?.removeAttribute("aria-invalid"); const error = page.querySelector(`[data-field-error="${field}"]`); if (error) error.textContent = ""; }
 function buildReturnUrl(institutionId) { return `./my-institution.html${institutionId ? `?institutionId=${encodeURIComponent(institutionId)}` : ""}#units`; }
 function getInstitutionName(institution) { return String(institution?.displayName || institution?.name || "").trim(); }

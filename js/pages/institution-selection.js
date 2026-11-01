@@ -1,4 +1,5 @@
-import { getMyInstitutions } from "../services/auth-service.js";
+import { resolveInstitutionContext, rememberInstitution } from "../services/institution-context.js";
+import { preserveContext } from "../components/api-ui.js";
 const selectionStates = new WeakMap();
 
 export async function initInstitutionSelectionPage() {
@@ -15,8 +16,10 @@ export async function initInstitutionSelectionPage() {
   initSelection(page, state);
   showInstitutionSelectionLoading(page);
   try {
-    const memberships = await getMyInstitutions();
-    renderInstitutionSelection(page, memberships.map((item) => ({ ...item, id: item.institutionId })));
+    const context = await resolveInstitutionContext();
+    state.user = context.user;
+    renderInstitutionSelection(page, context.institutions.map((item) => ({ ...item, id: item.institutionId ?? item.id })), context.id);
+    if (context.id) preserveContext(context.id);
   } catch { showInstitutionSelectionError(page); }
 }
 
@@ -93,6 +96,8 @@ function initSelection(page, state) {
     if (!institution) return;
 
     state.selectedInstitutionId = String(institution.id);
+    rememberInstitution(state.user, institution.id);
+    preserveContext(institution.id);
     updateSelectedCards(options, state.selectedInstitutionId);
     updateSelectionNavigation(page, state.selectedInstitutionId);
     updateFeedback(

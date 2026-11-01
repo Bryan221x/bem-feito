@@ -6,7 +6,8 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.SimpleMailMessage;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.Session;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,7 +44,7 @@ class RequestTransactionTests {
     private User admin;
     private static final String PASSWORD=UUID.randomUUID().toString();
     private static final String HASH=new BCryptPasswordEncoder(4).encode(PASSWORD);
-    @BeforeEach void setup() { admin=account("transaction-admin@example.invalid",UserStatus.ACTIVE,PlatformRole.PLATFORM_ADMIN);authenticate(); }
+    @BeforeEach void setup() { admin=account("transaction-admin@example.invalid",UserStatus.ACTIVE,PlatformRole.PLATFORM_ADMIN);authenticate();when(sender.createMimeMessage()).thenAnswer(invocation->new MimeMessage(Session.getInstance(new Properties()))); }
     @AfterEach void clear() { SecurityContextHolder.clearContext(); }
     private User account(String email,UserStatus status,PlatformRole role) { var u=new User();u.setName("Conta H2");u.setEmail(email);u.setStatus(status);u.setPlatformRole(role);u.setPasswordHash(status==UserStatus.INVITED?null:HASH);return users.saveAndFlush(u); }
     private void authenticate() { var p=new UserPrincipal(admin);SecurityContextHolder.getContext().setAuthentication(UsernamePasswordAuthenticationToken.authenticated(p,null,p.getAuthorities())); }
@@ -55,8 +56,14 @@ class RequestTransactionTests {
     private Reviewed approve(Long id) { return reviews.registration(id,"approve",new Decision("Conferido",null)); }
     private String raw(Invitation invitation) {
         // SMTP mode never returns the URL: inspect the mocked message only in this test.
-        var captured=org.mockito.ArgumentCaptor.forClass(SimpleMailMessage.class);verify(sender,atLeastOnce()).send(captured.capture());
-        String body=captured.getValue().getText();return body.substring(body.indexOf("#token=")+7).split("\\n")[0];
+        var captured=org.mockito.ArgumentCaptor.forClass(MimeMessage.class);verify(sender,atLeastOnce()).send(captured.capture());
+        String body=mailText(captured.getValue());return body.substring(body.indexOf("#token=")+7).split("[\\r\\n]")[0];
+    }
+    static String mailText(jakarta.mail.Part part) {
+        try { if(part.getContent() instanceof String text) return text;
+            if(part.getContent() instanceof jakarta.mail.Multipart multi) for(int i=0;i<multi.getCount();i++) {String text=mailText(multi.getBodyPart(i));if(!text.isEmpty()) return text;}
+            return "";
+        } catch(Exception e) { throw new AssertionError("Não foi possível ler mensagem de teste"); }
     }
     @Test void databaseFailureRollsBackEntireApproval() {
         Long id=submissions.register(registration()).id();long institutions=count("institutions"),units=count("units"),usersBefore=count("users");
@@ -76,20 +83,28 @@ class RequestTransactionTests {
     @Test void emailRunsOnlyAfterCommitAndManualUrlIsAbsentInSmtpMode() {
         var tx=new TransactionTemplate(manager);
         Reviewed result=tx.execute(s->{var created=submissions.register(registration());var reviewed=approve(created.id());verifyNoInteractions(sender);return reviewed;});
-        verify(sender,times(1)).send(any(SimpleMailMessage.class));assertThat(result.invitation().activationUrl()).isNull();assertThat(result.invitation().deliveryMode()).isEqualTo("EMAIL");
+        verify(sender,times(1)).send(any(MimeMessage.class));assertThat(result.invitation().activationUrl()).isNull();assertThat(result.invitation().deliveryMode()).isEqualTo("EMAIL_SENT");
         String raw=raw(result.invitation());assertThat(raw).matches("[A-Za-z0-9_-]{43}");
         assertThat(tokens.findByTokenHash(InvitationService.hash(raw))).isPresent();
     }
     @Test void mailFailureDoesNotUndoApprovalAndReissueWorks() {
-        doThrow(new org.springframework.mail.MailSendException("test failure without SMTP")).when(sender).send(any(SimpleMailMessage.class));
+        doThrow(new org.springframework.mail.MailSendException("test failure without SMTP")).when(sender).send(any(MimeMessage.class));
         Long id=submissions.register(registration()).id();Reviewed approved=approve(id);
+        assertThat(approved.invitation().deliveryMode()).isEqualTo("FAILED");assertThat(approved.invitation().activationUrl()).contains("#token=");
         assertThat(approved.status()).isEqualTo(RequestStatus.APPROVED);assertThat(count("institution_memberships")).isEqualTo(1);
-        reset(sender);var reissued=invitations.reissue(approved.userId());verify(sender).send(any(SimpleMailMessage.class));
+        clearInvocations(sender);doNothing().when(sender).send(any(MimeMessage.class));var reissued=invitations.reissue(approved.userId());verify(sender).send(any(MimeMessage.class));
         assertThat(reissued.userId()).isEqualTo(approved.userId());assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM account_invitation_tokens WHERE used_at IS NULL",Long.class)).isEqualTo(1);
     }
     @Test void rollbackNeverSendsEmailOrPersistsTokens() {
         var tx=new TransactionTemplate(manager);tx.executeWithoutResult(s->{var request=submissions.register(registration());approve(request.id());s.setRollbackOnly();});
         verifyNoInteractions(sender);assertThat(count("registration_requests")).isZero();assertThat(count("account_invitation_tokens")).isZero();assertThat(count("institutions")).isEqualTo(3);
+    }
+    @Test void unconfiguredMailKeepsManualAlternative() {
+        var factory=new org.springframework.beans.factory.support.StaticListableBeanFactory();
+        var delivery=new InvitationDeliveryService(factory.getBeanProvider(JavaMailSender.class),"");
+        var receipt=new Invitation(1L,"PENDING","http://localhost/activation",java.time.LocalDateTime.now());
+        delivery.deliver(new InvitationMail(1L,"local@example.invalid","Conta","Instituição",receipt.activationUrl(),receipt.expiresAt(),receipt));
+        assertThat(receipt.deliveryMode()).isEqualTo("NOT_CONFIGURED");assertThat(receipt.activationUrl()).isNotNull();
     }
     private List<Boolean> race(Callable<Boolean> action) throws Exception {
         var gate=new CountDownLatch(1);var pool=Executors.newFixedThreadPool(2);
@@ -114,6 +129,6 @@ class RequestTransactionTests {
     @Test void concurrentReissueLeavesOnlyOneUsableToken() throws Exception {
         var approved=approve(submissions.register(registration()).id());clearInvocations(sender);
         var results=race(()->{invitations.reissue(approved.userId());return true;});assertThat(results).containsOnly(true);
-        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM account_invitation_tokens WHERE used_at IS NULL",Long.class)).isEqualTo(1);verify(sender,times(2)).send(any(SimpleMailMessage.class));
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM account_invitation_tokens WHERE used_at IS NULL",Long.class)).isEqualTo(1);verify(sender,times(2)).send(any(MimeMessage.class));
     }
 }

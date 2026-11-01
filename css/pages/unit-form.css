@@ -338,7 +338,8 @@
   gap: var(--space-2);
 }
 
-.unit-field--wide {
+.unit-field--wide,
+.unit-fields--address .unit-field--wide {
   grid-column: 1 / -1;
 }
 
@@ -776,6 +777,8 @@
 
 .unit-need-item > div:first-child {
   display: grid;
+  min-width: 0;
+  overflow-wrap: anywhere;
   gap: var(--space-1);
 }
 

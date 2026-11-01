@@ -1,3 +1,5 @@
+import { formatContact, contactIcon } from "../services/contact-format.js";
+import { renderInstitutionSetup } from "../components/institution-setup.js";
 import { getInstitution, patchInstitution, saveContact, deleteContact, contactPayload, uploadHistoryImage, patchHistoryImage, deleteHistoryImage } from "../services/institution-service.js";
 import { getMyInstitutions, getCurrentUser } from "../services/auth-service.js";
 import { getCategories } from "../services/request-service.js";
@@ -47,7 +49,7 @@ export async function initMyInstitutionPage() {
 }
 
 
-export function renderMyInstitutionPage(page, institutions, selectedInstitutionId = null) {
+export function renderMyInstitutionPage(page, institutions, selectedInstitutionId = null, preserveImageDrafts = false) {
   const state = pageStates.get(page);
   if (!state || !Array.isArray(institutions)) return;
 
@@ -58,9 +60,11 @@ export function renderMyInstitutionPage(page, institutions, selectedInstitutionI
   state.selectedInstitutionId = selected ? String(selected.id) : null;
   state.contacts = selected && Array.isArray(selected.contacts) ? selected.contacts.map(normalizeContact).filter(Boolean) : [];
   state.contactChanges = [];
-  releaseHistoryImagePreviews(state.historyImages);
-  state.historyImages = normalizeHistoryImages(selected?.historyImages);
-  state.historyImagesChanged = false;
+  if (!preserveImageDrafts) {
+    releaseHistoryImagePreviews(state.historyImages);
+    state.historyImages = normalizeHistoryImages(selected?.historyImages);
+    state.historyImagesChanged = false;
+  }
 
   renderSelector(page, state);
   renderInstitution(page, state, selected);
@@ -79,6 +83,12 @@ function bindPageActions(page, state) {
   page.querySelector("[data-edit-about]")?.addEventListener("click", () => openAboutForm(page, state));
   page.querySelector("[data-cancel-about]")?.addEventListener("click", () => closeAboutForm(page, state));
   page.querySelector("[data-about-form]")?.addEventListener("submit", (event) => prepareAboutChanges(event, page, state));
+  page.querySelector("[data-images-form]")?.addEventListener("submit", (event) => prepareAboutChanges(event, page, state));
+  page.querySelector("[data-cancel-images]")?.addEventListener("click", () => {
+    releaseHistoryImagePreviews(state.historyImages);
+    state.historyImages = normalizeHistoryImages(getSelectedInstitution(state)?.historyImages);
+    state.historyImagesChanged = false; renderHistoryImageEditor(page, state);
+  });
   page.querySelector("[data-history-image-input]")?.addEventListener("change", (event) => addHistoryImagePreviews(event, page, state));
   page.querySelector("[data-history-image-list]")?.addEventListener("click", (event) => handleHistoryImageAction(event, page, state));
   page.querySelector("[data-history-image-list]")?.addEventListener("input", (event) => updateHistoryImageMetadata(event, state));
@@ -138,7 +148,9 @@ function renderInstitution(page, state, institution) {
   setText(page, "[data-about-history-images]", state.historyImages.length ? `${state.historyImages.length} ${state.historyImages.length === 1 ? "foto" : "fotos"}` : "Nenhuma foto adicionada ainda.");
 
   renderContacts(page, state.contacts);
+  renderHistoryImageEditor(page, state);
   renderUnits(page, institution);
+  renderInstitutionSetup(page, institution, state);
   const canProfile = state.admin || state.permissions?.includes("EDIT_PROFILE");
   page.querySelectorAll("[data-edit-general], [data-edit-reminder]").forEach((control) => { control.disabled = !canProfile; });
   const addUnit = page.querySelector("[data-add-unit]");
@@ -223,7 +235,7 @@ function prepareGeneralChanges(event, page, state) {
   }
   void saving(page, (message) => showFeedback(page, message), async () => {
     const updated = await patchInstitution(institution.id, changes);
-    renderMyInstitutionPage(page, state.institutions.map((item) => item.id === institution.id ? updated : item), institution.id);
+    renderMyInstitutionPage(page, state.institutions.map((item) => item.id === institution.id ? updated : item), institution.id, true);
   });
 }
 
@@ -236,9 +248,6 @@ function openAboutForm(page, state) {
     const control = form.elements.namedItem(field);
     if (control) control.value = institution[field] ?? "";
   });
-  state.historyImages = normalizeHistoryImages(institution.historyImages);
-  state.historyImagesChanged = false;
-  renderHistoryImageEditor(page, state);
   page.querySelector("[data-about-view]")?.setAttribute("hidden", "");
   form.hidden = false;
   form.elements.namedItem("objective")?.focus();
@@ -248,12 +257,6 @@ function closeAboutForm(page, state = null) {
   page.querySelector("[data-about-view]")?.removeAttribute("hidden");
   const form = page.querySelector("[data-about-form]");
   if (form) form.hidden = true;
-  if (state) {
-    releaseHistoryImagePreviews(state.historyImages);
-    const institution = getSelectedInstitution(state);
-    state.historyImages = normalizeHistoryImages(institution?.historyImages);
-    state.historyImagesChanged = false;
-  }
 }
 
 function prepareAboutChanges(event, page, state) {
@@ -263,11 +266,12 @@ function prepareAboutChanges(event, page, state) {
   if (!institution || !form.reportValidity()) return;
   const changes = {};
   ABOUT_FIELDS.forEach((field) => {
+    if (!form.elements.namedItem(field)) return;
     const next = form.elements.namedItem(field)?.value.trim() || "";
     const current = String(institution[field] ?? "").trim();
     if (next !== current) changes[field] = next || null;
   });
-  if (state.historyImagesChanged) {
+  if (form.hasAttribute("data-images-form") && state.historyImagesChanged) {
     changes.historyImages = state.historyImages.map((image, order) => {
       const prepared = {
         alt: image.alt.trim(),
@@ -306,12 +310,14 @@ function prepareAboutChanges(event, page, state) {
       }
     }
     const updated = await getInstitution(institution.id);
-    renderMyInstitutionPage(page, state.institutions.map((item) => item.id === institution.id ? updated : item), institution.id);
+    renderMyInstitutionPage(page, state.institutions.map((item) => item.id === institution.id ? updated : item), institution.id, !historyImages);
   });
 }
 
 function addHistoryImagePreviews(event, page, state) {
-  const files = [...(event.target.files || [])].filter((file) => file.type.startsWith("image/"));
+  const selected = [...(event.target.files || [])];
+  const files = selected.filter((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type) && file.size <= 5 * 1024 * 1024);
+  if (files.length !== selected.length) showFeedback(page, "Alguns arquivos não foram adicionados. Use JPEG, PNG ou WebP de até 5 MiB.");
   files.forEach((file) => state.historyImages.push({
     draftKey: createDraftKey(),
     id: null,
@@ -374,6 +380,7 @@ function createHistoryImageEditorItem(image, index, total) {
   actions.className = "my-institution-history-image__actions";
   actions.append(createHistoryImageButton("up", image.draftKey, "Mover foto para antes", index === 0), createHistoryImageButton("down", image.draftKey, "Mover foto para depois", index === total - 1), createHistoryImageButton("remove", image.draftKey, "Remover foto"));
   item.append(preview, fields, actions);
+  if (index === 0) { const badge = document.createElement("small"); badge.textContent = "Foto de destaque público"; item.append(badge); }
   return item;
 }
 
@@ -384,6 +391,7 @@ function createHistoryImageField(labelText, field, image, required = false) {
   input.type = "text";
   input.value = image[field];
   input.required = required;
+  input.maxLength = 255;
   input.dataset.historyImageField = field;
   input.dataset.historyImageKey = image.draftKey;
   label.append(input);
@@ -408,7 +416,7 @@ function openContactForm(page, contact = null) {
   form.elements.contactId.value = contact?.id || "";
   form.elements.type.value = contact?.type || "EMAIL";
   form.elements.label.value = contact?.label || "";
-  form.elements.value.value = contact?.value || "";
+  form.elements.value.value = contact ? formatContact(contact) : "";
   form.elements.isPrimary.checked = Boolean(contact?.isPrimary);
   form.elements.isPublic.checked = Boolean(contact?.isPublic);
   setText(page, "[data-contact-form-title]", contact ? "Editar contato" : "Adicionar contato");
@@ -477,16 +485,16 @@ function createContactItem(contact) {
   const icon = document.createElement("span");
   icon.className = "my-institution-contact__icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="m4 6 8 6 8-6"></path></svg>';
+  icon.innerHTML = contactIcon(contact.type);
   const content = document.createElement("div");
   content.className = "my-institution-contact__content";
   const title = document.createElement("strong");
   title.textContent = contact.label || getContactTypeLabel(contact.type);
   const value = document.createElement("span");
-  value.textContent = contact.value;
+  value.textContent = formatContact(contact);
   const meta = document.createElement("small");
   meta.className = "my-institution-contact__meta";
-  meta.textContent = [contact.isPrimary ? "Principal" : null, contact.isPublic ? "Público" : "Privado"].filter(Boolean).join(" • ");
+  meta.textContent = [getContactTypeLabel(contact.type), contact.isPrimary ? "Principal" : null, contact.isPublic ? "Público" : "Privado"].filter(Boolean).join(" • ");
   content.append(title, value, meta);
   const actions = document.createElement("div");
   actions.className = "my-institution-contact__actions";
@@ -522,7 +530,8 @@ function createUnitItem(institutionId, unit) {
   edit.className = "button button--outline my-institution-unit__edit";
   edit.textContent = "Editar";
   edit.href = buildUnitUrl(institutionId, unit.id);
-  item.append(content, edit);
+  const needs=document.createElement("a");needs.className="button button--outline";needs.textContent="Gerenciar necessidades";needs.href=buildUnitUrl(institutionId,unit.id)+"#needs";
+  item.append(content, edit, needs);
   return item;
 }
 

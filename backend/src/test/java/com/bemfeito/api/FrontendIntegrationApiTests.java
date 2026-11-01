@@ -52,6 +52,21 @@ class FrontendIntegrationApiTests {
         mvc.perform(get("/api/units/map").param("size","1")).andExpect(status().isOk()).andExpect(jsonPath("$.totalElements",is(2))).andExpect(jsonPath("$.content",hasSize(1))).andExpect(jsonPath("$.content[0].latitude",is(-20.0))).andExpect(jsonPath("$.content[0].contacts").doesNotExist());
     }
     @Test void uploadRequiresCsrf() throws Exception { mvc.perform(multipart(upload()).file(image()).param("altText","Descrição")).andExpect(status().isForbidden()); }
+    @Test void publicCardsIncludeOrderedPhotoAndPublicPhoneWithoutPrivateContacts() throws Exception {
+        Long institution=owner();
+        String uploaded=mvc.perform(multipart(upload()).file(image()).param("altText","Foto pública").param("displayOrder","0").with(csrf()))
+            .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        String photo=JsonPath.read(uploaded,"$.url");
+        jdbc.update("insert into institution_contacts (institution_id,type,value,is_public,is_primary,display_order) values (?,'PHONE','+5531999990001',false,true,0)",institution);
+        jdbc.update("insert into institution_contacts (institution_id,type,value,is_public,is_primary,display_order) values (?,'WHATSAPP','+5531999990002',true,true,1)",institution);
+        em.clear();
+        String body=mvc.perform(get("/api/institutions").with(anonymous())).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        java.util.List<java.util.Map<String,Object>> rows=JsonPath.read(body,"$.content");
+        var row=rows.stream().filter(r->((Number)r.get("id")).longValue()==institution.longValue()).findFirst().orElseThrow();
+        assertThat(((java.util.Map<?,?>)row.get("image")).get("url")).isEqualTo(photo);
+        assertThat(((java.util.Map<?,?>)row.get("publicContact")).get("value")).isEqualTo("+5531999990002");
+        assertThat(body).doesNotContain("+5531999990001").doesNotContain("legalName").doesNotContain("password");
+    }
     @Test @WithMockUser void uploadRequiresInstitutionMembership() throws Exception { mvc.perform(multipart(upload()).file(image()).param("altText","Descrição").with(csrf())).andExpect(status().isForbidden()); }
     @Test void uploadRequiresAlternativeText() throws Exception { mvc.perform(multipart(upload()).file(image()).param("altText","").with(csrf())).andExpect(status().isBadRequest()); }
     @Test void uploadReturnsUsableResourceAndSupportsMetadataPatch() throws Exception {

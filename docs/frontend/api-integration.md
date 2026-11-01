@@ -195,6 +195,49 @@ memória e porta 8081. O teste usa portas 5501/8081, gera senha em memória, cri
 contas pelo fluxo real e encerra os processos. Relatório/imagens ficam em
 `backend/target/browser-results` (não versionado).
 
-Não há alteração de schema nem nova migração nesta Parte. Recuperação de senha,
+Não houve alteração de schema nessa Parte histórica. A continuação de contas
+implementa recuperação de senha e prepara a migração 005, sem aplicá-la ao MySQL.
 OAuth, pagamentos e deploy final continuam fora do escopo. SMTP é a integração
 opcional da Parte 4; audit log e geocodificação automática são evoluções futuras.
+
+
+## Ajustes de UX/UI após o checkpoint 0cff1d9
+
+`GET /api/institutions` mantém paginação e acrescenta `image` (primeira imagem da
+galeria por ordem/id) e `publicContact` (PHONE/WHATSAPP público, priorizando o marcado
+como principal). Ausentes retornam null. A consulta usa buscas em lote por página;
+não inclui contatos privados, razão social ou credenciais. Não há novo endpoint ou
+schema. A descrição integral continua armazenada; o card limita sua exibição a três
+linhas e os detalhes permitem expandir o texto.
+
+A galeria possui formulário próprio e visível em Minha Instituição. Salvar textos
+não descarta imagens ainda em edição. Upload, metadados, ordem e remoção reutilizam
+os contratos existentes. Não existem campos independentes de logotipo/capa nem
+fotos por unidade; a primeira foto é apenas o destaque visual da galeria.
+
+O feedback compartilhado respeita campos desabilitados, formulários independentes e
+etapas ocultas da unidade. Erros mantêm dados e focam o primeiro campo aplicável.
+A senha de login continua sendo limpa pelo fluxo de segurança existente.
+Decisões administrativas não repetem mutações automaticamente após conflito; 409
+mantém o modal e oferece atualização explícita. Convite manual é exibido fora do
+modal, sem armazenamento no navegador nem promessa de envio por e-mail.
+
+Veja [evidências e limitações](ux-refinement-report.md).
+
+
+## Continuação: contexto, contas, localização e necessidades
+
+Veja [contratos e operação](../operations/accounts-mail-maps.md). Rotas públicas novas:
+POST `/api/password-recovery/request` (email) e POST `/api/password-recovery/reset`
+(token, password, confirmPassword), ambas com CSRF. Nenhuma rota retorna token de
+recuperação. `Invitation` acrescenta purpose e diferencia EMAIL_SENT, FAILED,
+NOT_CONFIGURED, PENDING e MANUAL. E-mail aceito pelo SMTP não equivale a caixa postal.
+
+`GET /api/units/map` acrescenta institutionName ao ponto. PATCH de endereço sem
+coordenadas explícitas remove a localização antiga; latitude/longitude devem ser
+fornecidas juntas. O frontend confirma o ponto antes de salvar e inclui o par.
+Não existe geocodificação automática nem alteração de coordenadas a partir do CEP.
+
+Necessidades mantêm os contratos existentes e a regra INACTIVE antes de DELETE.
+A seção pública de materiais usa somente ACTIVE das unidades publicadas; contatos
+privados continuam excluídos. Não há contrato de transação de doação ou pagamento.

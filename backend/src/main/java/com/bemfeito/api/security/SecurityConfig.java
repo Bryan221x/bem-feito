@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/institutions","/api/institutions/{id}","/api/institutions/{id}/units","/api/units/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/institutions/access-search","/api/history-media/{institutionId}/{key}").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/registration-requests","/api/access-requests",
-                    "/api/account-invitations/inspect","/api/account-invitations/accept").permitAll()
+                    "/api/account-invitations/inspect","/api/account-invitations/accept","/api/password-recovery/request","/api/password-recovery/reset").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("PLATFORM_ADMIN")
                 .requestMatchers(HttpMethod.POST,"/api/institutions").hasRole("PLATFORM_ADMIN")
                 .requestMatchers("/api/auth/**","/api/me/**","/api/management/**","/api/institutions/**","/api/units/**").authenticated()

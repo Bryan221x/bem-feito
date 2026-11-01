@@ -139,7 +139,7 @@ test("activation shows expired state without displaying the password form", asyn
   currentPage = page; pageSelector = "[data-account-activation-page]"; await activation.initAccountActivationPage(); assert.equal(page.dataset.state, "expired"); assert.equal(f.hidden, true);
 });
 
-test("admin dialog sends a real decision, updates status, and clears its manual URL on close", async () => {
+test("admin decision closes dialog, refreshes list and preserves the manual invitation on the page", async () => {
   const raw = randomBytes(32).toString("base64url"), activationUrl = `http://127.0.0.1:5500/pages/account-activation.html#token=${raw}`;
   let requestStatus = "PENDING";
   const summary = () => ({ id: 4, type: "REGISTRATION", institutionName: "Instituição", responsibleName: "Pessoa", createdAt: "2026-10-27T12:00:00", status: requestStatus });
@@ -150,7 +150,7 @@ test("admin dialog sends a real decision, updates status, and clears its manual 
     return response({ content: [summary()], last: true, totalPages: 1, totalElements: 1 });
   });
   const page = new Element();
-  for (const name of ["request-dialog", "request-details", "request-dialog-feedback", "request-type", "request-status", "request-prev", "request-next", "request-notes", "request-role", "reissue-invitation", "invitation-result", "invitation-url", "request-pagination", "admin-requests-list", "request-role-control", "request-reload", "close-request-dialog", "copy-invitation", "admin-requests-loading", "admin-requests-error", "admin-requests-empty", "admin-requests-table"]) page.selectors[`[data-${name}]`] = new Element();
+  for (const name of ["request-notice", "refresh-request", "request-dialog", "request-details", "request-dialog-feedback", "request-type", "request-status", "request-prev", "request-next", "request-notes", "request-role", "reissue-invitation", "invitation-result", "invitation-url", "request-pagination", "admin-requests-list", "request-role-control", "request-reload", "close-request-dialog", "copy-invitation", "admin-requests-loading", "admin-requests-error", "admin-requests-empty", "admin-requests-table"]) page.selectors[`[data-${name}]`] = new Element();
   const dialog = page.selectors["[data-request-dialog]"]; dialog.showModal = () => { dialog.open = true; }; dialog.close = () => { dialog.open = false; return dialog.fire("close"); };
   const approve = new Element(); approve.dataset.requestDecision = "approve"; page.selectors["[data-request-decision]"] = [approve];
   dialog.selectors['button[type="submit"], [data-request-decision], [data-reissue-invitation]'] = [approve, page.selectors["[data-reissue-invitation]"]];
@@ -161,6 +161,60 @@ test("admin dialog sends a real decision, updates status, and clears its manual 
   assert.equal(dialog.open, true); assert.equal(approve.disabled, false); page.selectors["[data-request-notes]"].value = "Conferido";
   await approve.fire("click"); assert.equal(requestStatus, "APPROVED"); assert.equal(approve.disabled, true);
   assert.equal(page.selectors["[data-invitation-url]"].value, activationUrl); assert.equal(page.selectors["[data-invitation-result]"].hidden, false);
-  assert.match(page.selectors["[data-request-dialog-feedback]"].textContent, /Decisão registrada/);
-  await dialog.close(); assert.equal(page.selectors["[data-invitation-url]"].value, ""); assert.equal(page.selectors["[data-invitation-result]"].hidden, true);
+  assert.equal(dialog.open, false);
+  assert.match(page.selectors["[data-request-notice]"].textContent, /Convite manual/);
+  await dialog.close(); assert.equal(page.selectors["[data-invitation-url]"].value, activationUrl);
 });
+
+async function decisionPage(action) {
+  const page = new Element();
+  for (const name of ["request-notice", "refresh-request", "request-dialog", "request-details", "request-dialog-feedback", "request-type", "request-status", "request-prev", "request-next", "request-notes", "request-role", "reissue-invitation", "invitation-result", "invitation-url", "request-pagination", "admin-requests-list", "request-role-control", "request-reload", "close-request-dialog", "copy-invitation", "admin-requests-loading", "admin-requests-error", "admin-requests-empty", "admin-requests-table"]) page.selectors[`[data-${name}]`] = new Element();
+  const dialog = page.selectors["[data-request-dialog]"]; dialog.showModal = () => { dialog.open = true; }; dialog.close = () => { dialog.open = false; return dialog.fire("close"); };
+  const approve = new Element(); approve.dataset.requestDecision = action; page.selectors["[data-request-decision]"] = [approve];
+  dialog.selectors['button[type="submit"], [data-request-decision], [data-reissue-invitation]'] = [approve, page.selectors["[data-reissue-invitation]"]];
+  page.selectors["[data-request-type]"].value = "REGISTRATION"; page.selectors["[data-request-role]"].value = "EDITOR";
+  location.search = ""; currentPage = page; pageSelector = "[data-admin-requests-page]"; window.confirm = () => true;
+  adminRequests.initAdminRequestsPage(); await tick();
+  await page.selectors["[data-admin-requests-list]"].fire("click", { closest: () => ({ dataset: { requestId: 4 } }) }); await tick();
+  return { page, dialog, button: approve };
+}
+
+for (const [action, status] of [["reject", "REJECTED"], ["needs-changes", "NEEDS_CHANGES"], ["cancel", "CANCELLED"]]) {
+  test(`admin ${action} waits for success, closes and reloads preserving filters`, async () => {
+    let complete, statusValue = "PENDING";
+    route((url) => {
+      if (url.endsWith(`/4/${action}`)) return new Promise(resolve => { complete = () => { statusValue = status; resolve(response({ status })); }; });
+      const summary = { id: 4, type: "REGISTRATION", institutionName: "Instituição", status: statusValue };
+      return response(url.endsWith("/4") ? { summary, units: [] } : { content: [summary], totalPages: 1, totalElements: 1, last: true });
+    });
+    const { page, dialog, button } = await decisionPage(action);
+    page.selectors["[data-request-status]"].value = "PENDING";
+    page.selectors["[data-request-notes]"].value = "Motivo preservado";
+    const pending = button.fire("click"); await tick();
+    assert.equal(dialog.open, true); assert.equal(button.disabled, true);
+    await button.fire("click"); assert.equal(calls.filter(c => c.url.endsWith(`/4/${action}`)).length, 1);
+    complete(); await pending;
+    assert.equal(dialog.open, false); assert.match(page.selectors["[data-request-notice]"].textContent, /sucesso/);
+    assert.ok(calls.at(-1).url.includes("status=PENDING"));
+  });
+}
+for (const failure of [409, 503]) {
+  test(`admin ${failure} keeps dialog and notes; conflict requires explicit refresh`, async () => {
+    route(url => {
+      if (url.endsWith("/4/approve")) return response({ message: "Estado alterado" }, failure);
+      const summary = { id: 4, type: "REGISTRATION", institutionName: "Instituição", status: "PENDING" };
+      return response(url.endsWith("/4") ? { summary, units: [] } : { content: [summary], totalPages: 1, totalElements: 1, last: true });
+    });
+    const { page, dialog, button } = await decisionPage("approve");
+    page.selectors["[data-request-notes]"].value = "Conferido";
+    await button.fire("click");
+    assert.equal(dialog.open, true); assert.equal(page.selectors["[data-request-notes]"].value, "Conferido");
+    assert.equal(button.disabled, failure === 409);
+    if (failure === 409) {
+      assert.equal(page.selectors["[data-refresh-request]"].hidden, false);
+      await page.selectors["[data-refresh-request]"].fire("click"); await tick();
+      assert.equal(button.disabled, false);
+    }
+    assert.equal(calls.filter(c => c.url.endsWith("/4/approve")).length, 1);
+  });
+}

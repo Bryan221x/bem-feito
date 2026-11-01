@@ -169,3 +169,46 @@ PLAYWRIGHT_MODULE apontando para módulo instalado, BROWSER_EXECUTABLE para Edge
 `node --test tests/frontend/browser-flow.test.mjs` na raiz. O servidor fixa H2 em
 memória, espera seu próprio sinal de startup e encerra processos ao terminar.
 Relatório e screenshots ficam em backend/target/browser-results, ignorados.
+
+
+## Conferência do refinamento final de UX/UI
+
+Consulte o [relatório de refinamento](../frontend/ux-refinement-report.md). Conferir:
+
+1. Solicitação de cadastro: enviar vazio, observar foco/erros e corrigir os campos;
+   UF precede Cidade e o sucesso é verde.
+2. Solicitações administrativas: confirmar uma decisão; o modal fecha após a API,
+   a lista atualiza preservando o filtro e o convite manual permanece na página.
+3. Minha Instituição → Imagens da instituição: adicionar arquivo, descrever a foto,
+   salvar e conferir na galeria; a primeira foto ordenada aparece na consulta pública.
+4. Catálogo e detalhes: resumo curto, telefone/WhatsApp apenas público, texto integral
+   acessível nos detalhes e história/galeria com fechamento por Escape.
+
+Preparar a apresentação em instância separada, com banco e diretório de uploads
+exclusivos, usando os formulários de solicitação, aprovação, ativação e edição.
+Utilizar conteúdo revisado e imagens autorizadas; não importar nem limpar registros
+do ambiente principal. A identidade administrativa desse ambiente deve ser
+provisionada em atividade separada e autorizada. Não repetir o bootstrap existente.
+Para regressão automatizada, BrowserTestServer já força H2 em memória, desliga
+bootstrap e e-mail, cria somente uma conta administrativa de teste temporária e usa
+os fluxos reais para as demais contas. Isso não prepara registros para a banca.
+
+O ensaio final com conteúdo escolhido para a banca, leitor de tela e dispositivos
+físicos continua manual. As evidências locais da Parte 6.2 permanecem válidas;
+SMTP/hosting reais e restauração de backup com imagens presentes não foram validados
+por este refinamento. Upload em H2 não substitui teste de recuperação operacional.
+
+
+## Continuação de contas, mapas e materiais
+
+Consultar [configuração e migração pendente](accounts-mail-maps.md) e
+[relatório desta etapa](../frontend/accounts-maps-report.md). Antes de ensaiar no
+ambiente operacional, revisar e autorizar separadamente a migração 005; não iniciar
+o novo backend contra o schema antigo. Manter as evidências históricas da Parte 6.2.
+
+Em ambiente isolado, conferir seleção A/B e navegação direta, assistente sem duplicar
+unidades, convite capturado e ativação, recuperação com nova senha e rejeição da
+antiga, ponto escolhido/confirmado no mapa, mapas por unidade e materiais ACTIVE
+com contatos públicos. Trocar a situação para FULFILLED deve retirar o pedido da
+consulta pública ao atualizar; excluir continua exigindo INACTIVE. Nenhum item de
+exemplo deve ser inserido no MySQL principal para esses testes.
