@@ -59,6 +59,14 @@ class ProductionSecurityTests {
         var local = new AbuseProtectionFilter(new SecurityJson(new ObjectMapper()), false);
         for (int i = 0; i < 12; i++) assertThat(request(local,"127.0.0.1","POST","/api/auth/login").getStatus()).isEqualTo(200);
     }
+    @Test void geocodingEndpointHasItsOwnPerClientRequestBudget() throws Exception {
+        var filter = new AbuseProtectionFilter(new SecurityJson(new ObjectMapper()), true);
+        for (int i = 0; i < 10; i++) assertThat(request(filter,"127.0.0.1","POST","/api/units/geocode").getStatus()).isEqualTo(200);
+        var denied = request(filter,"127.0.0.1","POST","/api/units/geocode");
+        assertThat(denied.getStatus()).isEqualTo(429);
+        assertThat(denied.getHeader("Retry-After")).isEqualTo("60");
+        assertThat(request(filter,"127.0.0.2","POST","/api/units/geocode").getStatus()).isEqualTo(200);
+    }
     @Test void windowExpiresWithoutWaiting() throws Exception {
         var time = new java.util.concurrent.atomic.AtomicLong(0);
         Clock clock = new Clock() {

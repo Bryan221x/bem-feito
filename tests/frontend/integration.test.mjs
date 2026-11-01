@@ -87,12 +87,86 @@ test("contact links reject unsafe values and provide type appropriate links", ()
 test("opening hours distinguish open, closed, notes and missing days", () => {
   const rows = detail.renderOpeningHours([{ dayOfWeek: 1, closed: false, opensAt: "09:00:00", closesAt: "12:00:00", note: "Agendar" }, { dayOfWeek: 2, closed: true }]);
   assert.equal(rows.length, 7); assert.match(rows[0].textContent, /09:00 às 12:00 — Agendar/); assert.match(rows[1].textContent, /Fechado/); assert.match(rows[2].textContent, /Não informado/);
+  const empty = detail.renderOpeningHours([]); assert.equal(empty.length, 1); assert.equal(empty[0].textContent, "Horários não informados");
 });
 test("multiple units keep their needs and private contacts separate", () => {
   const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-name", "institution-contact-section", "institution-general-contacts"]); page.selectors["[data-institution-details]"] = details;
   detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", contacts: [{ type: "EMAIL", value: "private@example.invalid", isPublic: false }], units: [{ id: 1, name: "A", needs: [{ name: "Only A", status: "ACTIVE", category: "Categoria", quantity: 4, unitLabel: "kg" }, { name: "Hidden", status: "FULFILLED" }] }, { id: 2, name: "B", needs: [{ name: "Only B", status: "ACTIVE" }] }] });
   const cards = details.selectors["[data-donation-needs]"].children;
-  assert.equal(cards.length, 2); assert.match(textTree(cards[0]), /Only A/); assert.doesNotMatch(textTree(cards[0]), /Only B|Hidden/); assert.match(textTree(cards[0]), /4 kg/); assert.match(textTree(cards[1]), /Only B/); assert.equal(details.selectors["[data-institution-general-contacts]"].children.length, 0);
+  assert.equal(cards.length, 2); assert.match(textTree(cards[0]), /Only A/); assert.doesNotMatch(textTree(cards[0]), /Only B|Hidden|private@example/); assert.match(textTree(cards[0]), /4 kg/); assert.match(textTree(cards[1]), /Only B/); assert.equal(details.selectors["[data-institution-general-contacts]"].children.length, 0);
+});
+
+test("general and unit contacts remain distinct and needs link once to contacts", () => {
+  const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-contact-section", "institution-general-contacts", "institution-contact-cta"]);
+  page.selectors["[data-institution-details]"] = details;
+  detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", contacts: [{ type: "EMAIL", value: "geral@example.invalid", label: "E-mail", isPublic: true }], units: [
+    { id: 1, name: "A", contacts: [{ type: "PHONE", value: "+5531999990000", label: "Recepção", isPublic: true }], needs: [{ name: "Arroz", status: "ACTIVE" }] },
+    { id: 2, name: "B", contacts: [{ type: "WHATSAPP", value: "+5531888880000", isPublic: true }] },
+  ] });
+  const needs = textTree(details.selectors["[data-donation-needs]"]);
+  assert.match(needs, /Arroz/); assert.doesNotMatch(needs, /geral@example|9999|8888/);
+  assert.equal(details.selectors["[data-institution-general-contacts]"].children.length, 1);
+  const unitCards = details.selectors["[data-institution-units]"].children;
+  assert.match(textTree(unitCards[0]), /9999/); assert.match(textTree(unitCards[1]), /8888/);
+  assert.doesNotMatch(textTree(unitCards[0]), /geral@example/);
+  const generalCard = details.selectors["[data-institution-general-contacts]"].children[0];
+  assert.equal((textTree(generalCard).match(/E-mail/g) || []).length, 1);
+  const cta = details.selectors["[data-institution-contact-cta]"];
+  assert.equal(cta.hidden, false); assert.equal(cta.href, "#institution-contacts");
+});
+
+test("contact CTA targets a unit contact when no general contact exists and hides when none exist", () => {
+  const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-contact-section", "institution-general-contacts", "institution-contact-cta"]);
+  page.selectors["[data-institution-details]"] = details;
+  detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", units: [{ id: 22, name: "Unidade", contacts: [{ type: "PHONE", value: "+5531999990000", isPublic: true }] }] });
+  const cta = details.selectors["[data-institution-contact-cta]"];
+  assert.equal(cta.hidden, false); assert.equal(cta.href, "#unit-contacts-22");
+  detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", contacts: [{ type: "EMAIL", value: "privado@example.invalid", isPublic: false }], units: [{ id: 22, name: "Unidade", contacts: [] }] });
+  assert.equal(cta.hidden, true); assert.equal(cta.attributes.href, undefined);
+});
+
+test("public units share one map, focus independent markers and omit units without coordinates", async () => {
+  const { markers, markerObjects, mapInstances } = mapLibrary();
+  const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-contact-section", "institution-general-contacts", "institution-contact-cta", "institution-map-section", "institution-map", "institution-map-feedback"]);
+  page.selectors["[data-institution-details]"] = details;
+  const mapSection = details.selectors["[data-institution-map-section]"]; let scrolls = 0; mapSection.scrollIntoView = () => { scrolls += 1; };
+  detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", units: [
+    { id: 11, name: "Unidade A", latitude: -23.5, longitude: -46.6, address: { street: "Rua A", number: "10", city: "São Paulo", state: "SP" } },
+    { id: 12, name: "Unidade B", latitude: -22.9, longitude: -43.2, address: { street: "Rua B", number: "20", city: "Rio de Janeiro", state: "RJ" } },
+    { id: 13, name: "Unidade sem ponto", latitude: null, longitude: null, address: { street: "Rua C", city: "Santos", state: "SP" } },
+  ] });
+  assert.equal(mapInstances.length, 1); assert.deepEqual(markers, [[-23.5, -46.6], [-22.9, -43.2]]);
+  assert.equal(mapSection.hidden, false); assert.equal(details.selectors["[data-institution-units]"].children.length, 3);
+  assert.match(textTree(details.selectors["[data-institution-units]"].children[2]), /Localização no mapa ainda não confirmada/);
+  assert.match(textTree(markerObjects[0].popup), /Unidade A.*Rua A, 10/);
+  const cards = details.selectors["[data-institution-units]"].children;
+  const actionsA = cards[0].children.find(child => child.className === "institution-unit-card__actions");
+  const actionsB = cards[1].children.find(child => child.className === "institution-unit-card__actions");
+  assert.equal(actionsA.children[0].textContent, "Ver no mapa"); assert.equal(actionsA.children[0].type, "button");
+  assert.match(actionsA.children[1].href, /^https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=/);
+  assert.equal(actionsA.children[1].target, "_blank"); assert.equal(actionsA.children[1].rel, "noopener noreferrer");
+  await actionsA.children[0].fire("click");
+  assert.equal(scrolls, 1); assert.deepEqual(mapInstances[0].center, [-23.5, -46.6]); assert.equal(markerObjects[0].popupOpened, true); assert.equal(markerObjects[0].zIndex, 1000);
+  await actionsB.children[0].fire("click");
+  assert.equal(scrolls, 2); assert.deepEqual(mapInstances[0].center, [-22.9, -43.2]); assert.equal(markerObjects[0].zIndex, 0); assert.equal(markerObjects[1].zIndex, 1000);
+});
+
+test("shared public map stays hidden when no unit has confirmed coordinates", () => {
+  const { markers, mapInstances } = mapLibrary();
+  const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-contact-section", "institution-general-contacts", "institution-contact-cta", "institution-map-section", "institution-map", "institution-map-feedback"]);
+  page.selectors["[data-institution-details]"] = details;
+  detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", units: [{ id: 3, name: "Unidade", latitude: null, longitude: null }] });
+  assert.equal(details.selectors["[data-institution-map-section]"].hidden, true); assert.deepEqual(markers, []); assert.equal(mapInstances.length, 0);
+});
+
+test("a single located unit gets one shared marker and all-missing hours collapse to one message", () => {
+  const { markers, mapInstances } = mapLibrary();
+  const page = new Element(), details = nodes(new Element(), ["donation-needs", "institution-units", "institution-units-empty", "institution-contact-section", "institution-general-contacts", "institution-contact-cta", "institution-map-section", "institution-map", "institution-map-feedback"]);
+  page.selectors["[data-institution-details]"] = details;
+  detail.renderInstitutionDetails(page, { id: 7, displayName: "Name", units: [{ id: 4, name: "Única", latitude: -12.3, longitude: -45.6, openingHours: [] }] });
+  assert.equal(mapInstances.length, 1); assert.deepEqual(markers, [[-12.3, -45.6]]);
+  const hoursSection = details.selectors["[data-institution-units]"].children[0].children.find(child => child.children?.[0]?.textContent === "Horários");
+  assert.equal(hoursSection.children[1].children.length, 1); assert.equal(hoursSection.children[1].children[0].textContent, "Horários não informados");
 });
 test("cities render real IDs and search real names", async () => {
   const page = nodes(new Element(), ["city-list", "city-empty", "city-empty-message", "city-map"]); page.selectors["#city-search-input"] = new Element(); page.selectors[".city-search"] = new Element(); currentPage = page; currentSelector = ".city-selection";
@@ -200,13 +274,13 @@ test("canceling inactive need removal preserves data without sending DELETE", as
   assert.equal(calls.length,0);assert.deepEqual(state.needs,[need]);
 });
 function mapLibrary({ fail = false } = {}) {
-  const markers = [], listeners = {};
+  const markers = [], markerObjects = [], mapInstances = [], listeners = {};
   globalThis.L = {
-    map() { if (fail) throw new Error("Map failed"); return { setView() { return this; }, fitBounds() {}, remove() {} }; },
+    map(container) { if (fail) throw new Error("Map failed"); const map = { container, zoom: 4, setView(center, zoom) { this.center = center; if (zoom != null) this.zoom = zoom; return this; }, getZoom() { return this.zoom; }, fitBounds(bounds) { this.bounds = bounds; }, remove() {}, on() { return this; } }; mapInstances.push(map); return map; },
     tileLayer() { return { on(event, callback) { listeners[event] = callback; return this; }, addTo() { return this; } }; },
-    marker(coordinates) { markers.push(coordinates); return { addTo() { return this; }, bindPopup() {} }; },
+    marker(coordinates) { markers.push(coordinates); const events = {}, element = { classList: { add() {}, remove() {} } }; const marker = { coordinates, events, element, zIndex: 0, addTo() { return this; }, bindPopup(content) { this.popup = content; return this; }, on(event, callback) { events[event] = callback; return this; }, setZIndexOffset(value) { this.zIndex = value; }, getElement() { return element; }, getLatLng() { return { lat: Number(this.coordinates[0]), lng: Number(this.coordinates[1]) }; }, openPopup() { this.popupOpened = true; }, setLatLng(point) { this.coordinates = [point.lat, point.lng]; return this; } }; markerObjects.push(marker); return marker; },
   };
-  return { markers, listeners };
+  return { markers, markerObjects, mapInstances, listeners };
 }
 async function cityPage(data = { content: [], totalPages: 0 }, status = 200) {
   const page = nodes(new Element(), ["city-list", "city-empty", "city-empty-message", "city-map"]);
@@ -295,7 +369,7 @@ test("donation empty state does not invent needs; unit contacts take priority", 
   detail.renderDonationNeeds(root,{ contacts:[{type:"EMAIL",value:"general@example.invalid",isPublic:true}], units:[
     {name:"Unidade A",needs:[{name:"<script>alert(1)</script>",status:"ACTIVE",priority:"HIGH"},{name:"Oculta",status:"INACTIVE"}],contacts:[{type:"EMAIL",value:"unit@example.invalid",isPublic:true},{type:"EMAIL",value:"private@example.invalid",isPublic:false}]},
     {name:"Inativa",status:"INACTIVE",needs:[{name:"Não publicar",status:"ACTIVE"}]}] });
-  const text=textTree(root.selectors["[data-donation-needs]"]);assert.match(text,/unit@example.invalid/);assert.match(text,/<script>/);assert.doesNotMatch(text,/general@example|private@example|Oculta|Não publicar/);
+  const text=textTree(root.selectors["[data-donation-needs]"]);assert.doesNotMatch(text,/unit@example.invalid|general@example|private@example/);assert.match(text,/<script>/);assert.doesNotMatch(text,/Oculta|Não publicar/);
 });
 
 test("public and management needs reorder after insert and priority edit without mutating records", () => {

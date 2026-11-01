@@ -2,7 +2,7 @@ import { contactHref, formatContact, contactIcon } from "../services/contact-for
 import { sortNeeds } from "../services/need-order.js";
 export { contactHref } from "../services/contact-format.js";
 import { apiAssetUrl } from "../services/api-client.js";
-import { createUnitMap, hasCoordinates, removeMap } from "../services/map-service.js";
+import { createUnitMap, focusUnitMap, hasCoordinates, removeMap } from "../services/map-service.js";
 
 const historyDialogStates = new WeakMap();
 
@@ -32,6 +32,7 @@ export function renderInstitutionDetails(page, institution) {
   renderDonationNeeds(details, institution);
   const markers = renderUnits(details, institution.units);
   renderMapArchitecture(details, markers);
+  renderContactCta(details, institution);
 
   const pageTitle = page.querySelector("#institution-page-title");
   if (pageTitle) pageTitle.textContent = displayName;
@@ -255,6 +256,18 @@ function renderGeneralContacts(details, contacts) {
   section.hidden = publicContacts.length === 0;
 }
 
+function renderContactCta(details, institution) {
+  const cta = details.querySelector("[data-institution-contact-cta]");
+  if (!cta) return;
+  const general = getPublicContacts(institution.contacts).length > 0;
+  const firstUnitWithContacts = (Array.isArray(institution.units) ? institution.units : []).find((unit) =>
+    (!unit.status || unit.status === "ACTIVE") && unit.id != null && getPublicContacts(unit.contacts).length > 0,
+  );
+  cta.hidden = !general && !firstUnitWithContacts;
+  if (cta.hidden) { cta.removeAttribute("href"); return; }
+  cta.href = general ? "#institution-contacts" : `#unit-contacts-${encodeURIComponent(firstUnitWithContacts.id)}`;
+}
+
 function renderUnits(details, units) {
   const container = details.querySelector("[data-institution-units]");
   const empty = details.querySelector("[data-institution-units-empty]");
@@ -263,14 +276,14 @@ function renderUnits(details, units) {
   const markers = [];
   container.replaceChildren(...validUnits.map((unit) => {
     const coordinates = getCoordinates(unit);
-    if (coordinates) markers.push({ unitId: String(unit.id), name: String(unit.name), ...coordinates });
-    return createUnit(unit);
+    if (coordinates) markers.push({ unitId: String(unit.id), name: String(unit.name), addressLabel: formatAddress(unit.address), ...coordinates });
+    return createUnit(unit, details);
   }));
   empty.hidden = validUnits.length > 0;
   return markers;
 }
 
-function createUnit(unit) {
+function createUnit(unit, details) {
   const card = document.createElement("article");
   card.className = "institution-unit-card";
   card.dataset.unitId = String(unit.id);
@@ -279,24 +292,28 @@ function createUnit(unit) {
   const address = document.createElement("p"); address.className = "institution-unit-card__address"; address.textContent = formatAddress(unit.address);
   header.append(title, address); card.append(header);
   if (hasCoordinates(unit)) {
-    const directions = document.createElement("a"); directions.textContent = "Como chegar";
-    directions.href = `https://www.openstreetmap.org/directions?to=${Number(unit.latitude)}%2C${Number(unit.longitude)}`;
-    directions.target = "_blank"; directions.rel = "noopener noreferrer";
-    const disclosure = document.createElement("details"), summary = document.createElement("summary"), map = document.createElement("div"), feedback = document.createElement("p");
-    summary.textContent = "Ver localização desta unidade"; map.className = "unit-location-map"; feedback.setAttribute("role","status");
-    disclosure.append(summary,map,feedback); let active = false;
-    disclosure.addEventListener("toggle", () => {
-      if (!disclosure.open) { if(active) removeMap(map); active=false; return; }
-      if (active) return;
-      feedback.textContent = "";
-      const unavailable = () => { feedback.textContent = "Mapa indisponível. O endereço e o link Como chegar continuam disponíveis."; };
-      active = !!createUnitMap(map,[unit],{ onUnavailable:unavailable }); if(!active) unavailable();
+    const actions = document.createElement("div"); actions.className = "institution-unit-card__actions";
+    const showMap = document.createElement("button"); showMap.type = "button"; showMap.className = "button button--outline"; showMap.dataset.unitMapFocus = String(unit.id); showMap.textContent = "Ver no mapa";
+    showMap.addEventListener("click", () => {
+      const section = details.querySelector("[data-institution-map-section]");
+      const map = details.querySelector("[data-institution-map]");
+      const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      section?.scrollIntoView?.({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      focusUnitMap(map, unit.id);
     });
-    card.append(directions,disclosure);
+    const directions = document.createElement("a"); directions.className = "button button--outline"; directions.textContent = "Como chegar";
+    const destination = `${Number(unit.latitude)},${Number(unit.longitude)}`;
+    directions.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+    directions.target = "_blank"; directions.rel = "noopener noreferrer";
+    actions.append(showMap, directions); card.append(actions);
   } else { const note=document.createElement("p"); note.textContent="Localização no mapa ainda não confirmada."; card.append(note); }
 
   const contacts = getPublicContacts(unit.contacts);
-  if (contacts.length) card.append(createSubsection("Contatos", contacts.map(createContact), "institution-contact"));
+  if (contacts.length) {
+    const section = createSubsection("Contatos da unidade", contacts.map(createContact), "institution-contact");
+    section.id = `unit-contacts-${String(unit.id)}`;
+    card.append(section);
+  }
   const areas = Array.isArray(unit.serviceAreas) ? unit.serviceAreas.filter(Boolean) : [];
   if (areas.length) card.append(createSubsection("Áreas de atuação", areas.map((area) => createTag(getServiceAreaLabel(area))), "institution-tags"));
 
@@ -314,13 +331,19 @@ function createSubsection(titleText, children, className) {
 
 function createContact(contact) {
   const item = document.createElement("div"); item.className = "institution-contact__item";
-  const label = document.createElement("span"); label.className = "institution-contact__label"; label.textContent = contact.label || getContactTypeLabel(contact.type);
+  const typeLabel = getContactTypeLabel(contact.type);
+  const customLabel = String(contact.label || "").trim();
+  if (customLabel && normalizeContactLabel(customLabel) !== normalizeContactLabel(typeLabel)) {
+    const label = document.createElement("span"); label.className = "institution-contact__label"; label.textContent = customLabel; item.append(label);
+  }
   const href = contactHref(contact);
   const value = document.createElement(href ? "a" : "span"); if (href) value.href = href; if (href?.startsWith("https:")) { value.target = "_blank"; value.rel = "noopener noreferrer"; } value.className = "institution-contact__value"; value.textContent = formatContact(contact);
   const icon=document.createElement("span"); icon.innerHTML=contactIcon(contact.type);
-  const type=document.createElement("small"); type.textContent=getContactTypeLabel(contact.type);
-  item.append(icon,label,type,value); return item;
+  const type=document.createElement("small"); type.textContent=typeLabel;
+  item.append(icon,type,value); return item;
 }
+
+function normalizeContactLabel(value) { return String(value || "").normalize("NFD").replace(/\p{M}/gu, "").replace(/[^\p{L}\p{N}]/gu, "").toLocaleLowerCase("pt-BR"); }
 
 function createTag(text) { const tag = document.createElement("span"); tag.className = "institution-needs__item"; tag.textContent = text; return tag; }
 function createNeed(need) {
@@ -341,12 +364,27 @@ function renderMapArchitecture(details, markers) {
   const section = details.querySelector("[data-institution-map-section]");
   const map = details.querySelector("[data-institution-map]");
   if (!section || !map) return;
-  map.replaceChildren(...markers.map((marker) => {
-    const point = document.createElement("span"); point.hidden = true; point.dataset.unitMapMarker = marker.unitId; point.dataset.latitude = String(marker.latitude); point.dataset.longitude = String(marker.longitude); return point;
-  }));
+  removeMap(map);
+  map.replaceChildren();
   section.hidden = markers.length === 0;
-  if (markers.length) details.dispatchEvent(new CustomEvent("bemfeito:institution-map-markers-ready", { bubbles: true, detail: { markers } }));
-  if (markers.length) createUnitMap(map, markers);
+  const feedback = details.querySelector("[data-institution-map-feedback]");
+  if (feedback) { feedback.hidden = true; feedback.textContent = ""; }
+  if (!markers.length) return;
+  const unavailable = () => {
+    if (!feedback) return;
+    feedback.textContent = "O mapa está indisponível no momento. Os endereços e as opções Como chegar continuam disponíveis.";
+    feedback.hidden = false;
+  };
+  const created = createUnitMap(map, markers, { onUnavailable: unavailable, popupContent: createUnitMapPopup });
+  if (!created) unavailable();
+}
+
+function createUnitMapPopup(unit) {
+  const popup = document.createElement("div");
+  const name = document.createElement("strong"); name.textContent = String(unit.name || "Unidade");
+  const address = document.createElement("p"); address.textContent = String(unit.addressLabel || "Endereço não informado");
+  popup.append(name, address);
+  return popup;
 }
 
 function getPublicContacts(contacts) { return Array.isArray(contacts) ? contacts.filter((contact) => contact?.value && contact.isPublic === true) : []; }
@@ -360,7 +398,17 @@ function setText(root, selector, value) { const element = root.querySelector(sel
 
 export function renderOpeningHours(hours) {
   const days = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
-  return days.map((day, index) => { const h = hours?.find((item) => Number(item.dayOfWeek) === index + 1); const p = document.createElement("p"); p.textContent = `${day}: ${h ? h.closed ? "Fechado" : `${h.opensAt.slice(0,5)} às ${h.closesAt.slice(0,5)}` : "Não informado"}${h?.note ? ` — ${h.note}` : ""}`; return p; });
+  const entries = Array.isArray(hours) ? hours : [];
+  const hasPublishedHours = entries.some((item) => item && (item.closed === true || (item.opensAt && item.closesAt) || item.note));
+  if (!hasPublishedHours) {
+    const empty = document.createElement("p"); empty.textContent = "Horários não informados"; return [empty];
+  }
+  return days.map((day, index) => {
+    const h = entries.find((item) => Number(item?.dayOfWeek) === index + 1);
+    const times = h?.opensAt && h?.closesAt ? `${String(h.opensAt).slice(0,5)} às ${String(h.closesAt).slice(0,5)}` : null;
+    const value = h?.closed === true ? "Fechado" : times || "Não informado";
+    const p = document.createElement("p"); p.textContent = `${day}: ${value}${h?.note ? ` — ${h.note}` : ""}`; return p;
+  });
 }
 
 export function renderDonationNeeds(details, institution) {
@@ -372,10 +420,7 @@ export function renderDonationNeeds(details, institution) {
     if(!needs.length) continue;
     const section=document.createElement("section"), title=document.createElement("h3"), list=document.createElement("div");
     title.textContent=unit.name;list.className="institution-unit-needs";list.append(...needs.map(need=>createNeed({ ...need,name:need.name || need.title })));
-    const help=document.createElement("p");help.textContent="Quer ajudar? Entre em contato com a instituição para combinar sua doação.";
-    const own=getPublicContacts(unit.contacts), contacts=own.length ? own : getPublicContacts(institution.contacts);
-    const links=document.createElement("div");links.className="institution-contact";links.append(...contacts.map(createContact));
-    section.append(title,list,help,links);groups.push(section);
+    section.append(title,list);groups.push(section);
   }
   if(!groups.length) { const empty=document.createElement("p");empty.textContent="Esta instituição ainda não informou necessidades atuais.";groups.push(empty); }
   host.replaceChildren(...groups);

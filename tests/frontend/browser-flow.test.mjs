@@ -176,6 +176,22 @@ test('real browser: registration, approval, activation, management and public ca
     assert.equal((await api(owner,`/api/management/units/${unitId}`)).latitude,picked);
     await goto(owner,`/pages/unit-form.html?unitId=${unitId}`);await owner.waitForFunction(()=>document.querySelector('[name=name]').value==='Segunda unidade');
     assert.equal(new URL(owner.url()).searchParams.get('institutionId'),String(id));
+    await owner.route('**/api/units/geocode', route=>route.fulfill({status:200,json:[
+      {latitude:-23.54,longitude:-46.62,label:'Praça da Sé, São Paulo',houseNumber:null,approximate:true},
+      {latitude:-23.55,longitude:-46.63,label:'Praça da Sé, 2, São Paulo',houseNumber:'2',approximate:false}
+    ]}));
+    await owner.locator('[data-next-step]').click(); await owner.locator('[data-find-address]').click();
+    await owner.waitForFunction(()=>document.querySelector('[data-address-result]').options.length===3);
+    await responsive(owner,'unit address search results');
+    await owner.locator('[data-address-result]').selectOption('0');
+    assert.match(await owner.locator('[data-address-result-note]').innerText(),/aproximado/);
+    await owner.locator('[data-use-address-result]').click();
+    await owner.locator('[data-location-picker] .leaflet-marker-icon').waitFor();
+    assert.equal(await owner.locator('[name=latitude]').inputValue(),'-23.55000000');
+    await owner.locator('[data-confirm-location]').click();
+    await owner.locator('[data-next-step]').click(); await owner.locator('[data-submit-unit]').click();
+    await owner.waitForFunction(()=>document.querySelector('[data-unit-form-feedback]').textContent==='Alterações salvas.');
+    assert.equal((await api(owner,`/api/management/units/${unitId}`)).latitude,-23.54);
     const visitor = await browser.newPage(); await observe(visitor); await goto(visitor, '/pages/cities.html'); await visitor.locator('a[href*="institutions.html?cityId="]').first().waitFor(); await responsive(visitor, 'cities');
     await visitor.locator('a[href*="institutions.html?cityId="]').first().click(); await visitor.locator('a.institution-card__link').first().waitFor(); await responsive(visitor, 'institutions');
     assert.equal(await visitor.locator('.institution-card__media img').evaluate(img => img.complete && img.naturalWidth > 0), true);
@@ -187,9 +203,10 @@ test('real browser: registration, approval, activation, management and public ca
     await visitor.locator('a.institution-card__link').first().click();
     await visitor.waitForFunction(() => document.body.textContent.includes('Alimentos necessários')); await responsive(visitor, 'institution detail');
     assert.match(await visitor.locator('[data-donation-needs]').innerText(),/Alimentos necessários/);
-    assert.match(await visitor.locator('[data-donation-needs]').innerText(),/Quer ajudar/);
-    await visitor.getByText('Ver localização desta unidade',{exact:true}).click();
-    await visitor.locator('.institution-unit-card .leaflet-marker-icon').waitFor();
+    assert.doesNotMatch(await visitor.locator('[data-donation-needs]').innerText(),/Quer ajudar/);
+    assert.equal(await visitor.locator('[data-institution-contact-cta]').innerText(),'Entrar em contato');
+    await visitor.getByRole('button',{name:'Ver no mapa'}).first().click();
+    await visitor.locator('[data-institution-map] .leaflet-marker-icon').waitFor();
     assert.ok(await visitor.getByText('Como chegar',{exact:true}).count()>0);
     await responsive(visitor,'unit location');
     await visitor.locator('[data-donation-needs]').screenshot({path:resolve(root,'backend/target/browser-results/donation-needs.png')});

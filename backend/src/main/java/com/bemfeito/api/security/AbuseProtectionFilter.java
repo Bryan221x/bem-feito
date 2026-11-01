@@ -46,6 +46,7 @@ public final class AbuseProtectionFilter extends OncePerRequestFilter {
         if ("POST".equals(request.getMethod())) {
             if (recovery) { group = "recovery"; limit = 5; }
             else if (path.equals("/api/auth/login")) { group = "login"; limit = 10; }
+            else if (path.equals("/api/units/geocode")) { group = "geocode"; limit = 10; }
             else if (path.equals("/api/registration-requests") || path.equals("/api/access-requests")) {
                 group = "requests"; limit = 10; window = 600000;
             } else if (path.startsWith("/api/account-invitations/")) { group = "invitation"; limit = 20; }

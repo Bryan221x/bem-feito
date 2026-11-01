@@ -416,9 +416,37 @@
                       />
                     </div>
 
-                    <div class="unit-field"><label for="unit-latitude">Latitude (opcional)</label><input id="unit-latitude" name="latitude" type="number" min="-90" max="90" step="0.00000001" /></div>
-                    <div class="unit-field"><label for="unit-longitude">Longitude (opcional)</label><input id="unit-longitude" name="longitude" type="number" min="-180" max="180" step="0.00000001" /></div>
-                    <div class="unit-field unit-field--wide"><p>CEP e endereço não confirmam a posição física. Selecione o ponto no mapa ou informe as coordenadas e confirme.</p><button class="button button--outline" type="button" data-open-location>Abrir mapa para escolher localização</button><div data-location-panel hidden><div class="unit-location-map" data-location-picker></div></div><button class="button button--outline" type="button" data-confirm-location>Confirmar ponto</button><p role="status" data-location-feedback></p></div>
+                    <div class="unit-field unit-field--wide unit-location-help">
+                      <h3>Localização da unidade</h3>
+                      <p>Confira o endereço acima e procure-o no mapa. Você poderá ajustar o ponto antes de confirmar.</p>
+                      <button class="button" type="button" data-find-address>Encontrar endereço no mapa</button>
+                      <button class="button button--outline" type="button" data-open-location>Prefiro selecionar no mapa</button>
+                      <div class="unit-location-results" data-address-search-results hidden>
+                        <label for="unit-address-result">Confira e escolha o endereço correto</label>
+                        <select id="unit-address-result" data-address-result><option value="">Nenhum resultado escolhido</option></select>
+                        <p data-address-result-note role="status" aria-live="polite"></p>
+                        <button class="button button--outline" type="button" data-use-address-result disabled>Mostrar este resultado no mapa</button>
+                      </div>
+                      <p class="unit-location-attribution">A busca envia o endereço informado ao OpenStreetMap. Os resultados podem ser aproximados. Dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>.</p>
+                      <details class="unit-location-alternative">
+                        <summary>Tenho um link do Google Maps</summary>
+                        <label for="unit-google-maps-link">Link do Google Maps</label>
+                        <input id="unit-google-maps-link" type="url" inputmode="url" placeholder="Cole aqui o link compartilhado do Google Maps" autocomplete="url" data-google-maps-link aria-describedby="google-maps-help location-feedback" />
+                        <button class="button button--outline" type="button" data-locate-google-maps>Localizar pelo link</button>
+                        <p id="google-maps-help">Abra o Google Maps, encontre sua instituição, toque em Compartilhar e copie o link. Links curtos abrem no Maps para você escolher o mesmo ponto manualmente.</p>
+                        <div class="unit-location-fallback" data-google-maps-fallback hidden>
+                          <p>Não conseguimos ler esse link curto automaticamente. Abra o local no Google Maps; depois volte aqui e selecione no mapa o mesmo ponto. Sua localização atual só muda quando você confirmar.</p>
+                          <a class="button button--outline" data-open-google-maps target="_blank" rel="noopener noreferrer">Abrir este link no Google Maps</a>
+                        </div>
+                      </details>
+                      <div data-location-panel hidden><div class="unit-location-map" data-location-picker aria-label="Mapa para conferir e ajustar a localização"></div></div>
+                      <div class="unit-fields unit-fields--two-columns unit-location-coordinates">
+                        <div class="unit-field"><label for="unit-latitude">Latitude (opcional)</label><input id="unit-latitude" name="latitude" type="number" min="-90" max="90" step="0.00000001" /></div>
+                        <div class="unit-field"><label for="unit-longitude">Longitude (opcional)</label><input id="unit-longitude" name="longitude" type="number" min="-180" max="180" step="0.00000001" /></div>
+                      </div>
+                      <button class="button button--outline" type="button" data-confirm-location>Confirmar ponto</button>
+                      <p id="location-feedback" role="status" aria-live="polite" data-location-feedback></p>
+                    </div>
                     <div class="unit-field"><label for="unit-status">Status da unidade</label><select id="unit-status" name="status"><option value="ACTIVE">Ativa</option><option value="INACTIVE">Inativa</option></select></div>
                     <div class="unit-field unit-field--state">
                       <label for="unit-state">Estado (UF)</label>

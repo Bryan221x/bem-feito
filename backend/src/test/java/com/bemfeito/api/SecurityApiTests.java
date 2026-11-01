@@ -170,6 +170,20 @@ class SecurityApiTests {
             .andExpect(status().isForbidden());
         mutate(patch(institutionPath()),session,"{\"history\":\"Atualizada\"}").andExpect(status().isOk());
     }
+    @Test void addressGeocodingRequiresAuthenticationCsrfAndValidAddress() throws Exception {
+        String validAddress = "{\"street\":\"Rua A\",\"number\":\"10\",\"neighborhood\":\"Centro\",\"postalCode\":\"01000-000\",\"city\":\"São Paulo\",\"state\":\"SP\"}";
+        mvc.perform(post("/api/units/geocode").contentType("application/json").content(validAddress))
+            .andExpect(status().isForbidden());
+
+        var anonymous = new MockHttpSession();
+        mvc.perform(post("/api/units/geocode").session(anonymous).header("X-CSRF-TOKEN", token(anonymous))
+                .contentType("application/json").content(validAddress))
+            .andExpect(status().isUnauthorized());
+
+        mutate(post("/api/units/geocode"), login("owner"),
+            "{\"street\":\"\",\"number\":\"10\",\"neighborhood\":\"Centro\",\"postalCode\":\"01000-000\",\"city\":\"São Paulo\",\"state\":\"SP\"}")
+            .andExpect(status().isBadRequest());
+    }
     @Test void loginRotatesCsrfToken() throws Exception {
         var session=new MockHttpSession();String old=token(session);
         mvc.perform(post("/api/auth/login").session(session).header("X-CSRF-TOKEN",old).param("email","owner@example.invalid").param("password",PASSWORD)).andExpect(status().isOk());

@@ -1,5 +1,6 @@
 import { apiRequest } from "./api-client.js";
 export const getUnit = (id) => apiRequest(`/api/management/units/${encodeURIComponent(id)}`);
+export const geocodeUnitAddress = (address) => apiRequest("/api/units/geocode", { method: "POST", body: address });
 export const createUnit = (owner, body) => apiRequest(`/api/institutions/${encodeURIComponent(owner)}/units`, { method: "POST", body });
 export const patchUnit = (id, body) => apiRequest(`/api/units/${encodeURIComponent(id)}`, { method: "PATCH", body });
 export const getServiceAreas = () => apiRequest("/api/service-areas");
