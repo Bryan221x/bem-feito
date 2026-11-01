@@ -23,7 +23,6 @@
 
     <!-- Página -->
     <link rel="stylesheet" href="../css/pages/institution-login.css" />
-  <style>html.auth-pending body { visibility: hidden; }</style>
   <link rel="icon" type="image/png" href="../assets/images/brand/brand-mark.png" />
 </head>
 
@@ -147,6 +146,10 @@
                   </button>
                 </div>
 
+                <a class="institution-login__recovery" href="./password-recovery.html">
+                  Esqueceu sua senha?
+                </a>
+
                 <span
                   id="institution-password-error"
                   class="institution-login__field-error"
@@ -174,12 +177,31 @@
               </button>
             </form>
 
-            <p class="institution-login__request">
-              Ainda não faz parte?
-              <a href="./password-recovery.html">Esqueci minha senha</a>
-              <a href="./institution-access-request.html">Solicitar acesso a uma instituição existente</a>
-              <a href="./registration-request.html">Solicitar cadastro de uma instituição</a>
-            </p>
+            <section class="institution-login__participation" aria-labelledby="participation-title">
+              <h2 id="participation-title">Quer participar do Bem-Feito?</h2>
+
+              <div class="institution-login__option">
+                <svg class="institution-login__option-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 8v2m6-2v2m-6 2v1m6-1v1"></path>
+                </svg>
+                <div class="institution-login__option-content">
+                  <h3>Sua instituição já está cadastrada?</h3>
+                  <p>Solicite acesso para gerenciar uma instituição que já faz parte da plataforma.</p>
+                  <a class="button button--outline" href="./institution-access-request.html">Solicitar acesso</a>
+                </div>
+              </div>
+
+              <div class="institution-login__option">
+                <svg class="institution-login__option-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M14 3H5v18h14V8M14 3v5h5l-5-5M8 14h8m-4-4v8"></path>
+                </svg>
+                <div class="institution-login__option-content">
+                  <h3>Sua instituição ainda não está aqui?</h3>
+                  <p>Envie uma solicitação para cadastrar uma nova instituição no Bem-Feito.</p>
+                  <a class="button institution-login__registration" href="./registration-request.html">Solicitar cadastro</a>
+                </div>
+              </div>
+            </section>
 
             <a class="institution-login__back" href="../index.html">
               <span aria-hidden="true">←</span>

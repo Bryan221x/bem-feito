@@ -2,6 +2,10 @@
    Área de acesso da instituição
    ========================================================= */
 
+html.auth-pending .institution-login-page {
+  visibility: hidden;
+}
+
 .institution-login-page {
   min-height: 100vh;
   background-color: var(--color-background);
@@ -47,6 +51,7 @@
 .institution-login__access {
   display: flex;
   flex-direction: column;
+  gap: var(--space-5);
 
   padding: clamp(var(--space-5), 5vw, var(--space-7));
 }
@@ -256,6 +261,10 @@
   font-size: var(--font-size-xs);
 }
 
+.institution-login-page .institution-login__field-error:empty {
+  display: none;
+}
+
 .institution-login__message {
   padding: var(--space-3) var(--space-4);
 
@@ -277,20 +286,79 @@
   margin-top: var(--space-1);
 }
 
-.institution-login__request {
-  margin-top: var(--space-4);
-
+.institution-login__recovery {
+  justify-self: end;
+  color: var(--color-primary-dark);
   font-size: var(--font-size-sm);
-  text-align: center;
-}
-
-.institution-login__request a {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
-}
-
-.institution-login__request a:hover {
   text-decoration: underline;
+  text-underline-offset: 0.2em;
+  padding-block: var(--space-1);
+}
+
+.institution-login__participation {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.institution-login__participation h2 {
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+}
+
+.institution-login__option {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+}
+
+.institution-login__option + .institution-login__option {
+  border-top: 1px solid var(--color-border);
+}
+
+.institution-login__option-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-primary);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.institution-login__option-content {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  overflow-wrap: anywhere;
+}
+
+.institution-login__option h3 {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.institution-login__option p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.institution-login__registration {
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+}
+
+.institution-login__registration:hover {
+  border-color: var(--color-primary);
+}
+
+.institution-login-page :is(a, button):focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .institution-login__back {
