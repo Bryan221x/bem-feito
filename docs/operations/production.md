@@ -70,9 +70,13 @@ docker compose up -d mysql
 docker compose ps
 ```
 
-Somente um volume MySQL vazio executa schema.sql (21 tabelas), reference-data.sql,
-cities.sql (5.571 entradas) e a restrição de privilégios. O schema completo já
-contém a 004. O healthcheck exige a carga de cidades. Se inicialização falhar,
+Somente um volume MySQL vazio executa `database/schema.sql` (22 tabelas),
+`database/reference-data.sql`, `database/cities.sql` (5.571 entradas) e a
+restrição de privilégios. O schema completo já contém as estruturas das
+migrações 004 e 005. Não executar `004_request_uniqueness.sql` nem
+`005_password_recovery.sql` depois da inicialização de um banco novo. Os scripts
+do entrypoint não rodam novamente em volume existente. O healthcheck exige a
+carga de cidades. Se inicialização falhar,
 investigar logs e estado parcial antes de agir; não reiniciar scripts cegamente,
 não usar `--force` nem apagar volumes de instalações com dados.
 
@@ -106,15 +110,22 @@ Validar login/CSRF/cookie Secure/HttpOnly/Lax, logout, cadastro, imagens e pági
 online. Caddy obtém certificado após DNS/portas corretos. Não executar os comandos
 de publicação neste trabalho. Não montar a raiz do repositório como site público.
 
-## Banco existente e migração 004
+## Banco existente e migrações
 
-Nunca importar schema.sql em banco existente. Fazer backup coordenado, ensaiar em
-cópia isolada e executar `deploy/migration-status.sql` apenas para leitura. Conferir
+Nunca importar `schema.sql` em banco existente. O schema inicial contém as
+estruturas atuais das migrações 004 (unicidade de solicitações) e 005
+(recuperação de senha). Banco novo recebe essas estruturas pelo schema inicial;
+não aplicar os dois scripts de migração nele. Fazer backup coordenado, ensaiar
+em cópia isolada e executar `deploy/migration-status.sql` apenas para leitura. Conferir
 as expressões geradas open_cnpj/pending_email e os dois índices UNIQUE com suas
 colunas/ordem. Se ambos completos e equivalentes: 004 já aplicada, não reaplicar.
-Se ambos ausentes e sem duplicatas: operador autorizado aplica 004 uma única vez
-com cliente que interrompe no primeiro erro. Estado parcial/divergente ou duplicatas:
-parar e preparar reparo específico; DDL MySQL não é transação reversível integral.
+Se os objetos da 004 estiverem ambos ausentes e sem duplicatas: operador
+autorizado aplica 004 uma única vez com cliente que interrompe no primeiro erro.
+Conferir separadamente a 005: `credentials_version` e `password_reset_tokens`
+devem estar presentes e equivalentes ao script; se ausentes, ensaiar e aplicar
+a 005 uma única vez somente após backup e autorização. Estado parcial/divergente
+ou duplicatas: parar e preparar reparo específico; DDL MySQL não é transação
+reversível integral.
 Registrar versão/hash do script, data, operador e resultado fora de segredos.
 O MySQL local já tem 004; esta Parte não executa migração nem modifica schema.
 
@@ -136,7 +147,7 @@ certificado. Healthcheck unhealthy não provoca restart sozinho: alertar/investi
 Política unless-stopped reinicia processos encerrados, não repara dados.
 
 Login 10/min/IP; formulários públicos compartilham 10/10min/IP; convites 20/min/IP;
-CSRF 60/min/IP, resposta 429 + Retry-After. Limites em memória, no máximo 10.000
+recuperação 5/min/IP; geocodificação 10/min/IP; CSRF 60/min/IP, resposta 429 + Retry-After. Limites em memória, no máximo 10.000
 chaves, reiniciam com a API; NAT compartilha orçamento. Não substituem proteção
 DDoS de borda nem controle distribuído. Proxy é o único acesso à API; não publicar
 8080. Tomcat processa forwarded headers de proxies privados; não aceitar proxy
@@ -145,9 +156,18 @@ arbitrário na rede. Cookies e autorização permanecem independentes desses lim
 Erros de rede não repetem escrita automaticamente. Em resultado incerto, recarregar
 o recurso antes de reenviar. Operações de recursos distintos não são atômicas.
 SMTP após commit pode falhar: aprovação permanece; corrigir SMTP e reemitir convite
-para conta INVITED. Timeouts 5s, TLS com verificação de hostname, sem e-mail real
-enviado nesta etapa. Convites expiram e reemissão invalida anteriores. Sem fila
-durável: monitorar avisos de entrega e orientar operação manual quando desabilitado.
+para conta INVITED. Com `APP_MAIL_ENABLED=false`, aprovação não envia e-mail nem
+cria token; o admin emite o convite separadamente. Essa emissão persiste somente
+o hash do token e retorna uma URL de ativação uma vez, com estado `MANUAL`; o
+operador autorizado entrega a URL ao destinatário por canal privado confiável.
+Não publicar, registrar em logs ou compartilhar essa URL em canal público. Com
+SMTP desligado, recuperação de senha não cria token e retorna somente mensagem
+genérica; não há recuperação manual implementada na aplicação. Para demonstração,
+usar contas controladas e preservar suas credenciais. Se uma conta perder acesso,
+interromper seu uso e seguir procedimento de manutenção aprovado fora do fluxo
+público, sem afirmar que a recuperação está disponível. Timeouts 5s, TLS com
+verificação de hostname. Convites expiram e reemissão invalida anteriores. Sem
+fila durável: monitorar avisos de entrega.
 
 ## Backup e restauração
 
@@ -178,7 +198,7 @@ docker compose run --rm --no-deps -T --entrypoint tar api -C /var/lib/bemfeito/u
 O dump contém DROP/CREATE das tabelas: esses comandos são DESTRUTIVOS no destino e
 só se aplicam ao ambiente descartável explicitamente conferido. Usar arquivo tar
 do próprio backup com checksum válido, não arquivo arbitrário. Conferir ownership
-UID 10001 e autorização dos arquivos, contagens de 21 tabelas, FKs, 5.571 cidades,
+UID 10001 e autorização dos arquivos, contagens de 22 tabelas, FKs, 5.571 cidades,
 admin, referências de imagem, Hibernate validate, login e imagens após reinício.
 Não iniciar frontend com domínio de produção no ensaio; usar hostname isolado e
 certificado apropriado. Não enviar SMTP real. Registrar duração/resultado. O ensaio
